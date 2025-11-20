@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title> Gravli - Campus Delivery</title>
+    <title>Gravli - Campus Delivery</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
@@ -128,13 +128,94 @@
         .login-modal-content p {
             font-size: 1.1rem;
         }
+
+        /* ========= RESPONSIVE TWEAKS FOR MOBILE & TABLET ========= */
+
+        @media (max-width: 640px) {
+            /* Login modal: tighter padding + smaller heading on mobiles */
+            .login-modal-content {
+                padding: 1.75rem;
+            }
+            .login-modal-content h2 {
+                font-size: 1.9rem;
+            }
+            .login-modal-content p {
+                font-size: 0.95rem;
+            }
+
+            /* Header layout: stack on small screens */
+            #main-header {
+                padding: 0.75rem 1rem;
+            }
+            #main-header .header-inner {
+                flex-direction: column;
+                align-items: flex-start;
+                height: auto;
+                gap: 0.75rem;
+            }
+            #main-header h1 {
+                font-size: 1.7rem;
+            }
+            #main-header p.text-indigo-200 {
+                font-size: 0.75rem;
+            }
+
+            /* Cafe grid: keep 2 columns, better spacing on small screens */
+            #cafe-grid-container {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+                gap: 0.75rem;
+            }
+            .cafe-box-image {
+                height: 120px;
+                font-size: 1.25rem;
+            }
+
+            /* Floating cart button closer to edges */
+            #cart-button {
+                right: 1rem;
+                bottom: 1rem;
+                padding-left: 1rem;
+                padding-right: 1.2rem;
+            }
+
+            /* Modals: full-width, safe padding on mobile */
+            .modal-content {
+                max-width: 100%;
+                width: 100%;
+                max-height: 90vh;
+            }
+
+            /* Order cards: ensure good spacing */
+            #my-requests-list > div,
+            #all-requests-list-deliverer > div,
+            #my-current-deliveries-list > div {
+                padding: 1rem;
+            }
+        }
+
+        @media (min-width: 641px) and (max-width: 1024px) {
+            /* Tablet: 3 columns for cafes for nicer layout */
+            #cafe-grid-container {
+                grid-template-columns: repeat(3, minmax(0, 1fr));
+            }
+
+            /* Slightly reduce big paddings on tablets */
+            #app {
+                padding-left: 1.5rem;
+                padding-right: 1.5rem;
+            }
+
+            .modal-content {
+                max-width: 90%;
+            }
+        }
     </style>
 </head>
 <body class="bg-primary text-primary">
 
     <div id="login-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-primary/80 backdrop-blur-sm">
         <div class="login-modal-content rounded-lg w-full max-w-sm p-8 text-center text-white">
-            <h2 class="font-bold mb-4 text-accent">Welcome to Gravli </h2>
+            <h2 class="font-bold mb-4 text-accent">Welcome to Gravli!</h2>
             <p class="text-gray-200 mb-8">Sign in with your Google account to continue.</p>
             <button id="google-signin-btn" class="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-4 rounded-lg transition duration-300 flex items-center justify-center gap-3 text-lg">
                 <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48"><path fill="#FFC107" d="M43.6 20.3h-2.2V20.3H24v7.3h10.9c-1.5 4.8-5.7 8.3-10.9 8.3-6.5 0-11.8-5.3-11.8-11.8S17.5 12.1 24 12.1c3.1 0 5.9 1.2 7.9 3.2l5.8-5.8C34.5 6.3 29.6 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.6-.4-3.7z"/><path fill="#FF3D00" d="m6.3 14.8 5.8 4.6C10.6 22.5 10 25.6 10 29s.6 6.5 1.7 9.6l-5.8 4.6C3.9 39.1 2 34.3 2 29s1.9-10.1 4.3-14.2z"/><path fill="#4CAF50" d="m29 45.1 6.1-4.7c1.8 1.1 3.8 1.8 6 1.8 2.2 0 4.2-.7 6-1.8l6.1 4.7c-3.6 3.1-8.1 5-13.1 5s-9.5-1.9-13.1-5z"/><path fill="#1976D2" d="M43.6 20.3h-2.2V20.3H24v7.3h10.9c-1.5 4.8-5.7 8.3-10.9 8.3-6.5 0-11.8-5.3-11.8-11.8S17.5 12.1 24 12.1c3.1 0 5.9 1.2 7.9 3.2l5.8-5.8C34.5 6.3 29.6 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.6-.4-3.7z"/></svg>
@@ -162,13 +243,14 @@
 
     <header id="main-header" class="mb-8 p-6 bg-gradient-to-r from-violet-600 to-indigo-600 text-white shadow-lg relative hidden">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="relative flex items-center justify-between h-16">
+            <!-- added header-inner class for responsive control -->
+            <div class="header-inner relative flex items-center justify-between h-16">
                 <div class="flex-1 flex items-center justify-start gap-3">
                     <img id="user-avatar" class="hidden h-9 w-9 rounded-full border-2 border-white object-cover" alt="User Avatar">
                     <div id="userInfo" class="text-sm text-indigo-200">Loading user info...</div>
                 </div>
                 
-                <div class="absolute left-1/2 transform -translate-x-1/2">
+                <div class="absolute left-1/2 transform -translate-x-1/2 md:static md:transform-none md:flex-1 md:flex md:justify-center">
                     <h1 class="text-3xl md:text-4xl font-bold tracking-tight flex items-center justify-center gap-3">
                         <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
                         <span>Gravli</span>
@@ -198,26 +280,26 @@
                 <div id="new-order-section" class="mb-12">
                     <h2 class="text-2xl font-bold mb-6">Place a New Order</h2>
                     <div id="cafe-grid-container" class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
-                        </div>
+                    </div>
                 </div>
                 <div id="my-orders-section">
                     <h2 class="text-2xl font-bold mb-6">My Active Orders</h2>
                     <div id="my-requests-list" class="space-y-4">
-                        </div>
+                    </div>
                 </div>
             </div>
 
             <div id="deliverer-view" class="hidden">
                 <h2 class="text-2xl font-bold mb-4">My Current Deliveries</h2>
                 <div id="my-current-deliveries-list" class="space-y-4 mb-8">
-                      </div>
+                </div>
                 <div id="single-delivery-message" class="hidden bg-secondary p-4 rounded-lg text-center text-secondary shadow-md border border-custom">
                     <p>Please complete your current delivery to see more available jobs.</p>
                 </div>
                 <div id="available-deliveries-container">
                     <h2 class="text-2xl font-bold mb-6">Available Deliveries</h2>
                     <div id="all-requests-list-deliverer" class="space-y-4">
-                            </div>
+                    </div>
                 </div>
             </div>
         </main>
@@ -253,7 +335,7 @@
                 <button id="menu-close-btn" class="text-gray-400 hover:text-gray-600">&times;</button>
             </div>
             <div id="menu-items-container" class="space-y-3 overflow-y-auto pr-2">
-                </div>
+            </div>
         </div>
     </div>
 
@@ -264,7 +346,7 @@
                 <button id="cart-close-btn" class="text-gray-400 hover:text-gray-600">&times;</button>
             </div>
             <div id="cart-items-container" class="space-y-4 overflow-y-auto pr-2">
-                </div>
+            </div>
             <div class="mt-6 pt-4 border-t border-custom">
                 <div class="flex justify-between items-center font-bold text-lg">
                     <span>Total</span>
@@ -321,9 +403,10 @@
                 <button id="history-close-btn" class="text-gray-400 hover:text-gray-600">&times;</button>
             </div>
             <div id="history-items-container" class="space-y-4 overflow-y-auto pr-2">
-                </div>
+            </div>
         </div>
     </div>
+
     <footer class="text-center p-10 mt-16 border-t border-custom text-muted">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <p class="font-semibold text-secondary">Made By Students</p>
@@ -966,18 +1049,18 @@
             let actionButtonOrPanel = '';
             if (isMyDelivery && req.status === 'in-progress') {
                 const etaInput = `<input type="text" id="eta-${req.id}" class="w-full md:w-auto text-sm px-2 py-1 border border-custom rounded-lg bg-primary text-primary focus:outline-none focus:ring-1 focus:ring-accent" placeholder="e.g., 5-10 mins">`;
-                const updateEtaBtn = `<button data-id="${req.id}" class="update-eta-btn accent accent-hover text-white text-sm font-bold py-1 px-3 rounded-lg">Set ETA</button>`;
+                const updateEtaBtn = `<button data-id="${req.id}" class="update-eta-btn accent accent-hover text-white text-sm font-bold py-1 px-3 rounded-lg mt-2 md:mt-0">Set ETA</button>`;
                 let nextActionBtn = '';
                 if (req.subStatus === null) {
-                    nextActionBtn = `<button data-id="${req.id}" class="reached-cafe-btn w-full accent accent-hover text-white font-bold py-2 px-4 rounded-lg">Reached Cafe</button>`;
+                    nextActionBtn = `<button data-id="${req.id}" class="reached-cafe-btn w-full accent accent-hover text-white font-bold py-2 px-4 rounded-lg mt-2">Reached Cafe</button>`;
                 } else if (req.subStatus === 'reached-cafe') {
-                    nextActionBtn = `<button data-id="${req.id}" class="picked-up-btn w-full accent accent-hover text-white font-bold py-2 px-4 rounded-lg">Picked Up Order</button>`;
+                    nextActionBtn = `<button data-id="${req.id}" class="picked-up-btn w-full accent accent-hover text-white font-bold py-2 px-4 rounded-lg mt-2">Picked Up Order</button>`;
                 } else if (req.subStatus === 'picked-up') {
-                    nextActionBtn = `<button data-id="${req.id}" class="delivered-btn bg-blue-500 hover:bg-blue-600 w-full text-white font-bold py-2 px-4 rounded-lg">Delivered</button>`;
+                    nextActionBtn = `<button data-id="${req.id}" class="delivered-btn bg-blue-500 hover:bg-blue-600 w-full text-white font-bold py-2 px-4 rounded-lg mt-2">Delivered</button>`;
                 }
                 actionButtonOrPanel = `
-                    <div class="space-y-3">
-                        <div class="flex items-center gap-2">
+                    <div class="space-y-3 mt-3 md:mt-0">
+                        <div class="flex flex-col md:flex-row md:items-center gap-2">
                             ${etaInput}
                             ${updateEtaBtn}
                         </div>
@@ -989,21 +1072,25 @@
             } 
             else if (viewType === 'deliverer' && req.status === 'open') {
                 if (req.requesterId === currentUser.uid) {
-                    actionButtonOrPanel = `<p class="text-sm text-muted text-center italic">This is your own request.</p>`;
+                    actionButtonOrPanel = `<p class="text-sm text-muted text-center italic mt-2">This is your own request.</p>`;
                 } else {
-                    actionButtonOrPanel = `<button data-id="${req.id}" class="accept-btn w-full md:w-auto bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-lg transition duration-300">Accept Job</button>`;
+                    actionButtonOrPanel = `<button data-id="${req.id}" class="accept-btn w-full md:w-auto bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-lg transition duration-300 mt-3 md:mt-0">Accept Job</button>`;
                 }
             } 
             else if (isMyOwnRequestView && req.status === 'open') {
-                actionButtonOrPanel = `<button data-id="${req.id}" class="cancel-request-btn bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-lg transition duration-300">Cancel</button>`;
+                actionButtonOrPanel = `<button data-id="${req.id}" class="cancel-request-btn bg-red-500 hover:bg-red-600 w-full md:w-auto text-white font-bold py-2 px-4 rounded-lg transition duration-300 mt-3 md:mt-0">Cancel</button>`;
             }
 
             card.innerHTML = `
-                <div class="flex flex-col md:flex-row justify-between">
+                <div class="flex flex-col md:flex-row md:justify-between gap-3">
                     <div class="flex-grow">
-                        <div class="flex items-center mb-2">
-                            <div class="space-y-1">${itemContent}</div>
-                            ${getStatusBadge(req.status)}
+                        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-2 gap-1">
+                            <div class="space-y-1">
+                                ${itemContent}
+                            </div>
+                            <div class="mt-1 sm:mt-0">
+                                ${getStatusBadge(req.status)}
+                            </div>
                         </div>
                         ${requesterInfo}
                         <p class="text-sm text-secondary"><strong>Item Total:</strong> ₹${itemPriceDisplay}</p>
@@ -1014,10 +1101,12 @@
                         ${timerElement}
                         ${statusTracker}
                     </div>
-                    <div class="mt-4 md:mt-0 md:text-right md:pl-4 flex-shrink-0">
+                    <div class="mt-2 md:mt-0 md:text-right md:pl-4 flex-shrink-0">
                         <p class="text-sm text-secondary mb-1">Total Amount</p>
                         <p class="text-2xl font-bold text-green-600">₹${totalAmount}</p>
-                        <div class="mt-2">${actionButtonOrPanel}</div>
+                        <div class="mt-2">
+                            ${actionButtonOrPanel}
+                        </div>
                     </div>
                 </div>
             `;
@@ -1134,5 +1223,4 @@
         });
     </script>
 </body>
-
 </html>
