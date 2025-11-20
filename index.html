@@ -1,0 +1,1137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Campus Buddy - Campus Delivery</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #f3f4f6;
+            --bg-secondary: #ffffff;
+            --text-primary: #1f2937;
+            --text-secondary: #4b5563;
+            --text-muted: #9ca3af;
+            --border-color: #e5e7eb;
+            --accent-color: #8b5cf6; /* Violet 500 */
+            --accent-hover: #7c3aed; /* Violet 600 */
+        }
+        .dark {
+            --bg-primary: #111827;
+            --bg-secondary: #1f2937;
+            --text-primary: #f9fafb;
+            --text-secondary: #d1d5db;
+            --text-muted: #6b7280;
+            --border-color: #374151;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            transition: background-color 0.5s ease, color 0.5s ease;
+        }
+        .bg-primary { 
+            background-color: var(--bg-primary); 
+            transition: background-color 0.5s ease, color 0.5s ease;
+        }
+        .bg-secondary { 
+            background-color: var(--bg-secondary); 
+            transition: background-color 0.5s ease, color 0.5s ease;
+        }
+        .text-primary { 
+            color: var(--text-primary); 
+            transition: background-color 0.5s ease, color 0.5s ease;
+        }
+        .text-secondary { 
+            color: var(--text-secondary); 
+            transition: background-color 0.5s ease, color 0.5s ease;
+        }
+        .text-muted { 
+            color: var(--text-muted); 
+            transition: background-color 0.5s ease, color 0.5s ease;
+        }
+        .border-custom { 
+            border-color: var(--border-color);
+            transition: border-color 0.5s ease;
+        }
+        
+        .accent { background-color: var(--accent-color); }
+        .accent-hover:hover { background-color: var(--accent-hover); }
+        .text-accent { color: var(--accent-color); }
+        .modal-backdrop {
+            background-color: rgba(0,0,0,0.5);
+            transition: opacity 0.3s ease;
+        }
+        .modal-content { transition: transform 0.3s ease; }
+        
+        .cafe-box {
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 0.5rem;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+        }
+        
+        .cafe-box:hover {
+            transform: scale(1.05) translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+        }
+
+        .cafe-box-image {
+            height: 150px;
+            background-color: var(--bg-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            border-top-left-radius: 0.5rem;
+            border-top-right-radius: 0.5rem;
+        }
+        .cafe-box-name {
+            padding: 0.75rem;
+            text-align: center;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        #user-avatar {
+            transition: transform 0.2s ease-in-out;
+            cursor: pointer;
+        }
+        #user-avatar:hover {
+            transform: scale(1.1);
+        }
+
+        .login-modal-content {
+            background: linear-gradient(135deg, var(--bg-secondary) 0%, #303b4d 100%);
+            border: 1px solid var(--border-color);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2), 0 10px 10px -5px rgba(0, 0, 0, 0.1);
+            animation: fadeInScale 0.5s ease-out forwards;
+        }
+        .dark .login-modal-content {
+            background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
+            border-color: #4a5568;
+        }
+        @keyframes fadeInScale {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        .login-modal-content h2 {
+            font-size: 2.5rem;
+            line-height: 1.2;
+        }
+        .login-modal-content p {
+            font-size: 1.1rem;
+        }
+    </style>
+</head>
+<body class="bg-primary text-primary">
+
+    <div id="login-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-primary/80 backdrop-blur-sm">
+        <div class="login-modal-content rounded-lg w-full max-w-sm p-8 text-center text-white">
+            <h2 class="font-bold mb-4 text-accent">Welcome to Campus Buddy!</h2>
+            <p class="text-gray-200 mb-8">Sign in with your Google account to continue.</p>
+            <button id="google-signin-btn" class="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-4 rounded-lg transition duration-300 flex items-center justify-center gap-3 text-lg">
+                <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48"><path fill="#FFC107" d="M43.6 20.3h-2.2V20.3H24v7.3h10.9c-1.5 4.8-5.7 8.3-10.9 8.3-6.5 0-11.8-5.3-11.8-11.8S17.5 12.1 24 12.1c3.1 0 5.9 1.2 7.9 3.2l5.8-5.8C34.5 6.3 29.6 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.6-.4-3.7z"/><path fill="#FF3D00" d="m6.3 14.8 5.8 4.6C10.6 22.5 10 25.6 10 29s.6 6.5 1.7 9.6l-5.8 4.6C3.9 39.1 2 34.3 2 29s1.9-10.1 4.3-14.2z"/><path fill="#4CAF50" d="m29 45.1 6.1-4.7c1.8 1.1 3.8 1.8 6 1.8 2.2 0 4.2-.7 6-1.8l6.1 4.7c-3.6 3.1-8.1 5-13.1 5s-9.5-1.9-13.1-5z"/><path fill="#1976D2" d="M43.6 20.3h-2.2V20.3H24v7.3h10.9c-1.5 4.8-5.7 8.3-10.9 8.3-6.5 0-11.8-5.3-11.8-11.8S17.5 12.1 24 12.1c3.1 0 5.9 1.2 7.9 3.2l5.8-5.8C34.5 6.3 29.6 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.6-.4-3.7z"/></svg>
+                Sign in with Google
+            </button>
+        </div>
+    </div>
+
+    <div id="role-selection-modal" class="fixed inset-0 z-40 flex items-center justify-center p-4 bg-primary/80 backdrop-blur-sm hidden">
+        <div class="bg-secondary rounded-lg shadow-xl w-full max-w-sm p-8 text-center">
+            <h2 class="text-2xl font-bold mb-2 text-accent">What would you like to do?</h2>
+            <p class="text-secondary mb-8">Choose your role for this session.</p>
+            <div class="space-y-4">
+                <button id="select-student-btn" class="w-full bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-4 px-4 rounded-lg transition duration-300 text-lg flex items-center justify-center gap-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
+                    <span>Order Food</span>
+                </button>
+                <button id="select-deliverer-btn" class="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-4 px-4 rounded-lg transition duration-300 text-lg flex items-center justify-center gap-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
+                    <span>Deliver Orders</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <header id="main-header" class="mb-8 p-6 bg-gradient-to-r from-violet-600 to-indigo-600 text-white shadow-lg relative hidden">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="relative flex items-center justify-between h-16">
+                <div class="flex-1 flex items-center justify-start gap-3">
+                    <img id="user-avatar" class="hidden h-9 w-9 rounded-full border-2 border-white object-cover" alt="User Avatar">
+                    <div id="userInfo" class="text-sm text-indigo-200">Loading user info...</div>
+                </div>
+                
+                <div class="absolute left-1/2 transform -translate-x-1/2">
+                    <h1 class="text-3xl md:text-4xl font-bold tracking-tight flex items-center justify-center gap-3">
+                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                        <span>Campus Buddy</span>
+                    </h1>
+                </div>
+
+                <div class="flex-1 flex items-center justify-end space-x-3">
+                    <button id="order-history-btn" class="hidden bg-white/20 hover:bg-white/30 text-white text-xs font-bold py-1.5 px-4 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-indigo-600 focus:ring-white" aria-label="Order History">History</button>
+                    <button id="logout-btn" class="hidden bg-red-500 hover:bg-red-600 text-white text-xs font-bold py-1.5 px-4 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-indigo-600 focus:ring-white" aria-label="Logout">Logout</button>
+                    <button id="theme-switcher" class="p-2 rounded-full text-indigo-200 hover:bg-white/20 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-indigo-600 focus:ring-white" aria-label="Toggle theme">
+                        <svg id="sun-icon" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                        </svg>
+                        <svg id="moon-icon" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            <p class="text-indigo-200 text-center mt-2 text-sm">Your on-campus delivery solution. Fast, easy, and by students, for students.</p>
+        </div>
+    </header>
+
+    <div id="app" class="max-w-7xl mx-auto p-4 md:p-6 hidden">
+        <main id="main-content" class="pb-24">
+            <div id="student-view">
+                <div id="new-order-section" class="mb-12">
+                    <h2 class="text-2xl font-bold mb-6">Place a New Order</h2>
+                    <div id="cafe-grid-container" class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
+                        </div>
+                </div>
+                <div id="my-orders-section">
+                    <h2 class="text-2xl font-bold mb-6">My Active Orders</h2>
+                    <div id="my-requests-list" class="space-y-4">
+                        </div>
+                </div>
+            </div>
+
+            <div id="deliverer-view" class="hidden">
+                <h2 class="text-2xl font-bold mb-4">My Current Deliveries</h2>
+                <div id="my-current-deliveries-list" class="space-y-4 mb-8">
+                      </div>
+                <div id="single-delivery-message" class="hidden bg-secondary p-4 rounded-lg text-center text-secondary shadow-md border border-custom">
+                    <p>Please complete your current delivery to see more available jobs.</p>
+                </div>
+                <div id="available-deliveries-container">
+                    <h2 class="text-2xl font-bold mb-6">Available Deliveries</h2>
+                    <div id="all-requests-list-deliverer" class="space-y-4">
+                            </div>
+                </div>
+            </div>
+        </main>
+        
+        <div id="loader" class="text-center py-10 hidden">
+            <svg class="animate-spin h-8 w-8 text-accent mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            <p class="mt-2 text-secondary">Fetching delivery requests...</p>
+        </div>
+    </div>
+
+    <button id="cart-button" class="hidden fixed z-40 bottom-6 right-6 accent accent-hover text-white font-bold py-3 px-5 rounded-full shadow-lg flex items-center gap-3 transition-all duration-300">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
+        <span id="cart-button-text">View Cart</span>
+    </button>
+
+    <div id="active-order-bar" class="hidden fixed bottom-0 left-0 right-0 z-30 bg-secondary shadow-2xl border-t border-custom p-4 cursor-pointer">
+        <div class="max-w-7xl mx-auto flex justify-between items-center px-4 sm:px-6 lg:px-8">
+            <div>
+                <p class="text-sm text-secondary">Your order is In Progress!</p>
+                <p id="active-order-bar-status" class="font-bold text-accent">Awaiting deliverer updates...</p>
+            </div>
+            <span class="text-sm font-semibold text-secondary">View Details &rarr;</span>
+        </div>
+    </div>
+
+    <div id="menu-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 modal-backdrop hidden opacity-0">
+        <div id="menu-modal-content" class="bg-secondary rounded-lg shadow-xl w-full max-w-lg p-6 transform scale-95 modal-content max-h-[90vh] flex flex-col">
+            <div class="flex justify-between items-center mb-4">
+                <h3 id="menu-modal-title" class="text-2xl font-bold">Menu</h3>
+                <button id="menu-close-btn" class="text-gray-400 hover:text-gray-600">&times;</button>
+            </div>
+            <div id="menu-items-container" class="space-y-3 overflow-y-auto pr-2">
+                </div>
+        </div>
+    </div>
+
+    <div id="cart-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 modal-backdrop hidden opacity-0">
+        <div id="cart-modal-content" class="bg-secondary rounded-lg shadow-xl w-full max-w-lg p-6 transform scale-95 modal-content max-h-[90vh] flex flex-col">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-2xl font-bold">Your Cart</h3>
+                <button id="cart-close-btn" class="text-gray-400 hover:text-gray-600">&times;</button>
+            </div>
+            <div id="cart-items-container" class="space-y-4 overflow-y-auto pr-2">
+                </div>
+            <div class="mt-6 pt-4 border-t border-custom">
+                <div class="flex justify-between items-center font-bold text-lg">
+                    <span>Total</span>
+                    <span id="cart-total-price">₹0.00</span>
+                </div>
+                <button id="checkout-btn" class="mt-4 w-full accent accent-hover text-white font-bold py-3 px-4 rounded-lg transition duration-300">Proceed to Checkout</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="checkout-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 modal-backdrop hidden opacity-0">
+        <div id="checkout-modal-content" class="bg-secondary rounded-lg shadow-xl w-full max-w-md p-6 transform scale-95 modal-content">
+            <h3 class="text-2xl font-bold mb-4">Confirm Order</h3>
+            <form id="checkout-form">
+                <div class="mb-4">
+                    <label for="dropoff" class="block text-secondary font-semibold mb-2">Drop-off Location</label>
+                    <select id="dropoff" class="w-full px-3 py-2 border border-custom rounded-lg focus:outline-none focus:ring-2 focus:ring-accent bg-secondary text-primary" required>
+                        <option value="" disabled selected>Select a location</option>
+                        <option value="Main Library - 2nd Floor">Main Library - 2nd Floor</option>
+                        <option value="Engineering Building - Lobby">Engineering Building - Lobby</option>
+                        <option value="Student Union - Game Room">Student Union - Game Room</option>
+                        <option value="Oak Hall - Front Desk">Oak Hall - Front Desk</option>
+                        <option value="Willow Creek Apartments - Bldg C">Willow Creek Apartments - Bldg C</option>
+                        <option value="Science Center - Atrium">Science Center - Atrium</option>
+                    </select>
+                </div>
+                <div class="mb-6 bg-primary p-3 rounded-lg text-center">
+                    <p class="text-secondary font-semibold">Total Amount (Item + Fee)</p>
+                    <p id="checkout-total-display" class="text-primary text-2xl font-bold">₹0.00</p>
+                </div>
+                <p id="checkout-error-message" class="text-red-500 text-sm mb-4 text-center hidden"></p>
+                <div class="flex justify-end gap-4">
+                    <button type="button" id="checkout-cancel-btn" class="bg-gray-200 dark:bg-gray-600 hover:bg-gray-300 dark:hover:bg-gray-500 text-primary font-bold py-2 px-4 rounded-lg transition duration-300">Cancel</button>
+                    <button type="submit" class="accent accent-hover text-white font-bold py-2 px-4 rounded-lg transition duration-300">Confirm Order</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="loading-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-primary/80 backdrop-blur-sm hidden">
+        <div class="bg-secondary rounded-lg shadow-xl w-full max-w-xs p-8 text-center">
+            <svg class="animate-spin h-10 w-10 text-accent mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            <p class="mt-4 text-secondary font-semibold">Placing your order...</p>
+        </div>
+    </div>
+
+    <div id="history-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 modal-backdrop hidden opacity-0">
+        <div id="history-modal-content" class="bg-secondary rounded-lg shadow-xl w-full max-w-2xl p-6 transform scale-95 modal-content max-h-[90vh] flex flex-col">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-2xl font-bold">Order History</h3>
+                <button id="history-close-btn" class="text-gray-400 hover:text-gray-600">&times;</button>
+            </div>
+            <div id="history-items-container" class="space-y-4 overflow-y-auto pr-2">
+                </div>
+        </div>
+    </div>
+    <footer class="text-center p-10 mt-16 border-t border-custom text-muted">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <p class="font-semibold text-secondary">Made By Students</p>
+            <p class="font-semibold text-secondary mb-4">Made For Students</p>
+            <p class="text-sm">Made with ❤️ by Shubham</p>
+        </div>
+    </footer>
+
+
+    <script type="module">
+        // Firebase Imports
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { 
+            getAuth, 
+            onAuthStateChanged, 
+            GoogleAuthProvider, 
+            signInWithPopup, 
+            signOut 
+        } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { 
+            getFirestore, 
+            collection, 
+            addDoc, 
+            onSnapshot,
+            query, 
+            doc,
+            updateDoc,
+            serverTimestamp,
+            deleteDoc,
+        } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // --- Firebase Configuration ---
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-campus-delivery';
+        const firebaseConfig = {
+             apiKey: "AIzaSyBnStrl0raNIb9Gr9-TtNzSImwbOQ36l_w",
+             authDomain: "linkdash-3865d.firebaseapp.com",
+             projectId: "linkdash-3865d",
+             storageBucket: "linkdash-3865d.firebasestorage.app",
+             messagingSenderId: "337760264309",
+             appId: "1:337760264309:web:de20eaa36f7b9de688983c",
+             measurementId: "G-RXLFFT5F2K"
+        };
+        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+
+        // --- Initialize Firebase ---
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const auth = getAuth(app);
+        
+        // --- Helper function to generate menu items ---
+        function generateMenuItems(cafeId, count = 15) {
+            const items = [];
+            for (let i = 1; i <= count; i++) {
+                items.push({
+                    id: `${cafeId.toLowerCase()}-${i}`,
+                    name: `Item ${i}`,
+                    price: 100 + (i * 5)
+                });
+            }
+            return items;
+        }
+        const CAFE_DATA = {
+            "HR1": { name: "HR1", items: generateMenuItems("HR1", 15) },
+            "HR2": { name: "HR2", items: generateMenuItems("HR2", 15) },
+            "HR3": { name: "HR3", items: generateMenuItems("HR3", 15) },
+            "HR4": { name: "HR4", items: generateMenuItems("HR4", 15) },
+            "HR5": { name: "HR5", items: generateMenuItems("HR5", 15) },
+            "HR6": { name: "HR6", items: generateMenuItems("HR6", 15) },
+            "HR7": { name: "HR7", items: generateMenuItems("HR7", 15) },
+            "HR8": { name: "HR8", items: generateMenuItems("HR8", 15) },
+            "HR9": { name: "HR9", items: generateMenuItems("HR9", 15) },
+            "HR10": { name: "HR10", items: generateMenuItems("HR10", 15) },
+            "HR11": { name: "HR11", items: generateMenuItems("HR11", 15) },
+            "HR12": { name: "HR12", items: generateMenuItems("HR12", 15) },
+        };
+
+        // --- Global State ---
+        let currentUser = null;
+        let userDetails = null;
+        let unsubscribe = null; 
+        let cart = {};
+        let currentOpenCafeId = null;
+
+        // --- UI Elements ---
+        const loginModal = document.getElementById('login-modal');
+        const googleSignInBtn = document.getElementById('google-signin-btn');
+        const roleSelectionModal = document.getElementById('role-selection-modal');
+        const selectStudentBtn = document.getElementById('select-student-btn');
+        const selectDelivererBtn = document.getElementById('select-deliverer-btn');
+        const appContainer = document.getElementById('app');
+        const mainHeader = document.getElementById('main-header');
+        const themeSwitcher = document.getElementById('theme-switcher');
+        const sunIcon = document.getElementById('sun-icon');
+        const moonIcon = document.getElementById('moon-icon');
+        const studentView = document.getElementById('student-view');
+        const delivererView = document.getElementById('deliverer-view');
+        const loader = document.getElementById('loader');
+        const userInfo = document.getElementById('userInfo');
+        const userAvatar = document.getElementById('user-avatar');
+        const logoutBtn = document.getElementById('logout-btn');
+        const cafeGridContainer = document.getElementById('cafe-grid-container');
+        const cartButton = document.getElementById('cart-button');
+        const cartButtonText = document.getElementById('cart-button-text');
+        const menuModal = document.getElementById('menu-modal');
+        const menuModalContent = document.getElementById('menu-modal-content');
+        const menuModalTitle = document.getElementById('menu-modal-title');
+        const menuItemsContainer = document.getElementById('menu-items-container');
+        const menuCloseBtn = document.getElementById('menu-close-btn');
+        const cartModal = document.getElementById('cart-modal');
+        const cartModalContent = document.getElementById('cart-modal-content');
+        const cartItemsContainer = document.getElementById('cart-items-container');
+        const cartTotalPrice = document.getElementById('cart-total-price');
+        const cartCloseBtn = document.getElementById('cart-close-btn');
+        const checkoutBtn = document.getElementById('checkout-btn');
+        const checkoutModal = document.getElementById('checkout-modal');
+        const checkoutModalContent = document.getElementById('checkout-modal-content');
+        const checkoutForm = document.getElementById('checkout-form');
+        const checkoutTotalDisplay = document.getElementById('checkout-total-display');
+        const checkoutErrorMessage = document.getElementById('checkout-error-message');
+        const checkoutCancelBtn = document.getElementById('checkout-cancel-btn');
+        const loadingModal = document.getElementById('loading-modal');
+        const orderHistoryBtn = document.getElementById('order-history-btn');
+        const historyModal = document.getElementById('history-modal');
+        const historyModalContent = document.getElementById('history-modal-content');
+        const historyCloseBtn = document.getElementById('history-close-btn');
+        const historyItemsContainer = document.getElementById('history-items-container');
+        const activeOrderBar = document.getElementById('active-order-bar');
+        const activeOrderBarStatus = document.getElementById('active-order-bar-status');
+
+        // --- Theme Logic ---
+        function applyTheme(theme) {
+            if (theme === 'dark') {
+                document.documentElement.classList.add('dark');
+                sunIcon.classList.add('hidden');
+                moonIcon.classList.remove('hidden');
+            } else {
+                document.documentElement.classList.remove('dark');
+                sunIcon.classList.remove('hidden');
+                moonIcon.classList.add('hidden');
+            }
+        }
+        themeSwitcher.addEventListener('click', () => {
+            const isDark = document.documentElement.classList.toggle('dark');
+            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+            applyTheme(isDark ? 'dark' : 'light');
+        });
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        applyTheme(savedTheme);
+
+        // --- Authentication & User Setup ---
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                currentUser = user;
+                userDetails = { name: user.displayName, uid: user.uid, photoURL: user.photoURL };
+                loginModal.classList.add('hidden');
+                roleSelectionModal.classList.remove('hidden');
+                setupUserHeader("Welcome");
+            } else {
+                currentUser = null;
+                userDetails = null;
+                loginModal.classList.remove('hidden');
+                roleSelectionModal.classList.add('hidden');
+                appContainer.classList.add('hidden');
+                mainHeader.classList.add('hidden');
+                logoutBtn.classList.add('hidden');
+                userInfo.textContent = "Please sign in.";
+                userAvatar.classList.add('hidden');
+                userAvatar.src = '';
+                orderHistoryBtn.classList.add('hidden');
+            }
+        });
+        
+        async function signInWithGoogle() {
+            const provider = new GoogleAuthProvider();
+            try {
+                await signInWithPopup(auth, provider);
+            } catch (error) {
+                console.error("Google Sign-in Error:", error);
+                alert("Could not sign in with Google. Please try again.");
+            }
+        }
+        
+        function setupUserHeader(greeting) {
+            userInfo.innerHTML = `<p class="font-semibold">${greeting}, ${userDetails.name}!</p>`;
+            if (userDetails.photoURL) {
+                userAvatar.src = userDetails.photoURL;
+                userAvatar.classList.remove('hidden');
+            } else {
+                userAvatar.classList.add('hidden');
+            }
+            logoutBtn.classList.remove('hidden');
+            orderHistoryBtn.classList.remove('hidden');
+            mainHeader.classList.remove('hidden');
+        }
+
+        // --- App Start Logic ---
+        function startApp() {
+            roleSelectionModal.classList.add('hidden');
+            appContainer.classList.remove('hidden');
+            if (studentView.classList.contains('hidden') === false) {
+                renderCafes();
+                fetchAndDisplayRequests();
+            } else {
+                fetchAndDisplayRequests();
+            }
+        }
+
+        // --- NEW: UI Logic ---
+        function renderCafes() {
+            cafeGridContainer.innerHTML = '';
+            for (const cafeId in CAFE_DATA) {
+                const cafe = CAFE_DATA[cafeId];
+                const cafeBox = document.createElement('div');
+                cafeBox.className = 'cafe-box';
+                cafeBox.dataset.cafeId = cafeId;
+                cafeBox.innerHTML = `
+                    <div class="cafe-box-image">${cafe.name}</div>
+                    <div class="cafe-box-name">${cafe.name}</div>
+                `;
+                cafeGridContainer.appendChild(cafeBox);
+            }
+        }
+
+        function openMenuModal(cafeId) {
+            currentOpenCafeId = cafeId;
+            const cafe = CAFE_DATA[cafeId];
+            menuModalTitle.textContent = cafe.name;
+            renderMenu(cafeId);
+            
+            menuModal.classList.remove('hidden');
+            setTimeout(() => {
+                menuModal.classList.remove('opacity-0');
+                menuModalContent.classList.remove('scale-95');
+            }, 10);
+        }
+
+        function renderMenu(cafeId) {
+            const cafe = CAFE_DATA[cafeId];
+            menuItemsContainer.innerHTML = '';
+            
+            cafe.items.forEach(item => {
+                const itemInCart = cart[item.id];
+                const quantity = itemInCart ? itemInCart.quantity : 0;
+
+                const itemElement = document.createElement('div');
+                itemElement.className = 'flex items-center justify-between bg-primary p-3 rounded-lg';
+                itemElement.innerHTML = `
+                    <div>
+                        <p class="font-semibold text-primary">${item.name}</p>
+                        <p class="text-sm text-secondary">₹${item.price.toFixed(2)}</p>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <button data-item-id="${item.id}" data-change="-1" class="update-quantity-btn bg-gray-300 dark:bg-gray-600 text-primary font-bold w-7 h-7 rounded-full ${quantity === 0 ? 'opacity-50' : ''}">-</button>
+                        <span id="quantity-${item.id}" class="font-bold w-6 text-center">${quantity}</span>
+                        <button data-item-id="${item.id}" data-change="1" class="update-quantity-btn accent text-white font-bold w-7 h-7 rounded-full">+</button>
+                    </div>
+                `;
+                menuItemsContainer.appendChild(itemElement);
+            });
+        }
+
+        function updateCart(itemId, change) {
+            const firstItem = Object.values(cart)[0];
+            if (firstItem && firstItem.cafeId !== currentOpenCafeId) {
+                if (confirm("Your cart contains items from another cafe. Would you like to clear it and start a new order?")) {
+                    cart = {};
+                } else {
+                    return;
+                }
+            }
+            
+            const cafe = CAFE_DATA[currentOpenCafeId];
+            const item = cafe.items.find(i => i.id === itemId);
+            if (!item) return;
+
+            let itemInCart = cart[itemId];
+            if (!itemInCart) {
+                itemInCart = {
+                    name: item.name,
+                    price: item.price,
+                    quantity: 0,
+                    cafeId: currentOpenCafeId,
+                    cafeName: cafe.name
+                };
+                cart[itemId] = itemInCart;
+            }
+
+            itemInCart.quantity += change;
+
+            if (itemInCart.quantity <= 0) {
+                delete cart[itemId];
+            }
+            
+            renderMenu(currentOpenCafeId);
+            updateCartUI();
+        }
+
+        function updateCartUI() {
+            const itemCount = Object.values(cart).reduce((sum, item) => sum + item.quantity, 0);
+            if (itemCount > 0) {
+                cartButtonText.textContent = `View Cart (${itemCount})`;
+                cartButton.classList.remove('hidden');
+            } else {
+                cartButton.classList.add('hidden');
+            }
+        }
+
+        function openCartModal() {
+            cartItemsContainer.innerHTML = '';
+            let totalPrice = 0;
+
+            if (Object.keys(cart).length === 0) {
+                cartItemsContainer.innerHTML = `<p class="text-secondary text-center">Your cart is empty.</p>`;
+                cartTotalPrice.textContent = '₹0.00';
+                checkoutBtn.disabled = true;
+                checkoutBtn.classList.add('opacity-50');
+            } else {
+                checkoutBtn.disabled = false;
+                checkoutBtn.classList.remove('opacity-50');
+
+                for (const itemId in cart) {
+                    const item = cart[itemId];
+                    const itemElement = document.createElement('div');
+                    itemElement.className = 'flex items-center justify-between';
+                    
+                    itemElement.innerHTML = `
+                        <div class="flex items-center gap-3">
+                            <button data-item-id="${itemId}" class="remove-from-cart-btn text-red-500 hover:text-red-700 font-bold text-lg leading-none p-1 rounded-full">&times;</button>
+                            <div>
+                                <p class="font-semibold text-primary">${item.name} <span class="text-sm font-normal text-primary">x ${item.quantity}</span></p>
+                                <p class="text-sm text-secondary">from ${item.cafeName}</p>
+                            </div>
+                        </div>
+                        <p class="font-semibold">₹${(item.price * item.quantity).toFixed(2)}</p>
+                    `;
+                    cartItemsContainer.appendChild(itemElement);
+                    totalPrice += item.price * item.quantity;
+                }
+                cartTotalPrice.textContent = `₹${totalPrice.toFixed(2)}`;
+            }
+
+            cartModal.classList.remove('hidden');
+            setTimeout(() => {
+                cartModal.classList.remove('opacity-0');
+                cartModalContent.classList.remove('scale-95');
+            }, 10);
+        }
+
+        function closeCartModal() {
+            cartModal.classList.add('opacity-0');
+            cartModalContent.classList.add('scale-95');
+            setTimeout(() => cartModal.classList.add('hidden'), 300);
+        }
+
+        function closeMenuModal() {
+            menuModal.classList.add('opacity-0');
+            menuModalContent.classList.add('scale-95');
+            setTimeout(() => menuModal.classList.add('hidden'), 300);
+        }
+
+        function openCheckoutModal() {
+            closeCartModal();
+            const itemTotal = Object.values(cart).reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            const deliveryFee = 50.00;
+            const finalTotal = itemTotal + deliveryFee;
+            checkoutTotalDisplay.textContent = `₹${finalTotal.toFixed(2)}`;
+            checkoutErrorMessage.classList.add('hidden');
+
+            checkoutModal.classList.remove('hidden');
+            setTimeout(() => {
+                checkoutModal.classList.remove('opacity-0');
+                checkoutModalContent.classList.remove('scale-95');
+            }, 10);
+        }
+
+        function closeCheckoutModal() {
+            checkoutModal.classList.add('opacity-0');
+            checkoutModalContent.classList.add('scale-95');
+            setTimeout(() => checkoutModal.classList.add('hidden'), 300);
+        }
+        
+        function openHistoryModal() {
+            historyModal.classList.remove('hidden');
+            setTimeout(() => {
+                historyModal.classList.remove('opacity-0');
+                historyModalContent.classList.remove('scale-95');
+            }, 10);
+        }
+
+        function closeHistoryModal() {
+            historyModal.classList.add('opacity-0');
+            historyModalContent.classList.add('scale-95');
+            setTimeout(() => historyModal.classList.add('hidden'), 300);
+        }
+
+        function renderOrderHistory(completedOrders) {
+            historyItemsContainer.innerHTML = '';
+            if (completedOrders.length === 0) {
+                historyItemsContainer.innerHTML = `<p class="text-secondary text-center">You have no completed orders.</p>`;
+                return;
+            }
+            
+            completedOrders.forEach(req => {
+                const card = createRequestCard(req, 'history-view');
+                historyItemsContainer.appendChild(card);
+            });
+        }
+
+
+        async function submitOrder(e) {
+            e.preventDefault();
+            const submitBtn = checkoutForm.querySelector('button[type="submit"]');
+            checkoutErrorMessage.classList.add('hidden');
+
+            const dropoffValue = document.getElementById('dropoff').value;
+            if (!dropoffValue) {
+                checkoutErrorMessage.textContent = "Please select a drop-off location.";
+                checkoutErrorMessage.classList.remove('hidden');
+                return;
+            }
+
+            submitBtn.disabled = true;
+            loadingModal.classList.remove('hidden');
+
+            const itemTotal = Object.values(cart).reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            const deliveryFee = 50.00;
+            const finalTotal = itemTotal + deliveryFee;
+            const firstItem = Object.values(cart)[0];
+
+            const request = {
+                items: Object.values(cart).map(item => ({
+                    name: item.name,
+                    quantity: item.quantity,
+                    price: item.price
+                })),
+                itemPrice: itemTotal,
+                pickupLocation: firstItem.cafeName,
+                dropoffLocation: dropoffValue,
+                deliveryFee: deliveryFee,
+                totalAmount: finalTotal,
+                status: 'open',
+                requesterId: currentUser.uid,
+                requesterName: userDetails.name,
+                requesterPhotoURL: userDetails.photoURL,
+                requesterUid: userDetails.uid,
+                delivererId: null,
+                delivererName: null,
+                createdAt: serverTimestamp(),
+                subStatus: null, 
+                estimatedTime: null
+            };
+
+            setTimeout(async () => {
+                try {
+                    const collectionPath = `/artifacts/${appId}/public/data/deliveries`;
+                    await addDoc(collection(db, collectionPath), request);
+                    
+                    loadingModal.classList.add('hidden');
+                    closeCheckoutModal();
+                    cart = {};
+                    updateCartUI();
+                    checkoutForm.reset();
+                    submitBtn.disabled = false;
+
+                } catch (error) {
+                    console.error("Error adding document: ", error);
+                    loadingModal.classList.add('hidden');
+                    checkoutErrorMessage.textContent = "Failed to post request. Please try again.";
+                    checkoutErrorMessage.classList.remove('hidden');
+                    submitBtn.disabled = false;
+                }
+            }, 2500);
+        }
+
+        async function logout() {
+            try {
+                await signOut(auth);
+            } catch (error) {
+                console.error("Logout Error:", error);
+            }
+        }
+
+        // --- Firestore Logic (Fetching) ---
+        function fetchAndDisplayRequests() {
+           if (!currentUser) return;
+           if(unsubscribe) unsubscribe();
+           loader.classList.remove('hidden');
+           const collectionPath = `/artifacts/${appId}/public/data/deliveries`;
+           const q = query(collection(db, collectionPath));
+           
+           unsubscribe = onSnapshot(q, (querySnapshot) => {
+               loader.classList.add('hidden');
+               const nowInSeconds = Date.now() / 1000;
+               const maxAge = 900;
+               let allRequests = [];
+               querySnapshot.forEach((doc) => {
+                   const req = { id: doc.id, ...doc.data() };
+                   if (req.status === 'open' && req.createdAt && (nowInSeconds - req.createdAt.seconds > maxAge)) {
+                       if (req.requesterId === currentUser.uid) {
+                           deleteDoc(doc.ref);
+                       }
+                   } else {
+                       allRequests.push(req);
+                   }
+               });
+               allRequests.sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
+               displayRequests(allRequests);
+           }, (error) => {
+               console.error("Error fetching requests: ", error);
+               loader.classList.add('hidden');
+           });
+        }
+        
+        function getStatusBadge(status) {
+            switch(status) {
+                case 'open': return `<span class="bg-green-100 text-green-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded-full dark:bg-green-900 dark:text-green-300">Open</span>`;
+                case 'in-progress': return `<span class="bg-yellow-100 text-yellow-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded-full dark:bg-yellow-900 dark:text-yellow-300">In Progress</span>`;
+                case 'completed': return `<span class="bg-blue-100 text-blue-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded-full dark:bg-blue-900 dark:text-blue-300">Completed</span>`;
+                default: return `<span class="bg-gray-100 text-gray-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded-full dark:bg-gray-700 dark:text-gray-300">Unknown</span>`;
+            }
+        }
+
+        function displayRequests(requests) {
+            const myRequestsList = document.getElementById('my-requests-list');
+            const allRequestsListDeliverer = document.getElementById('all-requests-list-deliverer');
+            const myCurrentDeliveriesList = document.getElementById('my-current-deliveries-list');
+            const availableDeliveriesContainer = document.getElementById('available-deliveries-container');
+            const singleDeliveryMessage = document.getElementById('single-delivery-message');
+            
+            myRequestsList.innerHTML = '';
+            allRequestsListDeliverer.innerHTML = '';
+            myCurrentDeliveriesList.innerHTML = '';
+            
+            const myReqs = requests.filter(r => r.requesterId === currentUser.uid);
+            const myCurrentDeliveries = requests.filter(r => r.delivererId === currentUser.uid);
+            const openDeliveries = requests.filter(r => r.status === 'open');
+            const hasActiveDelivery = myCurrentDeliveries.some(r => r.status === 'in-progress');
+
+            const myActiveOrders = myReqs.filter(r => r.status === 'open' || r.status === 'in-progress');
+            const myCompletedOrders = myReqs.filter(r => r.status === 'completed');
+            const myInProgressOrder = myReqs.find(r => r.status === 'in-progress');
+            
+            myRequestsList.innerHTML = myActiveOrders.length ? '' : `<p class="text-secondary">You have no active orders.</p>`;
+            myActiveOrders.forEach(req => myRequestsList.appendChild(createRequestCard(req, 'student-own')));
+            
+            renderOrderHistory(myCompletedOrders);
+            
+            if (myInProgressOrder) {
+                activeOrderBarStatus.textContent = formatSubStatus(myInProgressOrder.subStatus);
+                activeOrderBar.classList.remove('hidden');
+                activeOrderBar.dataset.orderId = `order-${myInProgressOrder.id}`;
+            } else {
+                activeOrderBar.classList.add('hidden');
+            }
+
+            myCurrentDeliveriesList.innerHTML = myCurrentDeliveries.length ? '' : `<p class="text-secondary">You have no active or completed deliveries.</p>`;
+            myCurrentDeliveries.forEach(req => myCurrentDeliveriesList.appendChild(createRequestCard(req, 'deliverer-own')));
+            if (hasActiveDelivery) {
+                availableDeliveriesContainer.classList.add('hidden');
+                singleDeliveryMessage.classList.remove('hidden');
+            } else {
+                availableDeliveriesContainer.classList.remove('hidden');
+                singleDeliveryMessage.classList.add('hidden');
+                allRequestsListDeliverer.innerHTML = openDeliveries.length ? '' : `<p class="text-secondary">No available deliveries right now. Check back soon!</p>`;
+                openDeliveries.forEach(req => allRequestsListDeliverer.appendChild(createRequestCard(req, 'deliverer')));
+            }
+        }
+        
+        function formatSubStatus(status) {
+            if (!status) return 'Awaiting deliverer updates...';
+            switch(status) {
+                case 'reached-cafe': return 'Reached the cafe';
+                case 'picked-up': return 'Order picked up';
+                default: return 'In progress';
+            }
+        }
+
+        function createRequestCard(req, viewType) {
+            const card = document.createElement('div');
+            card.className = 'bg-secondary p-5 rounded-lg shadow-md border border-custom';
+            if (viewType === 'student-own') {
+                card.id = `order-${req.id}`;
+            }
+
+            const timeAgo = req.createdAt ? getTimeAgo(req.createdAt.seconds) : 'just now';
+            const isMyOwnRequestView = viewType === 'student-own';
+            const isMyDelivery = req.delivererId === currentUser.uid;
+
+            let itemContent;
+            if (req.items && Array.isArray(req.items)) {
+                itemContent = req.items.map(item => `
+                    <p class="font-semibold text-accent">${item.name} <span class="text-sm font-normal text-primary">x ${item.quantity}</span></p>
+                `).join('');
+            } else {
+                itemContent = `<h4 class="text-lg font-bold text-accent">${req.itemName || 'Order'}</h4>`;
+            }
+            
+            const totalAmount = req.totalAmount ? req.totalAmount.toFixed(2) : (req.itemPrice + req.deliveryFee).toFixed(2);
+            const itemPriceDisplay = req.itemPrice ? req.itemPrice.toFixed(2) : 'N/A';
+            
+            let timerElement = '';
+            if (req.status === 'open' && req.createdAt?.seconds) {
+                const nowInSeconds = Date.now() / 1000;
+                const ageInSeconds = nowInSeconds - req.createdAt.seconds;
+                const maxAge = 900;
+                const remainingSeconds = maxAge - ageInSeconds;
+                if (remainingSeconds > 0) {
+                    const minutes = Math.floor(remainingSeconds / 60);
+                    const seconds = Math.floor(remainingSeconds % 60);
+                    timerElement = `<p class="text-xs text-red-500 mt-2 font-medium">Expires in: ${minutes}:${seconds.toString().padStart(2, '0')}</p>`;
+                }
+            }
+            
+            let requesterInfo = '';
+            if (!isMyOwnRequestView && viewType !== 'history-view') {
+                const requesterPhoto = req.requesterPhotoURL ? `<img src="${req.requesterPhotoURL}" class="h-8 w-8 rounded-full object-cover mr-2" alt="Requester">` : `<div class="h-8 w-8 bg-gray-300 rounded-full flex items-center justify-center text-gray-600 text-sm font-bold mr-2">?</div>`;
+                requesterInfo = `
+                    <div class="flex items-center text-sm text-secondary mt-2">
+                        ${requesterPhoto}
+                        <p><strong>Requester:</strong> ${req.requesterName}</p>
+                    </div>
+                `;
+            }
+            
+            let delivererInfo = '';
+            if (req.delivererName) {
+                delivererInfo = `<p class="text-sm text-muted mt-2"><strong>Deliverer:</strong> ${req.delivererName}</p>`;
+            }
+
+            let statusTracker = '';
+            if (req.status === 'in-progress' && (isMyOwnRequestView || isMyDelivery)) {
+                 statusTracker = `
+                    <div class="mt-4 pt-4 border-t border-custom space-y-2">
+                        <p class="text-sm text-secondary"><strong>Deliverer ETA:</strong> <span class="font-semibold text-accent">${req.estimatedTime || 'Not set'}</span></p>
+                        <p class="text-sm text-secondary"><strong>Live Status:</strong> <span class="font-semibold text-accent">${formatSubStatus(req.subStatus)}</span></p>
+                    </div>
+                 `;
+            }
+
+            let actionButtonOrPanel = '';
+            if (isMyDelivery && req.status === 'in-progress') {
+                const etaInput = `<input type="text" id="eta-${req.id}" class="w-full md:w-auto text-sm px-2 py-1 border border-custom rounded-lg bg-primary text-primary focus:outline-none focus:ring-1 focus:ring-accent" placeholder="e.g., 5-10 mins">`;
+                const updateEtaBtn = `<button data-id="${req.id}" class="update-eta-btn accent accent-hover text-white text-sm font-bold py-1 px-3 rounded-lg">Set ETA</button>`;
+                let nextActionBtn = '';
+                if (req.subStatus === null) {
+                    nextActionBtn = `<button data-id="${req.id}" class="reached-cafe-btn w-full accent accent-hover text-white font-bold py-2 px-4 rounded-lg">Reached Cafe</button>`;
+                } else if (req.subStatus === 'reached-cafe') {
+                    nextActionBtn = `<button data-id="${req.id}" class="picked-up-btn w-full accent accent-hover text-white font-bold py-2 px-4 rounded-lg">Picked Up Order</button>`;
+                } else if (req.subStatus === 'picked-up') {
+                    nextActionBtn = `<button data-id="${req.id}" class="delivered-btn bg-blue-500 hover:bg-blue-600 w-full text-white font-bold py-2 px-4 rounded-lg">Delivered</button>`;
+                }
+                actionButtonOrPanel = `
+                    <div class="space-y-3">
+                        <div class="flex items-center gap-2">
+                            ${etaInput}
+                            ${updateEtaBtn}
+                        </div>
+                        <div>
+                            ${nextActionBtn}
+                        </div>
+                    </div>
+                `;
+            } 
+            else if (viewType === 'deliverer' && req.status === 'open') {
+                if (req.requesterId === currentUser.uid) {
+                    actionButtonOrPanel = `<p class="text-sm text-muted text-center italic">This is your own request.</p>`;
+                } else {
+                    actionButtonOrPanel = `<button data-id="${req.id}" class="accept-btn w-full md:w-auto bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-lg transition duration-300">Accept Job</button>`;
+                }
+            } 
+            else if (isMyOwnRequestView && req.status === 'open') {
+                actionButtonOrPanel = `<button data-id="${req.id}" class="cancel-request-btn bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-lg transition duration-300">Cancel</button>`;
+            }
+
+            card.innerHTML = `
+                <div class="flex flex-col md:flex-row justify-between">
+                    <div class="flex-grow">
+                        <div class="flex items-center mb-2">
+                            <div class="space-y-1">${itemContent}</div>
+                            ${getStatusBadge(req.status)}
+                        </div>
+                        ${requesterInfo}
+                        <p class="text-sm text-secondary"><strong>Item Total:</strong> ₹${itemPriceDisplay}</p>
+                        <p class="text-sm text-secondary"><strong>From:</strong> ${req.pickupLocation}</p>
+                        <p class="text-sm text-secondary"><strong>To:</strong> ${req.dropoffLocation}</p>
+                        ${delivererInfo}
+                        <p class="text-xs text-muted mt-2">Posted ${timeAgo}</p>
+                        ${timerElement}
+                        ${statusTracker}
+                    </div>
+                    <div class="mt-4 md:mt-0 md:text-right md:pl-4 flex-shrink-0">
+                        <p class="text-sm text-secondary mb-1">Total Amount</p>
+                        <p class="text-2xl font-bold text-green-600">₹${totalAmount}</p>
+                        <div class="mt-2">${actionButtonOrPanel}</div>
+                    </div>
+                </div>
+            `;
+            return card;
+        }
+        
+        function getTimeAgo(seconds) {
+            const now = Date.now() / 1000;
+            const diff = now - seconds;
+            if (diff < 60) return 'a few seconds ago';
+            if (diff < 3600) return `${Math.floor(diff / 60)} minutes ago`;
+            if (diff < 86400) return `${Math.floor(diff / 3600)} hours ago`;
+            return `${Math.floor(diff / 86400)} days ago`;
+        }
+        
+        async function handleAction(e) {
+            if (!currentUser || !userDetails) return;
+            const target = e.target.closest('button');
+            if (!target) return;
+            const requestId = target.dataset.id;
+            if (!requestId) return;
+
+            const docRef = doc(db, `/artifacts/${appId}/public/data/deliveries`, requestId);
+            try {
+                if (target.classList.contains('accept-btn')) {
+                    await updateDoc(docRef, { status: 'in-progress', delivererId: currentUser.uid, delivererName: userDetails.name });
+                } else if (target.classList.contains('update-eta-btn')) {
+                    const etaInput = document.getElementById(`eta-${requestId}`);
+                    if (etaInput && etaInput.value.trim()) {
+                        await updateDoc(docRef, { estimatedTime: etaInput.value.trim() });
+                        etaInput.value = '';
+                    }
+                } else if (target.classList.contains('reached-cafe-btn')) {
+                    await updateDoc(docRef, { subStatus: 'reached-cafe' });
+                } else if (target.classList.contains('picked-up-btn')) {
+                    await updateDoc(docRef, { subStatus: 'picked-up' });
+                } else if (target.classList.contains('delivered-btn')) {
+                     await updateDoc(docRef, { status: 'completed' });
+                } else if (target.classList.contains('cancel-request-btn')) {
+                    await deleteDoc(docRef);
+                }
+            } catch (error) {
+                console.error("Error updating document:", error);
+            }
+        }
+        
+        // --- Event Listeners ---
+        googleSignInBtn.addEventListener('click', signInWithGoogle);
+        selectStudentBtn.addEventListener('click', () => {
+            studentView.classList.remove('hidden');
+            delivererView.classList.add('hidden');
+            startApp();
+        });
+        selectDelivererBtn.addEventListener('click', () => {
+            studentView.classList.add('hidden');
+            delivererView.classList.remove('hidden');
+            startApp();
+        });
+        
+        cafeGridContainer.addEventListener('click', (e) => {
+            const cafeBox = e.target.closest('.cafe-box');
+            if (cafeBox) {
+                openMenuModal(cafeBox.dataset.cafeId);
+            }
+        });
+        menuItemsContainer.addEventListener('click', (e) => {
+            const button = e.target.closest('.update-quantity-btn');
+            if (button) {
+                const itemId = button.dataset.itemId;
+                const change = parseInt(button.dataset.change);
+                updateCart(itemId, change);
+            }
+        });
+        menuCloseBtn.addEventListener('click', closeMenuModal);
+        menuModal.addEventListener('click', (e) => e.target === menuModal && closeMenuModal());
+        cartButton.addEventListener('click', openCartModal);
+        cartCloseBtn.addEventListener('click', closeCartModal);
+        cartModal.addEventListener('click', (e) => e.target === cartModal && closeCartModal());
+
+        cartItemsContainer.addEventListener('click', (e) => {
+            const removeButton = e.target.closest('.remove-from-cart-btn');
+            if (removeButton) {
+                const itemId = removeButton.dataset.itemId;
+                if (cart[itemId]) {
+                    delete cart[itemId];
+                    updateCartUI();
+                    openCartModal();
+                }
+            }
+        });
+
+        checkoutBtn.addEventListener('click', openCheckoutModal);
+        checkoutCancelBtn.addEventListener('click', closeCheckoutModal);
+        checkoutModal.addEventListener('click', (e) => e.target === checkoutModal && closeCheckoutModal());
+        checkoutForm.addEventListener('submit', submitOrder);
+        
+        document.getElementById('main-content').addEventListener('click', handleAction);
+        logoutBtn.addEventListener('click', logout);
+        
+        orderHistoryBtn.addEventListener('click', openHistoryModal);
+        historyCloseBtn.addEventListener('click', closeHistoryModal);
+        historyModal.addEventListener('click', (e) => e.target === historyModal && closeHistoryModal());
+
+        activeOrderBar.addEventListener('click', () => {
+            const orderId = activeOrderBar.dataset.orderId;
+            const orderElement = document.getElementById(orderId);
+            if (orderElement) {
+                orderElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                orderElement.classList.add('bg-violet-100', 'dark:bg-violet-900', 'transition-all', 'duration-1000');
+                setTimeout(() => {
+                    orderElement.classList.remove('bg-violet-100', 'dark:bg-violet-900');
+                }, 2000);
+            }
+        });
+    </script>
+</body>
+</html>
