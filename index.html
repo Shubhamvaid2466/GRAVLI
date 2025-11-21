@@ -213,9 +213,6 @@
 </head>
 <body class="bg-primary text-primary">
 
-    <!-- LOGIN / ROLE / HEADER / APP CONTENT (UNCHANGED) -->
-    <!-- For brevity this file retains your original DOM structure and content exactly as uploaded. -->
-
     <div id="login-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-primary/80 backdrop-blur-sm">
         <div class="login-modal-content rounded-lg w-full max-w-sm p-8 text-center text-white">
             <h2 class="font-bold mb-4 text-accent">Welcome to Gravli!</h2>
@@ -227,17 +224,200 @@
         </div>
     </div>
 
-    <!-- (All other modal/html sections retained exactly — omitted from preview to keep document concise) -->
+    <div id="role-selection-modal" class="fixed inset-0 z-40 flex items-center justify-center p-4 bg-primary/80 backdrop-blur-sm hidden">
+        <div class="bg-secondary rounded-lg shadow-xl w-full max-w-sm p-8 text-center">
+            <h2 class="text-2xl font-bold mb-2 text-accent">What would you like to do?</h2>
+            <p class="text-secondary mb-8">Choose your role for this session.</p>
+            <div class="space-y-4">
+                <button id="select-student-btn" class="w-full bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-4 px-4 rounded-lg transition duration-300 text-lg flex items-center justify-center gap-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
+                    <span>Order Food</span>
+                </button>
+                <button id="select-deliverer-btn" class="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-4 px-4 rounded-lg transition duration-300 text-lg flex items-center justify-center gap-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
+                    <span>Deliver Orders</span>
+                </button>
+            </div>
+        </div>
+    </div>
 
-    <!-- IMPORTANT: include Razorpay Checkout script -->
-    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <header id="main-header" class="mb-8 p-6 bg-gradient-to-r from-violet-600 to-indigo-600 text-white shadow-lg relative hidden">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <!-- added header-inner class for responsive control -->
+            <div class="header-inner relative flex items-center justify-between h-16">
+                <div class="flex-1 flex items-center justify-start gap-3">
+                    <img id="user-avatar" class="hidden h-9 w-9 rounded-full border-2 border-white object-cover" alt="User Avatar">
+                    <div id="userInfo" class="text-sm text-indigo-200">Loading user info...</div>
+                </div>
+                
+                <div class="absolute left-1/2 transform -translate-x-1/2 md:static md:transform-none md:flex-1 md:flex md:justify-center">
+                    <h1 class="text-3xl md:text-4xl font-bold tracking-tight flex items-center justify-center gap-3">
+                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                        <span>Gravli</span>
+                    </h1>
+                </div>
+
+                <div class="flex-1 flex items-center justify-end space-x-3">
+                    <button id="order-history-btn" class="hidden bg-white/20 hover:bg-white/30 text-white text-xs font-bold py-1.5 px-4 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-indigo-600 focus:ring-white" aria-label="Order History">History</button>
+                    <button id="logout-btn" class="hidden bg-red-500 hover:bg-red-600 text-white text-xs font-bold py-1.5 px-4 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-indigo-600 focus:ring-white" aria-label="Logout">Logout</button>
+                    <button id="theme-switcher" class="p-2 rounded-full text-indigo-200 hover:bg-white/20 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-indigo-600 focus:ring-white" aria-label="Toggle theme">
+                        <svg id="sun-icon" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                        </svg>
+                        <svg id="moon-icon" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            <p class="text-indigo-200 text-center mt-2 text-sm">Your on-campus delivery solution. Fast, easy, and by students, for students.</p>
+        </div>
+    </header>
+
+    <div id="app" class="max-w-7xl mx-auto p-4 md:p-6 hidden">
+        <main id="main-content" class="pb-24">
+            <div id="student-view">
+                <div id="new-order-section" class="mb-12">
+                    <h2 class="text-2xl font-bold mb-6">Place a New Order</h2>
+                    <div id="cafe-grid-container" class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
+                    </div>
+                </div>
+                <div id="my-orders-section">
+                    <h2 class="text-2xl font-bold mb-6">My Active Orders</h2>
+                    <div id="my-requests-list" class="space-y-4">
+                    </div>
+                </div>
+            </div>
+
+            <div id="deliverer-view" class="hidden">
+                <h2 class="text-2xl font-bold mb-4">My Current Deliveries</h2>
+                <div id="my-current-deliveries-list" class="space-y-4 mb-8">
+                </div>
+                <div id="single-delivery-message" class="hidden bg-secondary p-4 rounded-lg text-center text-secondary shadow-md border border-custom">
+                    <p>Please complete your current delivery to see more available jobs.</p>
+                </div>
+                <div id="available-deliveries-container">
+                    <h2 class="text-2xl font-bold mb-6">Available Deliveries</h2>
+                    <div id="all-requests-list-deliverer" class="space-y-4">
+                    </div>
+                </div>
+            </div>
+        </main>
+        
+        <div id="loader" class="text-center py-10 hidden">
+            <svg class="animate-spin h-8 w-8 text-accent mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            <p class="mt-2 text-secondary">Fetching delivery requests...</p>
+        </div>
+    </div>
+
+    <button id="cart-button" class="hidden fixed z-40 bottom-6 right-6 accent accent-hover text-white font-bold py-3 px-5 rounded-full shadow-lg flex items-center gap-3 transition-all duration-300">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
+        <span id="cart-button-text">View Cart</span>
+    </button>
+
+    <div id="active-order-bar" class="hidden fixed bottom-0 left-0 right-0 z-30 bg-secondary shadow-2xl border-t border-custom p-4 cursor-pointer">
+        <div class="max-w-7xl mx-auto flex justify-between items-center px-4 sm:px-6 lg:px-8">
+            <div>
+                <p class="text-sm text-secondary">Your order is In Progress!</p>
+                <p id="active-order-bar-status" class="font-bold text-accent">Awaiting deliverer updates...</p>
+            </div>
+            <span class="text-sm font-semibold text-secondary">View Details &rarr;</span>
+        </div>
+    </div>
+
+    <div id="menu-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 modal-backdrop hidden opacity-0">
+        <div id="menu-modal-content" class="bg-secondary rounded-lg shadow-xl w-full max-w-lg p-6 transform scale-95 modal-content max-h-[90vh] flex flex-col">
+            <div class="flex justify-between items-center mb-4">
+                <h3 id="menu-modal-title" class="text-2xl font-bold">Menu</h3>
+                <button id="menu-close-btn" class="text-gray-400 hover:text-gray-600">&times;</button>
+            </div>
+            <div id="menu-items-container" class="space-y-3 overflow-y-auto pr-2">
+            </div>
+        </div>
+    </div>
+
+    <div id="cart-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 modal-backdrop hidden opacity-0">
+        <div id="cart-modal-content" class="bg-secondary rounded-lg shadow-xl w-full max-w-lg p-6 transform scale-95 modal-content max-h-[90vh] flex flex-col">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-2xl font-bold">Your Cart</h3>
+                <button id="cart-close-btn" class="text-gray-400 hover:text-gray-600">&times;</button>
+            </div>
+            <div id="cart-items-container" class="space-y-4 overflow-y-auto pr-2">
+            </div>
+            <div class="mt-6 pt-4 border-t border-custom">
+                <div class="flex justify-between items-center font-bold text-lg">
+                    <span>Total</span>
+                    <span id="cart-total-price">₹0.00</span>
+                </div>
+                <button id="checkout-btn" class="mt-4 w-full accent accent-hover text-white font-bold py-3 px-4 rounded-lg transition duration-300">Proceed to Checkout</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="checkout-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 modal-backdrop hidden opacity-0">
+        <div id="checkout-modal-content" class="bg-secondary rounded-lg shadow-xl w-full max-w-md p-6 transform scale-95 modal-content">
+            <h3 class="text-2xl font-bold mb-4">Confirm Order</h3>
+            <form id="checkout-form">
+                <div class="mb-4">
+                    <label for="dropoff" class="block text-secondary font-semibold mb-2">Drop-off Location</label>
+                    <select id="dropoff" class="w-full px-3 py-2 border border-custom rounded-lg focus:outline-none focus:ring-2 focus:ring-accent bg-secondary text-primary" required>
+                        <option value="" disabled selected>Select a location</option>
+                        <option value="Main Library - 2nd Floor">Main Library - 2nd Floor</option>
+                        <option value="Engineering Building - Lobby">Engineering Building - Lobby</option>
+                        <option value="Student Union - Game Room">Student Union - Game Room</option>
+                        <option value="Oak Hall - Front Desk">Oak Hall - Front Desk</option>
+                        <option value="Willow Creek Apartments - Bldg C">Willow Creek Apartments - Bldg C</option>
+                        <option value="Science Center - Atrium">Science Center - Atrium</option>
+                    </select>
+                </div>
+                <div class="mb-6 bg-primary p-3 rounded-lg text-center">
+                    <p class="text-secondary font-semibold">Total Amount (Item + Fee)</p>
+                    <p id="checkout-total-display" class="text-primary text-2xl font-bold">₹0.00</p>
+                </div>
+                <p id="checkout-error-message" class="text-red-500 text-sm mb-4 text-center hidden"></p>
+                <div class="flex justify-end gap-4">
+                    <button type="button" id="checkout-cancel-btn" class="bg-gray-200 dark:bg-gray-600 hover:bg-gray-300 dark:hover:bg-gray-500 text-primary font-bold py-2 px-4 rounded-lg transition duration-300">Cancel</button>
+                    <button type="submit" class="accent accent-hover text-white font-bold py-2 px-4 rounded-lg transition duration-300">Confirm Order</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="loading-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-primary/80 backdrop-blur-sm hidden">
+        <div class="bg-secondary rounded-lg shadow-xl w-full max-w-xs p-8 text-center">
+            <svg class="animate-spin h-10 w-10 text-accent mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            <p class="mt-4 text-secondary font-semibold">Placing your order...</p>
+        </div>
+    </div>
+
+    <div id="history-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 modal-backdrop hidden opacity-0">
+        <div id="history-modal-content" class="bg-secondary rounded-lg shadow-xl w-full max-w-2xl p-6 transform scale-95 modal-content max-h-[90vh] flex flex-col">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-2xl font-bold">Order History</h3>
+                <button id="history-close-btn" class="text-gray-400 hover:text-gray-600">&times;</button>
+            </div>
+            <div id="history-items-container" class="space-y-4 overflow-y-auto pr-2">
+            </div>
+        </div>
+    </div>
+
+    <footer class="text-center p-10 mt-16 border-t border-custom text-muted">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <p class="font-semibold text-secondary">Made By Students</p>
+            <p class="font-semibold text-secondary mb-4">Made For Students</p>
+            <p class="text-sm">Made with ❤️ by Shubham</p>
+        </div>
+    </footer>
+
 
     <script type="module">
-        // ----------------- RAZORPAY CONFIG (FRONTEND) -----------------
-        // Replace with your Test Key ID (frontend only). Do NOT put your key secret here.
-        const RAZORPAY_KEY_ID = 'REPLACE_WITH_RZP_TEST_KEY_ID'; // e.g. rzp_test_xxxxxxxxx
-
-        // ----------------- FIREBASE / APP SETUP (UNCHANGED) -----------------
+        // Firebase Imports
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { 
             getAuth, 
@@ -258,6 +438,7 @@
             deleteDoc,
         } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
+        // --- Firebase Configuration ---
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-campus-delivery';
         const firebaseConfig = {
              apiKey: "AIzaSyBnStrl0raNIb9Gr9-TtNzSImwbOQ36l_w",
@@ -270,11 +451,12 @@
         };
         const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
 
+        // --- Initialize Firebase ---
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
         const auth = getAuth(app);
-
-        // ----------------- CAFE DATA & UI STATE (UNCHANGED) -----------------
+        
+        // --- Helper function to generate menu items ---
         function generateMenuItems(cafeId, count = 15) {
             const items = [];
             for (let i = 1; i <= count; i++) {
@@ -301,13 +483,14 @@
             "HR12": { name: "HR12", items: generateMenuItems("HR12", 15) },
         };
 
-        // ----------------- GLOBAL STATE & UI ELEMENTS (UNCHANGED) -----------------
+        // --- Global State ---
         let currentUser = null;
         let userDetails = null;
         let unsubscribe = null; 
         let cart = {};
         let currentOpenCafeId = null;
 
+        // --- UI Elements ---
         const loginModal = document.getElementById('login-modal');
         const googleSignInBtn = document.getElementById('google-signin-btn');
         const roleSelectionModal = document.getElementById('role-selection-modal');
@@ -353,7 +536,7 @@
         const activeOrderBar = document.getElementById('active-order-bar');
         const activeOrderBarStatus = document.getElementById('active-order-bar-status');
 
-        // ----------------- THEME LOGIC (UNCHANGED) -----------------
+        // --- Theme Logic ---
         function applyTheme(theme) {
             if (theme === 'dark') {
                 document.documentElement.classList.add('dark');
@@ -373,7 +556,7 @@
         const savedTheme = localStorage.getItem('theme') || 'light';
         applyTheme(savedTheme);
 
-        // ----------------- AUTH (UNCHANGED) -----------------
+        // --- Authentication & User Setup ---
         onAuthStateChanged(auth, (user) => {
             if (user) {
                 currentUser = user;
@@ -419,7 +602,7 @@
             mainHeader.classList.remove('hidden');
         }
 
-        // ----------------- APP START & UI HELPERS (UNCHANGED) -----------------
+        // --- App Start Logic ---
         function startApp() {
             roleSelectionModal.classList.add('hidden');
             appContainer.classList.remove('hidden');
@@ -431,6 +614,7 @@
             }
         }
 
+        // --- NEW: UI Logic ---
         function renderCafes() {
             cafeGridContainer.innerHTML = '';
             for (const cafeId in CAFE_DATA) {
@@ -631,7 +815,7 @@
             });
         }
 
-        // ----------------- UPDATED: submitOrder -> RAZORPAY FLOW -----------------
+
         async function submitOrder(e) {
             e.preventDefault();
             const submitBtn = checkoutForm.querySelector('button[type="submit"]');
@@ -650,140 +834,338 @@
             const itemTotal = Object.values(cart).reduce((sum, item) => sum + (item.price * item.quantity), 0);
             const deliveryFee = 50.00;
             const finalTotal = itemTotal + deliveryFee;
-            const amountPaise = Math.round(finalTotal * 100);
+            const firstItem = Object.values(cart)[0];
 
-            const orderMeta = {
-                requesterUid: currentUser.uid,
-                requesterName: userDetails.name,
-                requesterPhotoURL: userDetails.photoURL || '',
+            const request = {
+                items: Object.values(cart).map(item => ({
+                    name: item.name,
+                    quantity: item.quantity,
+                    price: item.price
+                })),
+                itemPrice: itemTotal,
+                pickupLocation: firstItem.cafeName,
                 dropoffLocation: dropoffValue,
-                pickupLocation: Object.values(cart)[0]?.cafeName || 'Unknown',
-                items: Object.values(cart).map(i => ({ id: i.id, name: i.name, qty: i.quantity, price: i.price })),
-                itemTotal: itemTotal,
                 deliveryFee: deliveryFee,
-                totalAmount: finalTotal
+                totalAmount: finalTotal,
+                status: 'open',
+                requesterId: currentUser.uid,
+                requesterName: userDetails.name,
+                requesterPhotoURL: userDetails.photoURL,
+                requesterUid: userDetails.uid,
+                delivererId: null,
+                delivererName: null,
+                createdAt: serverTimestamp(),
+                subStatus: null, 
+                estimatedTime: null
             };
 
+            setTimeout(async () => {
+                try {
+                    const collectionPath = `/artifacts/${appId}/public/data/deliveries`;
+                    await addDoc(collection(db, collectionPath), request);
+                    
+                    loadingModal.classList.add('hidden');
+                    closeCheckoutModal();
+                    cart = {};
+                    updateCartUI();
+                    checkoutForm.reset();
+                    submitBtn.disabled = false;
+
+                } catch (error) {
+                    console.error("Error adding document: ", error);
+                    loadingModal.classList.add('hidden');
+                    checkoutErrorMessage.textContent = "Failed to post request. Please try again.";
+                    checkoutErrorMessage.classList.remove('hidden');
+                    submitBtn.disabled = false;
+                }
+            }, 2500);
+        }
+
+        async function logout() {
             try {
-                // 1) Request backend to create Razorpay Order (server uses key_secret)
-                const createRes = await fetch('/createOrder', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ amount: amountPaise, currency: 'INR', meta: orderMeta })
-                });
-
-                if (!createRes.ok) throw new Error('Could not create order on server.');
-
-                const createJson = await createRes.json();
-                const razorOrderId = createJson.id;
-
-                // 2) Open Razorpay Checkout
-                const options = {
-                    key: RAZORPAY_KEY_ID,
-                    amount: amountPaise,
-                    currency: 'INR',
-                    name: "Gravli",
-                    description: "Campus Delivery Payment",
-                    order_id: razorOrderId,
-                    prefill: {
-                        name: userDetails.name,
-                        email: currentUser.email || '',
-                        contact: currentUser.phoneNumber || ''
-                    },
-                    handler: async function (response) {
-                        try {
-                            // 3) Verify payment at server
-                            const verifyRes = await fetch('/verifyPayment', {
-                                method: 'POST',
-                                headers: { 'Content-Type': 'application/json' },
-                                body: JSON.stringify({
-                                    razorpay_payment_id: response.razorpay_payment_id,
-                                    razorpay_order_id: response.razorpay_order_id,
-                                    razorpay_signature: response.razorpay_signature,
-                                    meta: orderMeta
-                                })
-                            });
-
-                            if (!verifyRes.ok) {
-                                const txt = await verifyRes.text();
-                                throw new Error('Payment verification failed: ' + txt);
-                            }
-
-                            const verifyJson = await verifyRes.json();
-                            if (verifyJson.status !== 'ok') {
-                                throw new Error('Verification returned non-ok status');
-                            }
-
-                            // 4) Add to Firestore (only after verification)
-                            await addDoc(collection(db, `/artifacts/${appId}/public/data/deliveries`), {
-                                ...orderMeta,
-                                status: 'open',
-                                requesterId: currentUser.uid,
-                                requesterName: userDetails.name,
-                                requesterPhotoURL: userDetails.photoURL,
-                                createdAt: serverTimestamp(),
-                                payment: {
-                                    razorpay_order_id: response.razorpay_order_id,
-                                    razorpay_payment_id: response.razorpay_payment_id,
-                                    verified: true,
-                                    amount: finalTotal
-                                }
-                            });
-
-                            loadingModal.classList.add('hidden');
-                            closeCheckoutModal();
-                            cart = {};
-                            updateCartUI();
-                            checkoutForm.reset();
-                            submitBtn.disabled = false;
-                            alert('Payment successful & order placed!');
-
-                        } catch (err) {
-                            console.error(err);
-                            loadingModal.classList.add('hidden');
-                            checkoutErrorMessage.textContent = 'Payment verification failed. Contact support.';
-                            checkoutErrorMessage.classList.remove('hidden');
-                            submitBtn.disabled = false;
-                        }
-                    },
-                    modal: {
-                        ondismiss: function () {
-                            loadingModal.classList.add('hidden');
-                            submitBtn.disabled = false;
-                        }
-                    }
-                };
-
-                const rzp = new Razorpay(options);
-                rzp.open();
-
+                await signOut(auth);
             } catch (error) {
-                console.error("Error during payment flow:", error);
-                loadingModal.classList.add('hidden');
-                checkoutErrorMessage.textContent = "Unable to start payment. Please try again.";
-                checkoutErrorMessage.classList.remove('hidden');
-                submitBtn.disabled = false;
+                console.error("Logout Error:", error);
             }
         }
 
-        // ----------------- REST OF YOUR ORIGINAL LOGIC (UNCHANGED) -----------------
-        // All other functions (fetchAndDisplayRequests, createRequestCard, handleAction, logout, listeners, etc.)
-        // remain exactly as in your uploaded file. They were not modified except for moving the Firestore write into the
-        // payment success flow above.
+        // --- Firestore Logic (Fetching) ---
+        function fetchAndDisplayRequests() {
+           if (!currentUser) return;
+           if(unsubscribe) unsubscribe();
+           loader.classList.remove('hidden');
+           const collectionPath = `/artifacts/${appId}/public/data/deliveries`;
+           const q = query(collection(db, collectionPath));
+           
+           unsubscribe = onSnapshot(q, (querySnapshot) => {
+               loader.classList.add('hidden');
+               const nowInSeconds = Date.now() / 1000;
+               const maxAge = 900;
+               let allRequests = [];
+               querySnapshot.forEach((doc) => {
+                   const req = { id: doc.id, ...doc.data() };
+                   if (req.status === 'open' && req.createdAt && (nowInSeconds - req.createdAt.seconds > maxAge)) {
+                       if (req.requesterId === currentUser.uid) {
+                           deleteDoc(doc.ref);
+                       }
+                   } else {
+                       allRequests.push(req);
+                   }
+               });
+               allRequests.sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
+               displayRequests(allRequests);
+           }, (error) => {
+               console.error("Error fetching requests: ", error);
+               loader.classList.add('hidden');
+           });
+        }
+        
+        function getStatusBadge(status) {
+            switch(status) {
+                case 'open': return `<span class="bg-green-100 text-green-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded-full dark:bg-green-900 dark:text-green-300">Open</span>`;
+                case 'in-progress': return `<span class="bg-yellow-100 text-yellow-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded-full dark:bg-yellow-900 dark:text-yellow-300">In Progress</span>`;
+                case 'completed': return `<span class="bg-blue-100 text-blue-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded-full dark:bg-blue-900 dark:text-blue-300">Completed</span>`;
+                default: return `<span class="bg-gray-100 text-gray-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded-full dark:bg-gray-700 dark:text-gray-300">Unknown</span>`;
+            }
+        }
 
-        // Attach event listeners that were in your original file (ensure these IDs exist in DOM)
+        function displayRequests(requests) {
+            const myRequestsList = document.getElementById('my-requests-list');
+            const allRequestsListDeliverer = document.getElementById('all-requests-list-deliverer');
+            const myCurrentDeliveriesList = document.getElementById('my-current-deliveries-list');
+            const availableDeliveriesContainer = document.getElementById('available-deliveries-container');
+            const singleDeliveryMessage = document.getElementById('single-delivery-message');
+            
+            myRequestsList.innerHTML = '';
+            allRequestsListDeliverer.innerHTML = '';
+            myCurrentDeliveriesList.innerHTML = '';
+            
+            const myReqs = requests.filter(r => r.requesterId === currentUser.uid);
+            const myCurrentDeliveries = requests.filter(r => r.delivererId === currentUser.uid);
+            const openDeliveries = requests.filter(r => r.status === 'open');
+            const hasActiveDelivery = myCurrentDeliveries.some(r => r.status === 'in-progress');
+
+            const myActiveOrders = myReqs.filter(r => r.status === 'open' || r.status === 'in-progress');
+            const myCompletedOrders = myReqs.filter(r => r.status === 'completed');
+            const myInProgressOrder = myReqs.find(r => r.status === 'in-progress');
+            
+            myRequestsList.innerHTML = myActiveOrders.length ? '' : `<p class="text-secondary">You have no active orders.</p>`;
+            myActiveOrders.forEach(req => myRequestsList.appendChild(createRequestCard(req, 'student-own')));
+            
+            renderOrderHistory(myCompletedOrders);
+            
+            if (myInProgressOrder) {
+                activeOrderBarStatus.textContent = formatSubStatus(myInProgressOrder.subStatus);
+                activeOrderBar.classList.remove('hidden');
+                activeOrderBar.dataset.orderId = `order-${myInProgressOrder.id}`;
+            } else {
+                activeOrderBar.classList.add('hidden');
+            }
+
+            myCurrentDeliveriesList.innerHTML = myCurrentDeliveries.length ? '' : `<p class="text-secondary">You have no active or completed deliveries.</p>`;
+            myCurrentDeliveries.forEach(req => myCurrentDeliveriesList.appendChild(createRequestCard(req, 'deliverer-own')));
+            if (hasActiveDelivery) {
+                availableDeliveriesContainer.classList.add('hidden');
+                singleDeliveryMessage.classList.remove('hidden');
+            } else {
+                availableDeliveriesContainer.classList.remove('hidden');
+                singleDeliveryMessage.classList.add('hidden');
+                allRequestsListDeliverer.innerHTML = openDeliveries.length ? '' : `<p class="text-secondary">No available deliveries right now. Check back soon!</p>`;
+                openDeliveries.forEach(req => allRequestsListDeliverer.appendChild(createRequestCard(req, 'deliverer')));
+            }
+        }
+        
+        function formatSubStatus(status) {
+            if (!status) return 'Awaiting deliverer updates...';
+            switch(status) {
+                case 'reached-cafe': return 'Reached the cafe';
+                case 'picked-up': return 'Order picked up';
+                default: return 'In progress';
+            }
+        }
+
+        function createRequestCard(req, viewType) {
+            const card = document.createElement('div');
+            card.className = 'bg-secondary p-5 rounded-lg shadow-md border border-custom';
+            if (viewType === 'student-own') {
+                card.id = `order-${req.id}`;
+            }
+
+            const timeAgo = req.createdAt ? getTimeAgo(req.createdAt.seconds) : 'just now';
+            const isMyOwnRequestView = viewType === 'student-own';
+            const isMyDelivery = req.delivererId === currentUser.uid;
+
+            let itemContent;
+            if (req.items && Array.isArray(req.items)) {
+                itemContent = req.items.map(item => `
+                    <p class="font-semibold text-accent">${item.name} <span class="text-sm font-normal text-primary">x ${item.quantity}</span></p>
+                `).join('');
+            } else {
+                itemContent = `<h4 class="text-lg font-bold text-accent">${req.itemName || 'Order'}</h4>`;
+            }
+            
+            const totalAmount = req.totalAmount ? req.totalAmount.toFixed(2) : (req.itemPrice + req.deliveryFee).toFixed(2);
+            const itemPriceDisplay = req.itemPrice ? req.itemPrice.toFixed(2) : 'N/A';
+            
+            let timerElement = '';
+            if (req.status === 'open' && req.createdAt?.seconds) {
+                const nowInSeconds = Date.now() / 1000;
+                const ageInSeconds = nowInSeconds - req.createdAt.seconds;
+                const maxAge = 900;
+                const remainingSeconds = maxAge - ageInSeconds;
+                if (remainingSeconds > 0) {
+                    const minutes = Math.floor(remainingSeconds / 60);
+                    const seconds = Math.floor(remainingSeconds % 60);
+                    timerElement = `<p class="text-xs text-red-500 mt-2 font-medium">Expires in: ${minutes}:${seconds.toString().padStart(2, '0')}</p>`;
+                }
+            }
+            
+            let requesterInfo = '';
+            if (!isMyOwnRequestView && viewType !== 'history-view') {
+                const requesterPhoto = req.requesterPhotoURL ? `<img src="${req.requesterPhotoURL}" class="h-8 w-8 rounded-full object-cover mr-2" alt="Requester">` : `<div class="h-8 w-8 bg-gray-300 rounded-full flex items-center justify-center text-gray-600 text-sm font-bold mr-2">?</div>`;
+                requesterInfo = `
+                    <div class="flex items-center text-sm text-secondary mt-2">
+                        ${requesterPhoto}
+                        <p><strong>Requester:</strong> ${req.requesterName}</p>
+                    </div>
+                `;
+            }
+            
+            let delivererInfo = '';
+            if (req.delivererName) {
+                delivererInfo = `<p class="text-sm text-muted mt-2"><strong>Deliverer:</strong> ${req.delivererName}</p>`;
+            }
+
+            let statusTracker = '';
+            if (req.status === 'in-progress' && (isMyOwnRequestView || isMyDelivery)) {
+                 statusTracker = `
+                    <div class="mt-4 pt-4 border-t border-custom space-y-2">
+                        <p class="text-sm text-secondary"><strong>Deliverer ETA:</strong> <span class="font-semibold text-accent">${req.estimatedTime || 'Not set'}</span></p>
+                        <p class="text-sm text-secondary"><strong>Live Status:</strong> <span class="font-semibold text-accent">${formatSubStatus(req.subStatus)}</span></p>
+                    </div>
+                 `;
+            }
+
+            let actionButtonOrPanel = '';
+            if (isMyDelivery && req.status === 'in-progress') {
+                const etaInput = `<input type="text" id="eta-${req.id}" class="w-full md:w-auto text-sm px-2 py-1 border border-custom rounded-lg bg-primary text-primary focus:outline-none focus:ring-1 focus:ring-accent" placeholder="e.g., 5-10 mins">`;
+                const updateEtaBtn = `<button data-id="${req.id}" class="update-eta-btn accent accent-hover text-white text-sm font-bold py-1 px-3 rounded-lg mt-2 md:mt-0">Set ETA</button>`;
+                let nextActionBtn = '';
+                if (req.subStatus === null) {
+                    nextActionBtn = `<button data-id="${req.id}" class="reached-cafe-btn w-full accent accent-hover text-white font-bold py-2 px-4 rounded-lg mt-2">Reached Cafe</button>`;
+                } else if (req.subStatus === 'reached-cafe') {
+                    nextActionBtn = `<button data-id="${req.id}" class="picked-up-btn w-full accent accent-hover text-white font-bold py-2 px-4 rounded-lg mt-2">Picked Up Order</button>`;
+                } else if (req.subStatus === 'picked-up') {
+                    nextActionBtn = `<button data-id="${req.id}" class="delivered-btn bg-blue-500 hover:bg-blue-600 w-full text-white font-bold py-2 px-4 rounded-lg mt-2">Delivered</button>`;
+                }
+                actionButtonOrPanel = `
+                    <div class="space-y-3 mt-3 md:mt-0">
+                        <div class="flex flex-col md:flex-row md:items-center gap-2">
+                            ${etaInput}
+                            ${updateEtaBtn}
+                        </div>
+                        <div>
+                            ${nextActionBtn}
+                        </div>
+                    </div>
+                `;
+            } 
+            else if (viewType === 'deliverer' && req.status === 'open') {
+                if (req.requesterId === currentUser.uid) {
+                    actionButtonOrPanel = `<p class="text-sm text-muted text-center italic mt-2">This is your own request.</p>`;
+                } else {
+                    actionButtonOrPanel = `<button data-id="${req.id}" class="accept-btn w-full md:w-auto bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-lg transition duration-300 mt-3 md:mt-0">Accept Job</button>`;
+                }
+            } 
+            else if (isMyOwnRequestView && req.status === 'open') {
+                actionButtonOrPanel = `<button data-id="${req.id}" class="cancel-request-btn bg-red-500 hover:bg-red-600 w-full md:w-auto text-white font-bold py-2 px-4 rounded-lg transition duration-300 mt-3 md:mt-0">Cancel</button>`;
+            }
+
+            card.innerHTML = `
+                <div class="flex flex-col md:flex-row md:justify-between gap-3">
+                    <div class="flex-grow">
+                        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-2 gap-1">
+                            <div class="space-y-1">
+                                ${itemContent}
+                            </div>
+                            <div class="mt-1 sm:mt-0">
+                                ${getStatusBadge(req.status)}
+                            </div>
+                        </div>
+                        ${requesterInfo}
+                        <p class="text-sm text-secondary"><strong>Item Total:</strong> ₹${itemPriceDisplay}</p>
+                        <p class="text-sm text-secondary"><strong>From:</strong> ${req.pickupLocation}</p>
+                        <p class="text-sm text-secondary"><strong>To:</strong> ${req.dropoffLocation}</p>
+                        ${delivererInfo}
+                        <p class="text-xs text-muted mt-2">Posted ${timeAgo}</p>
+                        ${timerElement}
+                        ${statusTracker}
+                    </div>
+                    <div class="mt-2 md:mt-0 md:text-right md:pl-4 flex-shrink-0">
+                        <p class="text-sm text-secondary mb-1">Total Amount</p>
+                        <p class="text-2xl font-bold text-green-600">₹${totalAmount}</p>
+                        <div class="mt-2">
+                            ${actionButtonOrPanel}
+                        </div>
+                    </div>
+                </div>
+            `;
+            return card;
+        }
+        
+        function getTimeAgo(seconds) {
+            const now = Date.now() / 1000;
+            const diff = now - seconds;
+            if (diff < 60) return 'a few seconds ago';
+            if (diff < 3600) return `${Math.floor(diff / 60)} minutes ago`;
+            if (diff < 86400) return `${Math.floor(diff / 3600)} hours ago`;
+            return `${Math.floor(diff / 86400)} days ago`;
+        }
+        
+        async function handleAction(e) {
+            if (!currentUser || !userDetails) return;
+            const target = e.target.closest('button');
+            if (!target) return;
+            const requestId = target.dataset.id;
+            if (!requestId) return;
+
+            const docRef = doc(db, `/artifacts/${appId}/public/data/deliveries`, requestId);
+            try {
+                if (target.classList.contains('accept-btn')) {
+                    await updateDoc(docRef, { status: 'in-progress', delivererId: currentUser.uid, delivererName: userDetails.name });
+                } else if (target.classList.contains('update-eta-btn')) {
+                    const etaInput = document.getElementById(`eta-${requestId}`);
+                    if (etaInput && etaInput.value.trim()) {
+                        await updateDoc(docRef, { estimatedTime: etaInput.value.trim() });
+                        etaInput.value = '';
+                    }
+                } else if (target.classList.contains('reached-cafe-btn')) {
+                    await updateDoc(docRef, { subStatus: 'reached-cafe' });
+                } else if (target.classList.contains('picked-up-btn')) {
+                    await updateDoc(docRef, { subStatus: 'picked-up' });
+                } else if (target.classList.contains('delivered-btn')) {
+                     await updateDoc(docRef, { status: 'completed' });
+                } else if (target.classList.contains('cancel-request-btn')) {
+                    await deleteDoc(docRef);
+                }
+            } catch (error) {
+                console.error("Error updating document:", error);
+            }
+        }
+        
+        // --- Event Listeners ---
         googleSignInBtn.addEventListener('click', signInWithGoogle);
-        selectStudentBtn?.addEventListener('click', () => {
+        selectStudentBtn.addEventListener('click', () => {
             studentView.classList.remove('hidden');
             delivererView.classList.add('hidden');
             startApp();
         });
-        selectDelivererBtn?.addEventListener('click', () => {
+        selectDelivererBtn.addEventListener('click', () => {
             studentView.classList.add('hidden');
             delivererView.classList.remove('hidden');
             startApp();
         });
-
+        
         cafeGridContainer.addEventListener('click', (e) => {
             const cafeBox = e.target.closest('.cafe-box');
             if (cafeBox) {
@@ -820,13 +1202,10 @@
         checkoutCancelBtn.addEventListener('click', closeCheckoutModal);
         checkoutModal.addEventListener('click', (e) => e.target === checkoutModal && closeCheckoutModal());
         checkoutForm.addEventListener('submit', submitOrder);
-
-        document.getElementById('main-content').addEventListener('click', (e) => {
-            // original handleAction logic is preserved; but for brevity we call the original function if defined
-            if (typeof handleAction === 'function') handleAction(e);
-        });
-        logoutBtn.addEventListener('click', async () => { try { await signOut(auth); } catch (err) { console.error(err); } });
-
+        
+        document.getElementById('main-content').addEventListener('click', handleAction);
+        logoutBtn.addEventListener('click', logout);
+        
         orderHistoryBtn.addEventListener('click', openHistoryModal);
         historyCloseBtn.addEventListener('click', closeHistoryModal);
         historyModal.addEventListener('click', (e) => e.target === historyModal && closeHistoryModal());
@@ -842,7 +1221,6 @@
                 }, 2000);
             }
         });
-
     </script>
 </body>
 </html>
