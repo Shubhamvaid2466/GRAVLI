@@ -205,13 +205,13 @@
 
         .btn-round-qty { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; }
         
-        /* 3. Header */
+        /* 3. Header - REDESIGNED for better placement */
         header {
             background: linear-gradient(to right, var(--header-bg-start), var(--header-bg-end));
             color: white;
             box-shadow: var(--shadow-lg);
             margin-bottom: 2rem;
-            padding: 1.5rem;
+            padding: 1rem 1.5rem; /* Adjusted padding */
         }
         .header-content {
             max-width: var(--container-max-width);
@@ -219,26 +219,24 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            height: 4rem;
+            gap: 1rem;
+            flex-wrap: wrap; /* Allow wrapping on small screens */
         }
         .logo-area { display: flex; align-items: center; gap: 0.75rem; font-size: 1.875rem; font-weight: 700; }
-        .user-area { display: flex; align-items: center; gap: 0.75rem; flex: 1; }
-        .actions-area { display: flex; align-items: center; gap: 0.75rem; flex: 1; justify-content: flex-end; }
+        .user-area { display: flex; align-items: center; gap: 0.75rem; }
+        .actions-area { display: flex; align-items: center; gap: 0.75rem; }
         .avatar { height: 2.25rem; width: 2.25rem; border-radius: 50%; border: 2px solid white; object-fit: cover; }
         .logo-text-sm { color: #c7d2fe; text-align: center; margin-top: 0.5rem; font-size: 0.875rem; }
         
+        /* New style for the delivery stats badge - integrated into header flow */
         .delivery-stats {
-            position: absolute;
-            top: 5rem; /* Below header */
-            right: 1.5rem;
-            background: var(--bg-secondary);
-            color: var(--text-primary);
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
             padding: 0.5rem 1rem;
-            border-radius: var(--radius-md);
-            font-weight: 700;
-            box-shadow: var(--shadow-md);
+            border-radius: var(--radius-full);
+            font-weight: 600;
             font-size: 0.875rem;
-            z-index: 10;
+            white-space: nowrap;
         }
 
         /* 4. Layout & Grid */
@@ -422,7 +420,6 @@
             .cafe-box-image, .cafe-box-image-img { height: 160px; }
             #app { padding: 1.5rem; }
             .modal-content { max-width: 90%; }
-            .delivery-stats { top: 1rem; right: 9rem; position: absolute; box-shadow: none; background: rgba(0,0,0,0.1); color: white; }
         }
         
         @media (min-width: 1025px) {
@@ -430,12 +427,18 @@
             .cafe-box-image, .cafe-box-image-img { height: 180px; }
         }
 
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                text-align: center;
+            }
+            /* Reorder for mobile: Logo, then User, then Actions */
+            .logo-area { order: 1; }
+            .user-area { order: 2; width: 100%; justify-content: center; }
+            .actions-area { order: 3; width: 100%; justify-content: center; }
+        }
+
         @media (max-width: 640px) {
-            .header-content { flex-direction: column; align-items: flex-start; height: auto; gap: 0.5rem; }
-            .logo-area { width: 100%; justify-content: center; }
-            .user-area { width: 100%; justify-content: flex-start; }
-            .actions-area { width: 100%; justify-content: flex-end; }
-            
             .modal-content { width: 100%; margin: 0; border-radius: var(--radius-lg); max-height: 90vh; }
             .cart-item, .card-panel { padding: 0.9rem; }
         }
@@ -492,7 +495,7 @@
         </div>
     </div>
 
-    <header id="main-header" class="hidden relative">
+    <header id="main-header" class="hidden">
         <div class="header-content">
             <div class="user-area">
                 <img id="user-avatar" class="avatar hidden" alt="User Avatar">
@@ -505,6 +508,7 @@
             </div>
 
             <div class="actions-area">
+                <div id="delivery-stats" class="delivery-stats hidden">Deliveries: 0</div>
                 <button id="order-history-btn" class="hidden btn-icon" style="background: rgba(255,255,255,0.2); border-radius: 4px; padding: 5px 10px; color: white; font-weight: bold; font-size: 0.75rem;">History</button>
                 <button id="logout-btn" class="hidden btn-icon" style="background: var(--danger-bg); border-radius: 4px; padding: 5px 10px; color: white; font-weight: bold; font-size: 0.75rem;">Logout</button>
                 <button id="theme-switcher" class="btn-icon">
@@ -517,7 +521,6 @@
                 </button>
             </div>
         </div>
-        <div id="delivery-stats" class="delivery-stats hidden">Total Deliveries: 0</div>
         <p class="logo-text-sm">Your on-campus delivery solution. Fast, easy, and by students, for students.</p>
     </header>
 
@@ -624,7 +627,7 @@
                         </select>
                     </div>
                     <div class="form-group flex-1" style="margin-bottom: 0;">
-                        <input id="room-input" type="text" class="form-input" placeholder="Room No." required>
+                        <input id="room-input" type="text" inputmode="numeric" pattern="\d{3}" maxlength="3" class="form-input" placeholder="e.g., 102" required>
                     </div>
                 </div>
                 
@@ -1148,11 +1151,23 @@
             checkoutErrorMessage.classList.add('hidden');
 
             const blockVal = document.getElementById('block-select').value;
-            const roomVal = document.getElementById('room-input').value.trim();
+            const roomInput = document.getElementById('room-input');
+            const roomVal = roomInput.value.trim();
             
-            if (!blockVal || !roomVal) {
-                checkoutErrorMessage.textContent = "Please select a block and enter a room number.";
+            // Validation for Block
+            if (!blockVal) {
+                checkoutErrorMessage.textContent = "Please select a block.";
                 checkoutErrorMessage.classList.remove('hidden');
+                return;
+            }
+
+            // Validation for Room Number (must be exactly 3 digits)
+            const roomNumberPattern = /^\d{3}$/;
+            if (!roomNumberPattern.test(roomVal)) {
+                checkoutErrorMessage.textContent = "Please enter a valid 3-digit room number (e.g., 102).";
+                checkoutErrorMessage.classList.remove('hidden');
+                // Optional: shake the input or focus it
+                roomInput.focus();
                 return;
             }
 
@@ -1260,7 +1275,7 @@
                
                // Update Delivery Counter
                if (currentRole === 'deliverer') {
-                   deliveryStats.textContent = `Total Deliveries: ${totalDeliveriesCount}`;
+                   deliveryStats.textContent = `Deliveries: ${totalDeliveriesCount}`;
                }
 
                // Sort by latest for view
