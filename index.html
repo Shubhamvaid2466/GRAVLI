@@ -64,6 +64,7 @@
             color: var(--text-primary);
             transition: background-color 0.3s ease, color 0.3s ease;
             line-height: 1.5;
+            height: 100vh; /* Ensure full height for body */
         }
 
         button {
@@ -77,7 +78,7 @@
             line-height: 1.2;
         }
 
-        /* --- Utility Classes (Used by JS or General Layout) --- */
+        /* --- Utility Classes --- */
         .hidden { display: none !important; }
         .text-center { text-align: center; }
         .font-bold { font-weight: 700; }
@@ -110,7 +111,7 @@
             position: fixed;
             inset: 0;
             z-index: 50;
-            background-color: rgba(0, 0, 0, 0.5); /* Primary/80 approx */
+            background-color: rgba(0, 0, 0, 0.5);
             backdrop-filter: blur(4px);
             display: flex;
             align-items: center;
@@ -125,17 +126,26 @@
             border-radius: var(--radius-lg);
             box-shadow: var(--shadow-xl);
             width: 100%;
+            /* FIX: Enforce max-height globally so flex children can scroll */
+            max-height: 90vh; 
             transition: transform 0.3s ease, opacity 0.3s ease;
             overflow: hidden;
             display: flex;
             flex-direction: column;
+        }
+
+        /* FIX: Utility for scrollable inner areas */
+        .scrollable-y {
+            overflow-y: auto;
+            flex: 1;           /* Take all remaining height */
+            min-height: 0;     /* Crucial for flexbox scrolling */
+            padding-right: 0.5rem;
         }
         
         .modal-content.max-w-sm { max-width: 24rem; }
         .modal-content.max-w-md { max-width: 28rem; }
         .modal-content.max-w-lg { max-width: 32rem; }
         .modal-content.max-w-2xl { max-width: 42rem; }
-        .max-h-90vh { max-height: 90vh; }
 
         /* Login Modal Specific */
         .login-card {
@@ -360,9 +370,9 @@
 
         /* 9. Badges */
         .badge { padding: 0.125rem 0.625rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 500; }
-        .badge-open { background-color: #d1fae5; color: #065f46; } /* Green 100/800 */
-        .badge-progress { background-color: #fef3c7; color: #92400e; } /* Yellow 100/800 */
-        .badge-completed { background-color: #dbeafe; color: #1e40af; } /* Blue 100/800 */
+        .badge-open { background-color: #d1fae5; color: #065f46; } 
+        .badge-progress { background-color: #fef3c7; color: #92400e; } 
+        .badge-completed { background-color: #dbeafe; color: #1e40af; } 
         .dark .badge-open { background-color: #064e3b; color: #6ee7b7; }
         .dark .badge-progress { background-color: #78350f; color: #fcd34d; }
         .dark .badge-completed { background-color: #1e3a8a; color: #93c5fd; }
@@ -407,8 +417,7 @@
         .animate-spin { animation: spin 1s linear infinite; }
         @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
         
-        /* Scrollable Areas */
-        .overflow-y-auto { overflow-y: auto; }
+        /* Spacing Utilities */
         .pr-2 { padding-right: 0.5rem; }
         .space-y-3 > * + * { margin-top: 0.75rem; }
         .space-y-4 > * + * { margin-top: 1rem; }
@@ -540,7 +549,7 @@
                 <h3 id="menu-modal-title" class="text-2xl font-bold">Menu</h3>
                 <button id="menu-close-btn" style="color: var(--text-muted); font-size: 2rem; line-height: 1;">&times;</button>
             </div>
-            <div id="menu-items-container" class="space-y-3 overflow-y-auto pr-2">
+            <div id="menu-items-container" class="space-y-3 scrollable-y">
             </div>
         </div>
     </div>
@@ -551,7 +560,7 @@
                 <h3 class="text-2xl font-bold">Your Cart</h3>
                 <button id="cart-close-btn" style="color: var(--text-muted); font-size: 2rem; line-height: 1;">&times;</button>
             </div>
-            <div id="cart-items-container" class="space-y-4 overflow-y-auto pr-2">
+            <div id="cart-items-container" class="space-y-4 scrollable-y">
             </div>
             <div style="margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid var(--border-color);">
                 <div class="flex justify-between items-center font-bold" style="font-size: 1.125rem;">
@@ -608,7 +617,7 @@
                 <h3 class="text-2xl font-bold">Order History</h3>
                 <button id="history-close-btn" style="color: var(--text-muted); font-size: 2rem; line-height: 1;">&times;</button>
             </div>
-            <div id="history-items-container" class="space-y-4 overflow-y-auto pr-2">
+            <div id="history-items-container" class="space-y-4 scrollable-y">
             </div>
         </div>
     </div>
