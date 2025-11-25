@@ -226,6 +226,20 @@
         .actions-area { display: flex; align-items: center; gap: 0.75rem; flex: 1; justify-content: flex-end; }
         .avatar { height: 2.25rem; width: 2.25rem; border-radius: 50%; border: 2px solid white; object-fit: cover; }
         .logo-text-sm { color: #c7d2fe; text-align: center; margin-top: 0.5rem; font-size: 0.875rem; }
+        
+        .delivery-stats {
+            position: absolute;
+            top: 5rem; /* Below header */
+            right: 1.5rem;
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            padding: 0.5rem 1rem;
+            border-radius: var(--radius-md);
+            font-weight: 700;
+            box-shadow: var(--shadow-md);
+            font-size: 0.875rem;
+            z-index: 10;
+        }
 
         /* 4. Layout & Grid */
         #app {
@@ -257,12 +271,24 @@
             transform: scale(1.03) translateY(-3px);
             box-shadow: var(--shadow-lg);
         }
+        /* Default Text/Icon style for Active Cafes */
         .cafe-box-image {
+            height: 140px;
+            background-color: var(--bg-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-secondary);
+        }
+        /* Image style for Coming Soon Cafes */
+        .cafe-box-image-img {
             height: 140px;
             background-color: var(--bg-primary);
             overflow: hidden;
         }
-        .cafe-box-image img {
+        .cafe-box-image-img img {
             width: 100%;
             height: 100%;
             object-fit: cover;
@@ -272,6 +298,10 @@
             text-align: center;
             font-weight: 600;
             color: var(--text-primary);
+        }
+        .disabled-cafe {
+            cursor: not-allowed;
+            opacity: 0.8;
         }
 
         /* 6. Lists & Cards */
@@ -389,14 +419,15 @@
         /* --- Responsive Queries --- */
         @media (min-width: 641px) {
             .cafe-grid { grid-template-columns: repeat(3, 1fr); }
-            .cafe-box-image { height: 160px; }
+            .cafe-box-image, .cafe-box-image-img { height: 160px; }
             #app { padding: 1.5rem; }
             .modal-content { max-width: 90%; }
+            .delivery-stats { top: 1rem; right: 9rem; position: absolute; box-shadow: none; background: rgba(0,0,0,0.1); color: white; }
         }
         
         @media (min-width: 1025px) {
             .cafe-grid { grid-template-columns: repeat(4, 1fr); }
-            .cafe-box-image { height: 180px; }
+            .cafe-box-image, .cafe-box-image-img { height: 180px; }
         }
 
         @media (max-width: 640px) {
@@ -461,7 +492,7 @@
         </div>
     </div>
 
-    <header id="main-header" class="hidden">
+    <header id="main-header" class="hidden relative">
         <div class="header-content">
             <div class="user-area">
                 <img id="user-avatar" class="avatar hidden" alt="User Avatar">
@@ -486,6 +517,7 @@
                 </button>
             </div>
         </div>
+        <div id="delivery-stats" class="delivery-stats hidden">Total Deliveries: 0</div>
         <p class="logo-text-sm">Your on-campus delivery solution. Fast, easy, and by students, for students.</p>
     </header>
 
@@ -711,6 +743,7 @@
         let unsubscribe = null; 
         let cart = {};
         let currentOpenCafeId = null;
+        let currentRole = null; // 'student' or 'deliverer'
 
         // --- UI Elements ---
         const loginModal = document.getElementById('login-modal');
@@ -757,6 +790,7 @@
         const historyItemsContainer = document.getElementById('history-items-container');
         const activeOrderBar = document.getElementById('active-order-bar');
         const activeOrderBarStatus = document.getElementById('active-order-bar-status');
+        const deliveryStats = document.getElementById('delivery-stats');
 
         // --- Theme Logic ---
         function applyTheme(theme) {
@@ -784,11 +818,34 @@
                 currentUser = user;
                 userDetails = { name: user.displayName, uid: user.uid, photoURL: user.photoURL };
                 loginModal.classList.add('hidden');
-                roleSelectionModal.classList.remove('hidden');
-                setupUserHeader("Welcome");
+                
+                // Check local storage for persistent role
+                const savedRole = localStorage.getItem('userRole');
+                if (savedRole) {
+                    currentRole = savedRole;
+                    roleSelectionModal.classList.add('hidden');
+                    if (currentRole === 'student') {
+                        studentView.classList.remove('hidden');
+                        delivererView.classList.add('hidden');
+                        cartButton.classList.add('hidden'); // Initially hidden, shows if items
+                        deliveryStats.classList.add('hidden');
+                    } else {
+                        studentView.classList.add('hidden');
+                        delivererView.classList.remove('hidden');
+                        cartButton.classList.add('hidden'); // Strictly hidden for deliverer
+                        deliveryStats.classList.remove('hidden');
+                    }
+                    setupUserHeader("Welcome");
+                    startApp();
+                } else {
+                    roleSelectionModal.classList.remove('hidden');
+                    setupUserHeader("Welcome");
+                }
             } else {
                 currentUser = null;
                 userDetails = null;
+                currentRole = null;
+                localStorage.removeItem('userRole');
                 loginModal.classList.remove('hidden');
                 roleSelectionModal.classList.add('hidden');
                 appContainer.classList.add('hidden');
@@ -798,6 +855,7 @@
                 userAvatar.classList.add('hidden');
                 userAvatar.src = '';
                 orderHistoryBtn.classList.add('hidden');
+                deliveryStats.classList.add('hidden');
             }
         });
         
@@ -828,7 +886,7 @@
         function startApp() {
             roleSelectionModal.classList.add('hidden');
             appContainer.classList.remove('hidden');
-            if (studentView.classList.contains('hidden') === false) {
+            if (!studentView.classList.contains('hidden')) {
                 renderCafes();
                 fetchAndDisplayRequests();
             } else {
@@ -839,25 +897,49 @@
         // --- UI Logic ---
         function renderCafes() {
             cafeGridContainer.innerHTML = '';
-            // Stylish placeholder image for "Coming Soon"
-            const imageUrl = "https://placehold.co/400x300/1f2937/FFF?text=Coming+Soon";
+            // "Coming Soon" placeholder
+            const comingSoonImg = "https://placehold.co/400x300/1f2937/FFF?text=Coming+Soon";
             
+            const activeCafes = ['HR1', 'HR2', 'HR3', 'HR4'];
+
             for (const cafeId in CAFE_DATA) {
                 const cafe = CAFE_DATA[cafeId];
+                const isActive = activeCafes.includes(cafeId);
                 const cafeBox = document.createElement('div');
                 cafeBox.className = 'cafe-box';
                 cafeBox.dataset.cafeId = cafeId;
-                cafeBox.innerHTML = `
-                    <div class="cafe-box-image">
-                        <img src="${imageUrl}" alt="${cafe.name}" loading="lazy">
-                    </div>
-                    <div class="cafe-box-name">${cafe.name}</div>
-                `;
+                
+                if (!isActive) {
+                    cafeBox.classList.add('disabled-cafe');
+                }
+
+                if (isActive) {
+                    // HR1-HR4: Active, show text/icon style (Classic look)
+                    cafeBox.innerHTML = `
+                        <div class="cafe-box-image">${cafe.name}</div>
+                        <div class="cafe-box-name">${cafe.name}</div>
+                    `;
+                } else {
+                    // Others: Inactive, show "Coming Soon" image
+                    cafeBox.innerHTML = `
+                        <div class="cafe-box-image-img">
+                            <img src="${comingSoonImg}" alt="Coming Soon" loading="lazy">
+                        </div>
+                        <div class="cafe-box-name">${cafe.name}</div>
+                    `;
+                }
                 cafeGridContainer.appendChild(cafeBox);
             }
         }
 
         function openMenuModal(cafeId) {
+            // Only allow HR1-HR4
+            const activeCafes = ['HR1', 'HR2', 'HR3', 'HR4'];
+            if (!activeCafes.includes(cafeId)) {
+                alert("Coming Soon!");
+                return;
+            }
+
             currentOpenCafeId = cafeId;
             const cafe = CAFE_DATA[cafeId];
             menuModalTitle.textContent = cafe.name;
@@ -934,7 +1016,6 @@
         function updateCartUI() {
             const itemCount = Object.values(cart).reduce((sum, item) => sum + item.quantity, 0);
             
-            // Check if we are currently in Student View
             const isStudentView = !studentView.classList.contains('hidden');
 
             if (itemCount > 0 && isStudentView) {
@@ -1033,14 +1114,28 @@
             setTimeout(() => historyModal.classList.add('hidden'), 300);
         }
 
-        function renderOrderHistory(completedOrders) {
+        function renderOrderHistory(allOrders) {
             historyItemsContainer.innerHTML = '';
-            if (completedOrders.length === 0) {
-                historyItemsContainer.innerHTML = `<p class="text-secondary text-center">You have no completed orders.</p>`;
+            
+            // Filter logic for History based on Role
+            let relevantOrders = [];
+            if (currentRole === 'deliverer') {
+                // Show orders I DELIVERED
+                relevantOrders = allOrders.filter(req => req.delivererId === currentUser.uid && req.status === 'completed');
+            } else {
+                // Show orders I REQUESTED
+                relevantOrders = allOrders.filter(req => req.requesterId === currentUser.uid && req.status === 'completed');
+            }
+
+            if (relevantOrders.length === 0) {
+                historyItemsContainer.innerHTML = `<p class="text-secondary text-center">No completed orders found.</p>`;
                 return;
             }
             
-            completedOrders.forEach(req => {
+            // Sort by latest
+            relevantOrders.sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
+
+            relevantOrders.forEach(req => {
                 const card = createRequestCard(req, 'history-view');
                 historyItemsContainer.appendChild(card);
             });
@@ -1061,7 +1156,6 @@
                 return;
             }
 
-            // Combine Block and Room for final location
             const dropoffValue = `${blockVal} - Room ${roomVal}`;
 
             submitBtn.disabled = true;
@@ -1119,6 +1213,7 @@
 
         async function logout() {
             try {
+                localStorage.removeItem('userRole'); // Clear role on logout
                 await signOut(auth);
             } catch (error) {
                 console.error("Logout Error:", error);
@@ -1137,19 +1232,44 @@
                loader.classList.add('hidden');
                const nowInSeconds = Date.now() / 1000;
                const maxAge = 900;
-               let allRequests = [];
+               let activeRequests = [];
+               let allHistoryOrders = []; // To pass to history modal logic
+
+               let totalDeliveriesCount = 0;
+
                querySnapshot.forEach((doc) => {
                    const req = { id: doc.id, ...doc.data() };
+                   
+                   // Count completed deliveries by this user
+                   if (req.delivererId === currentUser.uid && req.status === 'completed') {
+                       totalDeliveriesCount++;
+                   }
+
+                   // Collect all for history purpose
+                   allHistoryOrders.push(req);
+
+                   // Filter logic for main view (clean up old open requests)
                    if (req.status === 'open' && req.createdAt && (nowInSeconds - req.createdAt.seconds > maxAge)) {
                        if (req.requesterId === currentUser.uid) {
                            deleteDoc(doc.ref);
                        }
                    } else {
-                       allRequests.push(req);
+                       activeRequests.push(req);
                    }
                });
-               allRequests.sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
-               displayRequests(allRequests);
+               
+               // Update Delivery Counter
+               if (currentRole === 'deliverer') {
+                   deliveryStats.textContent = `Total Deliveries: ${totalDeliveriesCount}`;
+               }
+
+               // Sort by latest for view
+               activeRequests.sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
+               displayRequests(activeRequests);
+               
+               // Pass filtered list to history render (it will filter internally based on role)
+               renderOrderHistory(allHistoryOrders);
+
            }, (error) => {
                console.error("Error fetching requests: ", error);
                loader.classList.add('hidden');
@@ -1182,13 +1302,12 @@
             const hasActiveDelivery = myCurrentDeliveries.some(r => r.status === 'in-progress');
 
             const myActiveOrders = myReqs.filter(r => r.status === 'open' || r.status === 'in-progress');
-            const myCompletedOrders = myReqs.filter(r => r.status === 'completed');
             const myInProgressOrder = myReqs.find(r => r.status === 'in-progress');
             
             myRequestsList.innerHTML = myActiveOrders.length ? '' : `<p class="text-secondary">You have no active orders.</p>`;
             myActiveOrders.forEach(req => myRequestsList.appendChild(createRequestCard(req, 'student-own')));
             
-            renderOrderHistory(myCompletedOrders);
+            // Note: History is rendered inside the snapshot listener now to catch updates
             
             if (myInProgressOrder) {
                 activeOrderBarStatus.textContent = formatSubStatus(myInProgressOrder.subStatus);
@@ -1276,7 +1395,7 @@
             if (req.status === 'in-progress' && (isMyOwnRequestView || isMyDelivery)) {
                  statusTracker = `
                     <div class="mt-4 pt-4 border-t border-custom space-y-2" style="border-top: 1px solid var(--border-color); padding-top: 1rem;">
-                        <p class="text-sm text-secondary"><strong>Deliverer ETA:</strong> <span class="font-semibold" style="color: var(--accent-color);">${req.estimatedTime || 'Not set'}</span></p>
+                        <p class="text-sm text-secondary"><strong>Deliverer ETA:</strong> <span class="font-semibold" style="color: var(--accent-color);">${req.estimatedTime ? req.estimatedTime + ' mins' : 'Not set'}</span></p>
                         <p class="text-sm text-secondary"><strong>Live Status:</strong> <span class="font-semibold" style="color: var(--accent-color);">${formatSubStatus(req.subStatus)}</span></p>
                     </div>
                  `;
@@ -1284,8 +1403,21 @@
 
             let actionButtonOrPanel = '';
             if (isMyDelivery && req.status === 'in-progress') {
-                const etaInput = `<input type="text" id="eta-${req.id}" class="form-input text-sm" placeholder="e.g., 5-10 mins" style="padding: 0.25rem 0.5rem; width: 100%;">`;
-                const updateEtaBtn = `<button data-id="${req.id}" class="update-eta-btn btn btn-accent btn-sm" style="white-space: nowrap;">Set ETA</button>`;
+                
+                // ETA Logic: Show input only if not set
+                let etaSection = '';
+                if (!req.estimatedTime) {
+                    const etaInput = `<input type="number" id="eta-${req.id}" min="1" max="40" class="form-input text-sm" placeholder="1-40 mins" style="padding: 0.25rem 0.5rem; width: 100%;">`;
+                    const updateEtaBtn = `<button data-id="${req.id}" class="update-eta-btn btn btn-accent btn-sm" style="white-space: nowrap;">Set ETA</button>`;
+                    etaSection = `
+                        <div class="flex flex-col md:flex-row md:items-center gap-2 mb-2">
+                            ${etaInput}
+                            ${updateEtaBtn}
+                        </div>`;
+                } else {
+                    etaSection = `<div class="text-sm text-green-600 font-bold mb-2">ETA Set: ${req.estimatedTime} mins</div>`;
+                }
+
                 let nextActionBtn = '';
                 if (req.subStatus === null) {
                     nextActionBtn = `<button data-id="${req.id}" class="reached-cafe-btn btn btn-accent w-full mt-2">Reached Cafe</button>`;
@@ -1296,10 +1428,7 @@
                 }
                 actionButtonOrPanel = `
                     <div class="space-y-3 mt-3">
-                        <div class="flex flex-col md:flex-row md:items-center gap-2">
-                            ${etaInput}
-                            ${updateEtaBtn}
-                        </div>
+                        ${etaSection}
                         <div>
                             ${nextActionBtn}
                         </div>
@@ -1371,9 +1500,13 @@
                     await updateDoc(docRef, { status: 'in-progress', delivererId: currentUser.uid, delivererName: userDetails.name });
                 } else if (target.classList.contains('update-eta-btn')) {
                     const etaInput = document.getElementById(`eta-${requestId}`);
-                    if (etaInput && etaInput.value.trim()) {
-                        await updateDoc(docRef, { estimatedTime: etaInput.value.trim() });
-                        etaInput.value = '';
+                    if (etaInput) {
+                        const val = parseInt(etaInput.value);
+                        if (val >= 1 && val <= 40) {
+                            await updateDoc(docRef, { estimatedTime: val.toString() });
+                        } else {
+                            alert("Please enter a time between 1 and 40 minutes.");
+                        }
                     }
                 } else if (target.classList.contains('reached-cafe-btn')) {
                     await updateDoc(docRef, { subStatus: 'reached-cafe' });
@@ -1391,19 +1524,27 @@
         
         // --- Event Listeners ---
         googleSignInBtn.addEventListener('click', signInWithGoogle);
+        
         selectStudentBtn.addEventListener('click', () => {
+            currentRole = 'student';
+            localStorage.setItem('userRole', 'student');
+            roleSelectionModal.classList.add('hidden');
             studentView.classList.remove('hidden');
             delivererView.classList.add('hidden');
+            deliveryStats.classList.add('hidden');
             startApp();
-            // Show cart if items exist
             updateCartUI();
         });
+        
         selectDelivererBtn.addEventListener('click', () => {
+            currentRole = 'deliverer';
+            localStorage.setItem('userRole', 'deliverer');
+            roleSelectionModal.classList.add('hidden');
             studentView.classList.add('hidden');
             delivererView.classList.remove('hidden');
-            startApp();
-            // Strictly hide cart in deliverer mode
+            deliveryStats.classList.remove('hidden');
             cartButton.classList.add('hidden');
+            startApp();
         });
         
         cafeGridContainer.addEventListener('click', (e) => {
