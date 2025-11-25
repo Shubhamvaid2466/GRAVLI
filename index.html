@@ -131,84 +131,105 @@
 
         /* ========= RESPONSIVE TWEAKS FOR MOBILE & TABLET ========= */
 
-        @media (max-width: 640px) {
-            /* Login modal: tighter padding + smaller heading on mobiles */
-            .login-modal-content {
-                padding: 1.75rem;
-            }
-            .login-modal-content h2 {
-                font-size: 1.9rem;
-            }
-            .login-modal-content p {
-                font-size: 0.95rem;
-            }
+       /* ------------------------- */
+/* 📱 Mobile (0–640px) */
+/* ------------------------- */
+@media (max-width: 640px) {
 
-            /* Header layout: stack on small screens */
-            #main-header {
-                padding: 0.75rem 1rem;
-            }
-            #main-header .header-inner {
-                flex-direction: column;
-                align-items: flex-start;
-                height: auto;
-                gap: 0.75rem;
-            }
-            #main-header h1 {
-                font-size: 1.7rem;
-            }
-            #main-header p.text-indigo-200 {
-                font-size: 0.75rem;
-            }
+    /* Login Modal */
+    .login-modal-content {
+        padding: 1.5rem !important;
+    }
+    .login-modal-content h2 {
+        font-size: 1.7rem;
+    }
+    .login-modal-content p {
+        font-size: 0.9rem;
+    }
 
-            /* Cafe grid: keep 2 columns, better spacing on small screens */
-            #cafe-grid-container {
-                grid-template-columns: repeat(2, minmax(0, 1fr));
-                gap: 0.75rem;
-            }
-            .cafe-box-image {
-                height: 120px;
-                font-size: 1.25rem;
-            }
+    /* Header - stack items */
+    #main-header {
+        padding: 0.75rem 1rem;
+    }
+    #main-header .header-inner {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.6rem;
+        height: auto;
+    }
+    #main-header h1 {
+        font-size: 1.6rem;
+    }
+    #main-header p.text-indigo-200 {
+        font-size: 0.75rem;
+    }
 
-            /* Floating cart button closer to edges */
-            #cart-button {
-                right: 1rem;
-                bottom: 1rem;
-                padding-left: 1rem;
-                padding-right: 1.2rem;
-            }
+    /* Cafe grid: 2 columns, tighter spacing */
+    #cafe-grid-container {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.7rem;
+    }
+    .cafe-box-image {
+        height: 120px;
+        font-size: 1.2rem;
+    }
 
-            /* Modals: full-width, safe padding on mobile */
-            .modal-content {
-                max-width: 100%;
-                width: 100%;
-                max-height: 90vh;
-            }
+    /* Floating cart button */
+    #cart-button {
+        right: 0.8rem;
+        bottom: 0.8rem;
+        padding: 0.7rem 1rem;
+    }
 
-            /* Order cards: ensure good spacing */
-            #my-requests-list > div,
-            #all-requests-list-deliverer > div,
-            #my-current-deliveries-list > div {
-                padding: 1rem;
-            }
-        }
+    /* Modal full width on mobile */
+    .modal-content {
+        width: 100% !important;
+        max-width: 100% !important;
+        max-height: 90vh;
+        margin: 0;
+        border-radius: 0.5rem;
+    }
 
-        @media (min-width: 641px) and (max-width: 1024px) {
-            /* Tablet: 3 columns for cafes for nicer layout */
-            #cafe-grid-container {
-                grid-template-columns: repeat(3, minmax(0, 1fr));
-            }
+    /* Order cards spacing */
+    #my-requests-list > div,
+    #all-requests-list-deliverer > div,
+    #my-current-deliveries-list > div {
+        padding: 0.9rem;
+    }
+}
 
-            /* Slightly reduce big paddings on tablets */
-            #app {
-                padding-left: 1.5rem;
-                padding-right: 1.5rem;
-            }
+/* ------------------------- */
+/* 📲 Tablets (641–1024px) */
+/* ------------------------- */
+@media (min-width: 641px) and (max-width: 1024px) {
 
-            .modal-content {
-                max-width: 90%;
-            }
-        }
+    /* Tablet-friendly grid */
+    #cafe-grid-container {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1rem;
+    }
+
+    /* Moderate padding */
+    #app {
+        padding: 1.5rem;
+    }
+
+    /* Modals slightly wide */
+    .modal-content {
+        max-width: 90% !important;
+    }
+}
+
+/* ------------------------- */
+/* 💻 Larger screens (>1024px) */
+/* optional – ensures layout is stable */
+/* ------------------------- */
+@media (min-width: 1025px) {
+    #cafe-grid-container {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
     </style>
 </head>
 <body class="bg-primary text-primary">
@@ -1224,3 +1245,4 @@
     </script>
 </body>
 </html>
+
