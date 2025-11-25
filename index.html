@@ -93,6 +93,7 @@
         .items-center { align-items: center; }
         .justify-center { justify-content: center; }
         .justify-between { justify-content: space-between; }
+        .justify-end { justify-content: flex-end; }
         .gap-2 { gap: 0.5rem; }
         .gap-3 { gap: 0.75rem; }
         .gap-4 { gap: 1rem; }
@@ -205,13 +206,13 @@
 
         .btn-round-qty { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; }
         
-        /* 3. Header - REDESIGNED for better placement */
+        /* 3. Header */
         header {
             background: linear-gradient(to right, var(--header-bg-start), var(--header-bg-end));
             color: white;
             box-shadow: var(--shadow-lg);
             margin-bottom: 2rem;
-            padding: 1rem 1.5rem; /* Adjusted padding */
+            padding: 1rem 1.5rem;
         }
         .header-content {
             max-width: var(--container-max-width);
@@ -220,7 +221,7 @@
             align-items: center;
             justify-content: space-between;
             gap: 1rem;
-            flex-wrap: wrap; /* Allow wrapping on small screens */
+            flex-wrap: wrap; 
         }
         .logo-area { display: flex; align-items: center; gap: 0.75rem; font-size: 1.875rem; font-weight: 700; }
         .user-area { display: flex; align-items: center; gap: 0.75rem; }
@@ -228,7 +229,6 @@
         .avatar { height: 2.25rem; width: 2.25rem; border-radius: 50%; border: 2px solid white; object-fit: cover; }
         .logo-text-sm { color: #c7d2fe; text-align: center; margin-top: 0.5rem; font-size: 0.875rem; }
         
-        /* New style for the delivery stats badge - integrated into header flow */
         .delivery-stats {
             background: rgba(255, 255, 255, 0.2);
             color: white;
@@ -1317,6 +1317,7 @@
             const hasActiveDelivery = myCurrentDeliveries.some(r => r.status === 'in-progress');
 
             const myActiveOrders = myReqs.filter(r => r.status === 'open' || r.status === 'in-progress');
+            const myCompletedOrders = myReqs.filter(r => r.status === 'completed');
             const myInProgressOrder = myReqs.find(r => r.status === 'in-progress');
             
             myRequestsList.innerHTML = myActiveOrders.length ? '' : `<p class="text-secondary">You have no active orders.</p>`;
@@ -1454,7 +1455,13 @@
                 if (req.requesterId === currentUser.uid) {
                     actionButtonOrPanel = `<p class="text-sm text-muted text-center italic mt-2">This is your own request.</p>`;
                 } else {
-                    actionButtonOrPanel = `<button data-id="${req.id}" class="accept-btn btn btn-deliverer btn-sm w-full mt-3 md:mt-0">Accept Job</button>`;
+                    const earnings = req.deliveryFee ? req.deliveryFee : 50;
+                    actionButtonOrPanel = `
+                        <div class="flex flex-col items-end gap-2">
+                            <p class="text-sm font-bold" style="color: var(--success-bg);">You'll get: ₹${earnings.toFixed(2)}</p>
+                            <button data-id="${req.id}" class="accept-btn btn btn-deliverer btn-sm w-full md:w-auto">Accept Job</button>
+                        </div>
+                    `;
                 }
             } 
             else if (isMyOwnRequestView && req.status === 'open') {
