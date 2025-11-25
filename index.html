@@ -64,7 +64,7 @@
             color: var(--text-primary);
             transition: background-color 0.3s ease, color 0.3s ease;
             line-height: 1.5;
-            height: 100vh; /* Ensure full height for body */
+            height: 100vh;
         }
 
         button {
@@ -126,7 +126,6 @@
             border-radius: var(--radius-lg);
             box-shadow: var(--shadow-xl);
             width: 100%;
-            /* FIX: Enforce max-height globally so flex children can scroll */
             max-height: 90vh; 
             transition: transform 0.3s ease, opacity 0.3s ease;
             overflow: hidden;
@@ -134,11 +133,10 @@
             flex-direction: column;
         }
 
-        /* FIX: Utility for scrollable inner areas */
         .scrollable-y {
             overflow-y: auto;
-            flex: 1;           /* Take all remaining height */
-            min-height: 0;     /* Crucial for flexbox scrolling */
+            flex: 1;
+            min-height: 0;
             padding-right: 0.5rem;
         }
         
@@ -252,20 +250,22 @@
             cursor: pointer;
             transition: all 0.2s ease-in-out;
             overflow: hidden;
+            display: flex;
+            flex-direction: column;
         }
         .cafe-box:hover {
             transform: scale(1.03) translateY(-3px);
             box-shadow: var(--shadow-lg);
         }
         .cafe-box-image {
-            height: 120px;
+            height: 140px;
             background-color: var(--bg-primary);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.25rem;
-            font-weight: 600;
-            color: var(--text-secondary);
+            overflow: hidden;
+        }
+        .cafe-box-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
         .cafe-box-name {
             padding: 0.75rem;
@@ -389,14 +389,14 @@
         /* --- Responsive Queries --- */
         @media (min-width: 641px) {
             .cafe-grid { grid-template-columns: repeat(3, 1fr); }
-            .cafe-box-image { height: 140px; }
+            .cafe-box-image { height: 160px; }
             #app { padding: 1.5rem; }
             .modal-content { max-width: 90%; }
         }
         
         @media (min-width: 1025px) {
             .cafe-grid { grid-template-columns: repeat(4, 1fr); }
-            .cafe-box-image { height: 160px; }
+            .cafe-box-image { height: 180px; }
         }
 
         @media (max-width: 640px) {
@@ -576,18 +576,26 @@
         <div id="checkout-modal-content" class="modal-content max-w-md scale-95" style="padding: 1.5rem;">
             <h3 class="text-2xl font-bold mb-4">Confirm Order</h3>
             <form id="checkout-form">
-                <div class="form-group">
-                    <label for="dropoff" class="form-label">Drop-off Location</label>
-                    <select id="dropoff" class="form-select" required>
-                        <option value="" disabled selected>Select a location</option>
-                        <option value="Main Library - 2nd Floor">Main Library - 2nd Floor</option>
-                        <option value="Engineering Building - Lobby">Engineering Building - Lobby</option>
-                        <option value="Student Union - Game Room">Student Union - Game Room</option>
-                        <option value="Oak Hall - Front Desk">Oak Hall - Front Desk</option>
-                        <option value="Willow Creek Apartments - Bldg C">Willow Creek Apartments - Bldg C</option>
-                        <option value="Science Center - Atrium">Science Center - Atrium</option>
-                    </select>
+                <label class="form-label mb-2">Drop-off Location</label>
+                <div class="flex gap-4 mb-4">
+                    <div class="form-group flex-1" style="margin-bottom: 0;">
+                        <select id="block-select" class="form-select" required>
+                            <option value="" disabled selected>Block</option>
+                            <option value="B1">B1</option>
+                            <option value="B2">B2</option>
+                            <option value="B3">B3</option>
+                            <option value="B4">B4</option>
+                            <option value="G1">G1</option>
+                            <option value="G2">G2</option>
+                            <option value="Main Library">Main Library</option>
+                            <option value="Admin Block">Admin Block</option>
+                        </select>
+                    </div>
+                    <div class="form-group flex-1" style="margin-bottom: 0;">
+                        <input id="room-input" type="text" class="form-input" placeholder="Room No." required>
+                    </div>
                 </div>
+                
                 <div class="total-display">
                     <p class="text-secondary font-semibold">Total Amount (Item + Fee)</p>
                     <p id="checkout-total-display" class="text-primary text-2xl font-bold">₹0.00</p>
@@ -831,13 +839,18 @@
         // --- UI Logic ---
         function renderCafes() {
             cafeGridContainer.innerHTML = '';
+            // Stylish placeholder image for "Coming Soon"
+            const imageUrl = "https://placehold.co/400x300/1f2937/FFF?text=Coming+Soon";
+            
             for (const cafeId in CAFE_DATA) {
                 const cafe = CAFE_DATA[cafeId];
                 const cafeBox = document.createElement('div');
                 cafeBox.className = 'cafe-box';
                 cafeBox.dataset.cafeId = cafeId;
                 cafeBox.innerHTML = `
-                    <div class="cafe-box-image">${cafe.name}</div>
+                    <div class="cafe-box-image">
+                        <img src="${imageUrl}" alt="${cafe.name}" loading="lazy">
+                    </div>
                     <div class="cafe-box-name">${cafe.name}</div>
                 `;
                 cafeGridContainer.appendChild(cafeBox);
@@ -920,7 +933,11 @@
 
         function updateCartUI() {
             const itemCount = Object.values(cart).reduce((sum, item) => sum + item.quantity, 0);
-            if (itemCount > 0) {
+            
+            // Check if we are currently in Student View
+            const isStudentView = !studentView.classList.contains('hidden');
+
+            if (itemCount > 0 && isStudentView) {
                 cartButtonText.textContent = `View Cart (${itemCount})`;
                 cartButton.classList.remove('hidden');
             } else {
@@ -1035,12 +1052,17 @@
             const submitBtn = checkoutForm.querySelector('button[type="submit"]');
             checkoutErrorMessage.classList.add('hidden');
 
-            const dropoffValue = document.getElementById('dropoff').value;
-            if (!dropoffValue) {
-                checkoutErrorMessage.textContent = "Please select a drop-off location.";
+            const blockVal = document.getElementById('block-select').value;
+            const roomVal = document.getElementById('room-input').value.trim();
+            
+            if (!blockVal || !roomVal) {
+                checkoutErrorMessage.textContent = "Please select a block and enter a room number.";
                 checkoutErrorMessage.classList.remove('hidden');
                 return;
             }
+
+            // Combine Block and Room for final location
+            const dropoffValue = `${blockVal} - Room ${roomVal}`;
 
             submitBtn.disabled = true;
             loadingModal.classList.remove('hidden');
@@ -1373,11 +1395,15 @@
             studentView.classList.remove('hidden');
             delivererView.classList.add('hidden');
             startApp();
+            // Show cart if items exist
+            updateCartUI();
         });
         selectDelivererBtn.addEventListener('click', () => {
             studentView.classList.add('hidden');
             delivererView.classList.remove('hidden');
             startApp();
+            // Strictly hide cart in deliverer mode
+            cartButton.classList.add('hidden');
         });
         
         cafeGridContainer.addEventListener('click', (e) => {
