@@ -5,29 +5,40 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gravli - Campus Delivery</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    
     <style>
         /* --- CSS Variables --- */
         :root {
+            /* Colors */
             --bg-primary: #f3f4f6;
             --bg-secondary: #ffffff;
             --text-primary: #1f2937;
             --text-secondary: #4b5563;
             --text-muted: #9ca3af;
             --border-color: #e5e7eb;
-            --accent-color: #8b5cf6;
-            --accent-hover: #7c3aed;
+            
+            --accent-color: #8b5cf6; /* Violet 500 */
+            --accent-hover: #7c3aed; /* Violet 600 */
+            
             --success-bg: #22c55e;
+            --success-bg-hover: #16a34a;
             --danger-bg: #ef4444;
+            --danger-bg-hover: #dc2626;
             --info-bg: #3b82f6;
+            --info-bg-hover: #2563eb;
+            --warning-bg: #f59e0b;
+
             --header-bg-start: #7c3aed;
             --header-bg-end: #4f46e5;
-            
-            --radius-sm: 0.25rem;
+
+            /* Spacing & Layout */
+            --container-max-width: 1280px;
             --radius-md: 0.5rem;
             --radius-lg: 0.75rem;
-            
-            --container-max-width: 1400px;
+            --radius-full: 9999px;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
         }
 
         .dark {
@@ -37,326 +48,561 @@
             --text-secondary: #d1d5db;
             --text-muted: #6b7280;
             --border-color: #374151;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.5);
         }
         
-        /* Reset & Base */
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: 'Inter', sans-serif; background-color: var(--bg-primary); color: var(--text-primary); transition: background-color 0.3s ease, color 0.3s ease; line-height: 1.5; min-height: 100vh; }
-        button { cursor: pointer; border: none; background: none; font-family: inherit; }
-        
-        /* Utility */
+        /* --- Base Reset & Typography --- */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            transition: background-color 0.3s ease, color 0.3s ease;
+            line-height: 1.5;
+            height: 100vh;
+        }
+
+        button {
+            cursor: pointer;
+            border: none;
+            background: none;
+            font-family: inherit;
+        }
+
+        h1, h2, h3, h4 {
+            line-height: 1.2;
+        }
+
+        /* --- Utility Classes --- */
         .hidden { display: none !important; }
-        .flex { display: flex; } .flex-col { flex-direction: column; } .items-center { align-items: center; } 
-        .justify-between { justify-content: space-between; } .justify-center { justify-content: center; }
-        .gap-2 { gap: 0.5rem; } .gap-4 { gap: 1rem; } .w-full { width: 100%; }
-        .text-center { text-align: center; } .font-bold { font-weight: 700; } .font-semibold { font-weight: 600; }
-        .text-sm { font-size: 0.875rem; } .text-xs { font-size: 0.75rem; } .text-2xl { font-size: 1.5rem; }
-
-        /* --- Header Styling (Updated) --- */
-        header { 
-            background: linear-gradient(to right, var(--header-bg-start), var(--header-bg-end)); 
-            color: white; 
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); 
-            margin-bottom: 2rem; 
-            padding: 0.75rem 1.5rem; 
-        }
+        .text-center { text-align: center; }
+        .font-bold { font-weight: 700; }
+        .font-semibold { font-weight: 600; }
+        .text-sm { font-size: 0.875rem; }
+        .text-xs { font-size: 0.75rem; }
+        .text-2xl { font-size: 1.5rem; }
+        .text-3xl { font-size: 1.875rem; }
         
-        .header-content { 
-            max-width: var(--container-max-width); 
-            margin: 0 auto; 
-            display: flex; 
-            align-items: center; 
-            justify-content: space-between; 
-            flex-wrap: wrap; 
-            gap: 1rem;
-        }
-
-        /* Left: User Info (Text first, then Image) */
-        .user-area { 
-            display: flex; 
-            align-items: center; 
-            gap: 0.75rem; 
-            flex: 1;
-        }
-        .avatar { 
-            height: 2.5rem; 
-            width: 2.5rem; 
-            border-radius: 50%; 
-            border: 2px solid rgba(255,255,255,0.8); 
-            object-fit: cover; 
-        }
-        #userInfo { font-weight: 600; font-size: 0.95rem; }
-
-        /* Center: Brand & Slogan */
-        .brand-area {
-            flex: 2;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            text-align: center;
-        }
-        .logo-text { font-size: 1.75rem; font-weight: 800; letter-spacing: -0.025em; line-height: 1.2; }
-        .tagline { font-size: 0.8rem; color: rgba(255,255,255,0.9); font-weight: 400; }
-
-        /* Right: Actions (Rectangle Buttons) */
-        .actions-area { 
-            display: flex; 
-            align-items: center; 
-            gap: 0.75rem; 
-            flex: 1; 
-            justify-content: flex-end;
-        }
+        .flex { display: flex; }
+        .flex-col { flex-direction: column; }
+        .items-center { align-items: center; }
+        .justify-center { justify-content: center; }
+        .justify-between { justify-content: space-between; }
+        .justify-end { justify-content: flex-end; }
+        .gap-2 { gap: 0.5rem; }
+        .gap-3 { gap: 0.75rem; }
+        .gap-4 { gap: 1rem; }
+        .w-full { width: 100%; }
+        .h-full { height: 100%; }
         
-        .btn-header {
-            background-color: rgba(255, 255, 255, 0.2);
-            color: white;
-            padding: 0.5rem 1rem;
-            border-radius: var(--radius-sm); /* Rectangle */
-            font-weight: 600;
-            font-size: 0.85rem;
-            transition: background 0.2s;
-        }
-        .btn-header:hover { background-color: rgba(255, 255, 255, 0.3); }
-        .btn-logout { background-color: var(--danger-bg); }
-        .btn-logout:hover { background-color: #dc2626; }
+        /* Transition Utilities */
+        .transition-all { transition: all 0.3s ease; }
+        .opacity-0 { opacity: 0; }
+        .scale-95 { transform: scale(0.95); }
 
-        /* Theme Icon Button */
-        .btn-icon-circle {
-            padding: 0.5rem;
-            border-radius: 50%;
+        /* --- Components --- */
+
+        /* 1. Modals */
+        .modal-backdrop {
+            position: fixed;
+            inset: 0;
+            z-index: 50;
+            background-color: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
             display: flex;
             align-items: center;
             justify-content: center;
-            background-color: rgba(255, 255, 255, 0.2);
-            color: white;
+            padding: 1rem;
+            transition: opacity 0.3s ease;
         }
-        .btn-icon-circle:hover { background-color: rgba(255, 255, 255, 0.3); }
-
-        /* --- Main Layout --- */
-        #app { max-width: 1280px; margin: 0 auto; padding: 1rem; padding-bottom: 6rem; }
         
-        /* --- Grid & Cards --- */
-        .cafe-grid { 
-            display: grid; 
-            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); 
-            gap: 1rem; 
-        }
-        @media (min-width: 768px) {
-            .cafe-grid { grid-template-columns: repeat(4, 1fr); }
+        .modal-content {
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-xl);
+            width: 100%;
+            max-height: 90vh; 
+            transition: transform 0.3s ease, opacity 0.3s ease;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
         }
 
-        .cafe-box { 
-            background-color: var(--bg-secondary); 
-            border: 1px solid var(--border-color); 
-            border-radius: var(--radius-md); 
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1); 
-            cursor: pointer; 
-            overflow: hidden; 
-            transition: transform 0.2s; 
+        .scrollable-y {
+            overflow-y: auto;
+            flex: 1;
+            min-height: 0;
+            padding-right: 0.5rem;
         }
-        .cafe-box:hover { transform: translateY(-4px); box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-        .cafe-box-media { 
-            height: 140px; 
-            background-color: var(--bg-primary); 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-        }
-        .cafe-box-media img { width: 100%; height: 100%; object-fit: cover; }
-        .cafe-box-media-text { font-size: 1.25rem; font-weight: 700; color: var(--text-secondary); }
-        .cafe-box-name { padding: 0.75rem; text-align: center; font-weight: 600; }
-
-        /* --- Modals (Fixed Scrolling) --- */
-        .modal-backdrop { 
-            position: fixed; inset: 0; z-index: 50; 
-            background-color: rgba(0, 0, 0, 0.6); 
-            backdrop-filter: blur(2px); 
-            display: flex; align-items: center; justify-content: center; 
-            padding: 1rem; 
-            transition: opacity 0.2s ease;
-        }
-        .modal-content { 
-            background-color: var(--bg-secondary); 
-            border-radius: var(--radius-lg); 
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); 
-            width: 100%; 
-            max-height: 85vh; /* Limit height */
-            display: flex; 
-            flex-direction: column; /* Allow flex layout for children */
-            transition: transform 0.2s ease;
-        }
-        .modal-content.max-w-lg { max-width: 32rem; }
-        .modal-content.max-w-md { max-width: 28rem; }
+        
         .modal-content.max-w-sm { max-width: 24rem; }
+        .modal-content.max-w-md { max-width: 28rem; }
+        .modal-content.max-w-lg { max-width: 32rem; }
+        .modal-content.max-w-2xl { max-width: 42rem; }
 
-        /* The Scrollable Area */
-        .scrollable-y { 
-            overflow-y: auto; 
-            padding: 0 0.5rem; 
-            flex: 1; /* Take remaining space */
-            margin-bottom: 1rem;
+        /* Login Modal Specific */
+        .login-card {
+            background: linear-gradient(135deg, var(--bg-secondary) 0%, #303b4d 100%);
+            color: white;
+            padding: 2rem;
+            border-radius: var(--radius-lg);
+            width: 100%;
+            max-width: 24rem;
+            text-align: center;
+            box-shadow: var(--shadow-xl);
+            animation: fadeInScale 0.5s ease-out forwards;
+        }
+        .dark .login-card {
+            background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
+            border: 1px solid var(--border-color);
         }
 
-        /* --- Lists & Items --- */
-        .menu-item { 
-            display: flex; justify-content: space-between; align-items: center; 
-            padding: 0.75rem; border-radius: var(--radius-md); 
-            background-color: var(--bg-primary); margin-bottom: 0.5rem; 
-        }
-        .cart-item { 
-            display: flex; justify-content: space-between; align-items: center; 
-            padding-bottom: 0.75rem; border-bottom: 1px solid var(--border-color); margin-bottom: 0.75rem; 
-        }
-        .card-panel { 
-            background: var(--bg-secondary); padding: 1rem; 
-            border-radius: var(--radius-md); border: 1px solid var(--border-color); 
-            margin-bottom: 1rem; box-shadow: 0 1px 2px rgba(0,0,0,0.05); 
+        @keyframes fadeInScale {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
         }
 
-        /* --- Buttons --- */
-        .btn { padding: 0.5rem 1rem; border-radius: var(--radius-md); font-weight: 600; transition: opacity 0.2s; display: inline-flex; align-items: center; justify-content: center; }
-        .btn:hover { opacity: 0.9; }
-        .btn-google { background: #4285F4; color: white; width: 100%; padding: 0.75rem; }
-        .btn-student { background: #6366f1; color: white; width: 100%; padding: 1rem; margin-bottom: 0.5rem; }
-        .btn-deliverer { background: var(--success-bg); color: white; width: 100%; padding: 1rem; }
-        .btn-accent { background: var(--accent-color); color: white; }
-        .btn-secondary { background: #e5e7eb; color: #374151; } .dark .btn-secondary { background: #374151; color: white; }
-        .btn-danger { background: var(--danger-bg); color: white; }
-        .btn-sm { padding: 0.25rem 0.75rem; font-size: 0.8rem; }
-        .btn-qty { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; background: #e5e7eb; color: black; }
-        .btn-qty.add { background: var(--accent-color); color: white; }
+        /* 2. Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.75rem 1rem;
+            border-radius: var(--radius-md);
+            font-weight: 600;
+            transition: background-color 0.2s, transform 0.1s;
+            gap: 0.5rem;
+        }
+        .btn:active { transform: scale(0.98); }
 
-        /* --- Footer & Floating --- */
-        footer { margin-top: 4rem; padding: 2rem; border-top: 1px solid var(--border-color); text-align: center; color: var(--text-muted); }
-        #cart-button { position: fixed; bottom: 2rem; right: 2rem; background: var(--accent-color); color: white; padding: 0.75rem 1.5rem; border-radius: 999px; font-weight: bold; box-shadow: 0 4px 12px rgba(0,0,0,0.2); z-index: 40; }
-        #active-order-bar { position: fixed; bottom: 0; left: 0; right: 0; background: var(--bg-secondary); border-top: 1px solid var(--border-color); padding: 1rem; cursor: pointer; z-index: 30; }
-        .active-order-content { max-width: 1280px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; }
-
-        /* --- Form --- */
-        .form-select, .form-input { width: 100%; padding: 0.75rem; border: 1px solid var(--border-color); border-radius: var(--radius-md); background: var(--bg-secondary); color: var(--text-primary); }
-
-        /* Badge */
-        .badge { padding: 0.2rem 0.6rem; border-radius: 99px; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; }
-        .badge-open { background: #d1fae5; color: #065f46; }
-        .badge-progress { background: #fef3c7; color: #92400e; }
-        .badge-completed { background: #dbeafe; color: #1e40af; }
-
-        /* Loading */
-        .animate-spin { animation: spin 1s linear infinite; } @keyframes spin { 100% { transform: rotate(360deg); } }
+        .btn-google { background-color: #3b82f6; color: white; width: 100%; }
+        .btn-google:hover { background-color: #2563eb; }
         
-        /* Mobile Tweaks */
+        .btn-student { background-color: #6366f1; color: white; width: 100%; padding: 1rem; font-size: 1.125rem; }
+        .btn-student:hover { background-color: #4f46e5; }
+
+        .btn-deliverer { background-color: var(--success-bg); color: white; width: 100%; padding: 1rem; font-size: 1.125rem; }
+        .btn-deliverer:hover { background-color: var(--success-bg-hover); }
+
+        .btn-accent { background-color: var(--accent-color); color: white; }
+        .btn-accent:hover { background-color: var(--accent-hover); }
+
+        .btn-danger { background-color: var(--danger-bg); color: white; }
+        .btn-danger:hover { background-color: var(--danger-bg-hover); }
+
+        .btn-secondary { background-color: #e5e7eb; color: var(--text-primary); }
+        .dark .btn-secondary { background-color: #4b5563; color: white; }
+        .btn-secondary:hover { opacity: 0.9; }
+
+        .btn-sm { padding: 0.375rem 1rem; font-size: 0.75rem; }
+        .btn-icon { padding: 0.5rem; border-radius: 50%; color: var(--text-secondary); }
+        .btn-icon:hover { background-color: rgba(255,255,255,0.1); }
+
+        .btn-round-qty { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; }
+        
+        /* 3. Header */
+        header {
+            background: linear-gradient(to right, var(--header-bg-start), var(--header-bg-end));
+            color: white;
+            box-shadow: var(--shadow-lg);
+            margin-bottom: 2rem;
+            padding: 1rem 1.5rem;
+        }
+        .header-content {
+            max-width: var(--container-max-width);
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            flex-wrap: wrap; 
+        }
+        .logo-area { display: flex; align-items: center; gap: 0.75rem; font-size: 1.875rem; font-weight: 700; }
+        .user-area { display: flex; align-items: center; gap: 0.75rem; }
+        .actions-area { display: flex; align-items: center; gap: 0.75rem; }
+        .avatar { height: 2.25rem; width: 2.25rem; border-radius: 50%; border: 2px solid white; object-fit: cover; }
+        .logo-text-sm { color: #c7d2fe; text-align: center; margin-top: 0.5rem; font-size: 0.875rem; }
+        
+        .delivery-stats {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: var(--radius-full);
+            font-weight: 600;
+            font-size: 0.875rem;
+            white-space: nowrap;
+        }
+
+        /* 4. Layout & Grid */
+        #app {
+            max-width: var(--container-max-width);
+            margin: 0 auto;
+            padding: 1rem;
+            padding-bottom: 6rem; /* Space for footer/cart */
+        }
+
+        .cafe-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+        }
+
+        /* 5. Cafe Box */
+        .cafe-box {
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-sm);
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        .cafe-box:hover {
+            transform: scale(1.03) translateY(-3px);
+            box-shadow: var(--shadow-lg);
+        }
+        /* Default Text/Icon style for Active Cafes */
+        .cafe-box-image {
+            height: 140px;
+            background-color: var(--bg-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-secondary);
+        }
+        /* Image style for Coming Soon Cafes */
+        .cafe-box-image-img {
+            height: 140px;
+            background-color: var(--bg-primary);
+            overflow: hidden;
+        }
+        .cafe-box-image-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .cafe-box-name {
+            padding: 0.75rem;
+            text-align: center;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        .disabled-cafe {
+            cursor: not-allowed;
+            opacity: 0.8;
+        }
+
+        /* 6. Lists & Cards */
+        .request-list { display: flex; flex-direction: column; gap: 1rem; }
+        
+        .card-panel {
+            background-color: var(--bg-secondary);
+            padding: 1.25rem;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-md);
+            border: 1px solid var(--border-color);
+        }
+
+        .menu-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background-color: var(--bg-primary);
+            padding: 0.75rem;
+            border-radius: var(--radius-md);
+            margin-bottom: 0.5rem;
+        }
+
+        .cart-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 0.5rem;
+        }
+
+        /* 7. Floating Elements */
+        #cart-button {
+            position: fixed;
+            bottom: 1.5rem;
+            right: 1.5rem;
+            z-index: 40;
+            background-color: var(--accent-color);
+            color: white;
+            font-weight: 700;
+            padding: 0.75rem 1.25rem;
+            border-radius: 9999px;
+            box-shadow: var(--shadow-lg);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            transition: all 0.3s;
+        }
+        #cart-button:hover { background-color: var(--accent-hover); transform: scale(1.05); }
+
+        #active-order-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            z-index: 30;
+            background-color: var(--bg-secondary);
+            box-shadow: 0 -4px 6px -1px rgba(0,0,0,0.1);
+            border-top: 1px solid var(--border-color);
+            padding: 1rem;
+            cursor: pointer;
+        }
+        .active-order-content {
+            max-width: var(--container-max-width);
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 1rem;
+        }
+        
+        /* 8. Forms */
+        .form-group { margin-bottom: 1rem; }
+        .form-label { display: block; color: var(--text-secondary); font-weight: 600; margin-bottom: 0.5rem; }
+        .form-select, .form-input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            background-color: var(--bg-secondary);
+            color: var(--text-primary);
+            font-size: 1rem;
+        }
+        .form-select:focus, .form-input:focus {
+            outline: 2px solid var(--accent-color);
+            border-color: transparent;
+        }
+        .total-display {
+            background-color: var(--bg-primary);
+            padding: 0.75rem;
+            border-radius: var(--radius-md);
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+
+        /* 9. Badges */
+        .badge { padding: 0.125rem 0.625rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 500; }
+        .badge-open { background-color: #d1fae5; color: #065f46; } 
+        .badge-progress { background-color: #fef3c7; color: #92400e; } 
+        .badge-completed { background-color: #dbeafe; color: #1e40af; } 
+        .dark .badge-open { background-color: #064e3b; color: #6ee7b7; }
+        .dark .badge-progress { background-color: #78350f; color: #fcd34d; }
+        .dark .badge-completed { background-color: #1e3a8a; color: #93c5fd; }
+
+        /* 10. Footer */
+        footer {
+            text-align: center;
+            padding: 2.5rem;
+            margin-top: 4rem;
+            border-top: 1px solid var(--border-color);
+            color: var(--text-muted);
+        }
+
+        /* --- Responsive Queries --- */
+        @media (min-width: 641px) {
+            .cafe-grid { grid-template-columns: repeat(3, 1fr); }
+            .cafe-box-image, .cafe-box-image-img { height: 160px; }
+            #app { padding: 1.5rem; }
+            .modal-content { max-width: 90%; }
+        }
+        
+        @media (min-width: 1025px) {
+            .cafe-grid { grid-template-columns: repeat(4, 1fr); }
+            .cafe-box-image, .cafe-box-image-img { height: 180px; }
+        }
+
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                text-align: center;
+            }
+            /* Reorder for mobile: Logo, then User, then Actions */
+            .logo-area { order: 1; }
+            .user-area { order: 2; width: 100%; justify-content: center; }
+            .actions-area { order: 3; width: 100%; justify-content: center; }
+        }
+
         @media (max-width: 640px) {
-            .header-content { flex-direction: column; gap: 1rem; }
-            .user-area { width: 100%; justify-content: center; }
-            .brand-area { order: -1; margin-bottom: 0.5rem; }
-            .actions-area { width: 100%; justify-content: center; }
+            .modal-content { width: 100%; margin: 0; border-radius: var(--radius-lg); max-height: 90vh; }
+            .cart-item, .card-panel { padding: 0.9rem; }
+        }
+
+        /* SVG Sizing Utilities */
+        svg.w-6 { width: 1.5rem; height: 1.5rem; }
+        svg.w-8 { width: 2rem; height: 2rem; }
+        svg.w-10 { width: 2.5rem; height: 2.5rem; }
+        svg.h-6 { height: 1.5rem; width: 1.5rem; }
+        .animate-spin { animation: spin 1s linear infinite; }
+        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        
+        /* Spacing Utilities */
+        .pr-2 { padding-right: 0.5rem; }
+        .space-y-3 > * + * { margin-top: 0.75rem; }
+        .space-y-4 > * + * { margin-top: 1rem; }
+        
+        /* Highlight Animation */
+        .highlight-pulse { animation: pulseBg 2s ease; }
+        @keyframes pulseBg {
+            0% { background-color: var(--bg-secondary); }
+            50% { background-color: rgba(139, 92, 246, 0.2); }
+            100% { background-color: var(--bg-secondary); }
         }
     </style>
 </head>
 <body>
 
     <div id="login-modal" class="modal-backdrop">
-        <div class="login-card" style="background: var(--bg-secondary); padding: 2rem; border-radius: 1rem; width: 100%; max-width: 400px; text-align: center; border: 1px solid var(--border-color);">
-            <h2 class="text-2xl font-bold mb-4" style="color: var(--accent-color);">Welcome to Gravli</h2>
-            <p class="mb-8" style="color: var(--text-secondary);">Sign in to continue</p>
-            <button id="google-signin-btn" class="btn btn-google">Sign in with Google</button>
+        <div class="login-card">
+            <h2 class="text-2xl font-bold mb-4" style="color: var(--accent-color);">Welcome to Gravli!</h2>
+            <p class="mb-8" style="color: #e5e7eb;">Sign in with your Google account to continue.</p>
+            <button id="google-signin-btn" class="btn btn-google">
+                <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48"><path fill="#FFC107" d="M43.6 20.3h-2.2V20.3H24v7.3h10.9c-1.5 4.8-5.7 8.3-10.9 8.3-6.5 0-11.8-5.3-11.8-11.8S17.5 12.1 24 12.1c3.1 0 5.9 1.2 7.9 3.2l5.8-5.8C34.5 6.3 29.6 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.6-.4-3.7z"/><path fill="#FF3D00" d="m6.3 14.8 5.8 4.6C10.6 22.5 10 25.6 10 29s.6 6.5 1.7 9.6l-5.8 4.6C3.9 39.1 2 34.3 2 29s1.9-10.1 4.3-14.2z"/><path fill="#4CAF50" d="m29 45.1 6.1-4.7c1.8 1.1 3.8 1.8 6 1.8 2.2 0 4.2-.7 6-1.8l6.1 4.7c-3.6 3.1-8.1 5-13.1 5s-9.5-1.9-13.1-5z"/><path fill="#1976D2" d="M43.6 20.3h-2.2V20.3H24v7.3h10.9c-1.5 4.8-5.7 8.3-10.9 8.3-6.5 0-11.8-5.3-11.8-11.8S17.5 12.1 24 12.1c3.1 0 5.9 1.2 7.9 3.2l5.8-5.8C34.5 6.3 29.6 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.6-.4-3.7z"/></svg>
+                Sign in with Google
+            </button>
         </div>
     </div>
 
     <div id="role-selection-modal" class="modal-backdrop hidden">
         <div class="modal-content max-w-sm" style="padding: 2rem; text-align: center;">
-            <h2 class="text-2xl font-bold mb-2" style="color: var(--accent-color);">Choose Role</h2>
-            <div class="flex flex-col gap-4 mt-6">
-                <button id="select-student-btn" class="btn btn-student">Order Food</button>
-                <button id="select-deliverer-btn" class="btn btn-deliverer">Deliver Orders</button>
+            <h2 class="text-2xl font-bold mb-2" style="color: var(--accent-color);">What would you like to do?</h2>
+            <p class="text-secondary mb-8">Choose your role for this session.</p>
+            <div class="flex flex-col gap-4">
+                <button id="select-student-btn" class="btn btn-student">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
+                    <span>Order Food</span>
+                </button>
+                <button id="select-deliverer-btn" class="btn btn-deliverer">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
+                    <span>Deliver Orders</span>
+                </button>
             </div>
         </div>
     </div>
 
     <header id="main-header" class="hidden">
         <div class="header-content">
-            
             <div class="user-area">
-                <span id="userInfo">Loading...</span>
-                <img id="user-avatar" class="avatar hidden" alt="User">
+                <img id="user-avatar" class="avatar hidden" alt="User Avatar">
+                <div id="userInfo" class="text-sm" style="color: #c7d2fe;">Loading user info...</div>
             </div>
-
-            <div class="brand-area">
-                <div class="logo-text">Gravli</div>
-                <p class="tagline">Your on-campus delivery solution.</p>
+            
+            <div class="logo-area">
+                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                <span>Gravli</span>
             </div>
 
             <div class="actions-area">
-                <div id="delivery-stats" class="badge badge-progress hidden" style="margin-right:0.5rem;">0 Delivers</div>
-                
-                <button id="order-history-btn" class="btn-header">History</button>
-                <button id="logout-btn" class="btn-header btn-logout">Logout</button>
-                
-                <button id="theme-switcher" class="btn-icon-circle">
-                    <svg id="sun-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
-                    <svg id="moon-icon" class="hidden" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+                <div id="delivery-stats" class="delivery-stats hidden">Deliveries: 0</div>
+                <button id="order-history-btn" class="hidden btn-icon" style="background: rgba(255,255,255,0.2); border-radius: 4px; padding: 5px 10px; color: white; font-weight: bold; font-size: 0.75rem;">History</button>
+                <button id="logout-btn" class="hidden btn-icon" style="background: var(--danger-bg); border-radius: 4px; padding: 5px 10px; color: white; font-weight: bold; font-size: 0.75rem;">Logout</button>
+                <button id="theme-switcher" class="btn-icon">
+                    <svg id="sun-icon" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                    </svg>
+                    <svg id="moon-icon" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                    </svg>
                 </button>
             </div>
         </div>
+        <p class="logo-text-sm">Your on-campus delivery solution. Fast, easy, and by students, for students.</p>
     </header>
 
     <div id="app" class="hidden">
         <main id="main-content">
             <div id="student-view">
                 <div id="new-order-section" style="margin-bottom: 3rem;">
-                    <h2 class="text-2xl font-bold mb-6">Cafes</h2>
-                    <div id="cafe-grid-container" class="cafe-grid"></div>
+                    <h2 class="text-2xl font-bold mb-6">Place a New Order</h2>
+                    <div id="cafe-grid-container" class="cafe-grid">
+                        </div>
                 </div>
                 <div id="my-orders-section">
-                    <h2 class="text-2xl font-bold mb-4">Your Orders</h2>
-                    <div id="my-requests-list" class="flex flex-col gap-4"></div>
+                    <h2 class="text-2xl font-bold mb-6">My Active Orders</h2>
+                    <div id="my-requests-list" class="request-list">
+                    </div>
                 </div>
             </div>
 
             <div id="deliverer-view" class="hidden">
-                <h2 class="text-2xl font-bold mb-4">My Current Job</h2>
-                <div id="my-current-deliveries-list" class="flex flex-col gap-4 mb-8"></div>
-                <div id="single-delivery-message" class="hidden card-panel text-center text-secondary"><p>Complete current job to see more.</p></div>
-                
-                <h2 class="text-2xl font-bold mb-4">Available Jobs</h2>
-                <div id="all-requests-list-deliverer" class="flex flex-col gap-4"></div>
+                <h2 class="text-2xl font-bold mb-4">My Current Deliveries</h2>
+                <div id="my-current-deliveries-list" class="request-list mb-8">
+                </div>
+                <div id="single-delivery-message" class="hidden card-panel text-center text-secondary">
+                    <p>Please complete your current delivery to see more available jobs.</p>
+                </div>
+                <div id="available-deliveries-container">
+                    <h2 class="text-2xl font-bold mb-6">Available Deliveries</h2>
+                    <div id="all-requests-list-deliverer" class="request-list">
+                    </div>
+                </div>
             </div>
         </main>
         
-        <div id="loader" class="text-center py-10 hidden">
-            <svg class="animate-spin h-8 w-8 mx-auto" style="color: var(--accent-color);" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
-            <p class="mt-2 text-secondary">Fetching data...</p>
+        <div id="loader" class="text-center py-10 hidden" style="padding: 2.5rem 0;">
+            <svg class="animate-spin h-8 w-8 mx-auto" style="color: var(--accent-color);" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            <p class="mt-2 text-secondary">Fetching delivery requests...</p>
         </div>
     </div>
 
-    <button id="cart-button" class="hidden"><span id="cart-button-text">View Cart</span></button>
+    <button id="cart-button" class="hidden">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
+        <span id="cart-button-text">View Cart</span>
+    </button>
+
     <div id="active-order-bar" class="hidden">
         <div class="active-order-content">
-            <div><span class="text-sm">Status: </span><span id="active-order-bar-status" class="font-bold text-accent">Loading...</span></div>
-            <span class="text-sm font-semibold">View &uarr;</span>
+            <div>
+                <p class="text-sm text-secondary">Your order is In Progress!</p>
+                <p id="active-order-bar-status" class="font-bold" style="color: var(--accent-color);">Awaiting deliverer updates...</p>
+            </div>
+            <span class="text-sm font-semibold text-secondary">View Details &rarr;</span>
         </div>
     </div>
 
     <div id="menu-modal" class="modal-backdrop hidden opacity-0">
         <div id="menu-modal-content" class="modal-content max-w-lg scale-95" style="padding: 1.5rem;">
-            <div class="flex justify-between items-center mb-4 border-b border-color pb-2">
+            <div class="flex justify-between items-center mb-4">
                 <h3 id="menu-modal-title" class="text-2xl font-bold">Menu</h3>
-                <button id="menu-close-btn" style="font-size: 1.5rem;">&times;</button>
+                <button id="menu-close-btn" style="color: var(--text-muted); font-size: 2rem; line-height: 1;">&times;</button>
             </div>
-            <div id="menu-items-container" class="scrollable-y"></div>
+            <div id="menu-items-container" class="space-y-3 scrollable-y">
+            </div>
         </div>
     </div>
 
     <div id="cart-modal" class="modal-backdrop hidden opacity-0">
         <div id="cart-modal-content" class="modal-content max-w-lg scale-95" style="padding: 1.5rem;">
-            <div class="flex justify-between items-center mb-4 border-b border-color pb-2">
+            <div class="flex justify-between items-center mb-4">
                 <h3 class="text-2xl font-bold">Your Cart</h3>
-                <button id="cart-close-btn" style="font-size: 1.5rem;">&times;</button>
+                <button id="cart-close-btn" style="color: var(--text-muted); font-size: 2rem; line-height: 1;">&times;</button>
             </div>
-            <div id="cart-items-container" class="scrollable-y"></div>
-            <div style="border-top: 1px solid var(--border-color); padding-top: 1rem;">
-                <div class="flex justify-between font-bold text-lg mb-4"><span>Total</span><span id="cart-total-price">₹0.00</span></div>
-                <button id="checkout-btn" class="btn btn-accent w-full">Proceed to Checkout</button>
+            <div id="cart-items-container" class="space-y-4 scrollable-y">
+            </div>
+            <div style="margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid var(--border-color);">
+                <div class="flex justify-between items-center font-bold" style="font-size: 1.125rem;">
+                    <span>Total</span>
+                    <span id="cart-total-price">₹0.00</span>
+                </div>
+                <button id="checkout-btn" class="btn btn-accent w-full mt-4">Proceed to Checkout</button>
             </div>
         </div>
     </div>
@@ -365,433 +611,1019 @@
         <div id="checkout-modal-content" class="modal-content max-w-md scale-95" style="padding: 1.5rem;">
             <h3 class="text-2xl font-bold mb-4">Confirm Order</h3>
             <form id="checkout-form">
+                <label class="form-label mb-2">Drop-off Location</label>
                 <div class="flex gap-4 mb-4">
-                    <div style="flex:1">
-                        <label class="block text-sm font-semibold mb-1">Block</label>
+                    <div class="form-group flex-1" style="margin-bottom: 0;">
                         <select id="block-select" class="form-select" required>
-                            <option value="" disabled selected>Select</option>
+                            <option value="" disabled selected>Block</option>
                             <option value="B1">B1</option>
                             <option value="B2">B2</option>
                             <option value="B3">B3</option>
                             <option value="B4">B4</option>
                             <option value="G1">G1</option>
                             <option value="G2">G2</option>
-                            <option value="Library">Library</option>
-                            <option value="Admin">Admin</option>
+                            <option value="Main Library">Main Library</option>
+                            <option value="Admin Block">Admin Block</option>
                         </select>
                     </div>
-                    <div style="flex:1">
-                        <label class="block text-sm font-semibold mb-1">Room</label>
-                        <input id="room-input" type="text" pattern="\d{3}" maxlength="3" class="form-input" placeholder="102" required>
+                    <div class="form-group flex-1" style="margin-bottom: 0;">
+                        <input id="room-input" type="text" inputmode="numeric" pattern="\d{3}" maxlength="3" class="form-input" placeholder="e.g., 102" required>
                     </div>
                 </div>
-                <div class="text-center bg-primary p-3 rounded mb-4">
-                    <p class="text-sm">Total to Pay</p>
-                    <p id="checkout-total-display" class="text-xl font-bold text-accent">₹0.00</p>
+                
+                <div class="total-display">
+                    <p class="text-secondary font-semibold">Total Amount (Item + Fee)</p>
+                    <p id="checkout-total-display" class="text-primary text-2xl font-bold">₹0.00</p>
                 </div>
-                <div class="flex justify-end gap-3">
+                <p id="checkout-error-message" class="text-sm mb-4 text-center hidden" style="color: var(--danger-bg);"></p>
+                <div class="flex justify-end gap-4">
                     <button type="button" id="checkout-cancel-btn" class="btn btn-secondary">Cancel</button>
-                    <button type="submit" class="btn btn-accent">Order Now</button>
+                    <button type="submit" class="btn btn-accent">Confirm Order</button>
                 </div>
             </form>
         </div>
     </div>
 
     <div id="loading-modal" class="modal-backdrop hidden">
-        <div class="bg-white p-6 rounded-lg text-center">
-            <svg class="animate-spin h-8 w-8 mx-auto text-purple-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
-            <p class="mt-2 font-semibold">Processing...</p>
+        <div class="modal-content max-w-sm" style="padding: 2rem; text-align: center; max-width: 20rem;">
+            <svg class="animate-spin h-10 w-10 mx-auto" style="color: var(--accent-color);" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            <p class="mt-4 text-secondary font-semibold">Placing your order...</p>
         </div>
     </div>
 
     <div id="history-modal" class="modal-backdrop hidden opacity-0">
         <div id="history-modal-content" class="modal-content max-w-2xl scale-95" style="padding: 1.5rem;">
-            <div class="flex justify-between items-center mb-4 border-b pb-2">
+            <div class="flex justify-between items-center mb-4">
                 <h3 class="text-2xl font-bold">Order History</h3>
-                <button id="history-close-btn" style="font-size: 1.5rem;">&times;</button>
+                <button id="history-close-btn" style="color: var(--text-muted); font-size: 2rem; line-height: 1;">&times;</button>
             </div>
-            <div id="history-items-container" class="scrollable-y"></div>
+            <div id="history-items-container" class="space-y-4 scrollable-y">
+            </div>
         </div>
     </div>
 
     <footer>
-        <p>Made by Students, For Students</p>
+        <div style="max-width: 1280px; margin: 0 auto;">
+            <p class="font-semibold text-secondary">Made By Students</p>
+            <p class="font-semibold text-secondary mb-4">Made For Students</p>
+            <p class="text-sm">Made with ❤️ by Shubham</p>
+        </div>
     </footer>
 
     <script type="module">
-        // --- CONFIGURATION ---
-        const APP_CONFIG = {
-            deliveryFee: 50.00,
-            firebase: {
-                apiKey: "AIzaSyBnStrl0raNIb9Gr9-TtNzSImwbOQ36l_w",
-                authDomain: "linkdash-3865d.firebaseapp.com",
-                projectId: "linkdash-3865d",
-                storageBucket: "linkdash-3865d.firebasestorage.app",
-                messagingSenderId: "337760264309",
-                appId: "1:337760264309:web:de20eaa36f7b9de688983c",
-                measurementId: "G-RXLFFT5F2K"
-            }
-        };
-
-        // --- FIREBASE IMPORT ---
+        // Firebase Imports
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, collection, addDoc, onSnapshot, query, doc, updateDoc, serverTimestamp, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { 
+            getAuth, 
+            onAuthStateChanged, 
+            GoogleAuthProvider, 
+            signInWithPopup, 
+            signOut 
+        } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { 
+            getFirestore, 
+            collection, 
+            addDoc, 
+            onSnapshot,
+            query, 
+            doc,
+            updateDoc,
+            serverTimestamp,
+            deleteDoc,
+        } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        const app = initializeApp(APP_CONFIG.firebase);
+        // --- Firebase Configuration ---
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-campus-delivery';
+        const firebaseConfig = {
+             apiKey: "AIzaSyBnStrl0raNIb9Gr9-TtNzSImwbOQ36l_w",
+             authDomain: "linkdash-3865d.firebaseapp.com",
+             projectId: "linkdash-3865d",
+             storageBucket: "linkdash-3865d.firebasestorage.app",
+             messagingSenderId: "337760264309",
+             appId: "1:337760264309:web:de20eaa36f7b9de688983c",
+             measurementId: "G-RXLFFT5F2K"
+        };
+        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+
+        // --- Initialize Firebase ---
+        const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
         const auth = getAuth(app);
-
-        // --- CAFE DATA ---
-        // Edit items here
+        
+        // --- Helper function to generate menu items ---
+        function generateMenuItems(cafeId, count = 15) {
+            const items = [];
+            for (let i = 1; i <= count; i++) {
+                items.push({
+                    id: `${cafeId.toLowerCase()}-${i}`,
+                    name: `Item ${i}`,
+                    price: 100 + (i * 5)
+                });
+            }
+            return items;
+        }
         const CAFE_DATA = {
-            "HR1": { name: "HR1", image: "", items: [{id:"h1a",name:"Tea",price:10}, {id:"h1b",name:"Coffee",price:20}, {id:"h1c",name:"Patties",price:25}] },
-            "HR2": { name: "HR2", image: "", items: [{id:"h2a",name:"Burger",price:45}, {id:"h2b",name:"Fries",price:50}] },
-            "HR3": { name: "HR3", image: "", items: [{id:"h3a",name:"Maggie",price:30}] },
-            "HR4": { name: "HR4", image: "", items: [{id:"h4a",name:"Pasta",price:60}] },
-            "HR5": { name: "HR5", image: "", items: [{id:"h5a",name:"Pizza",price:120}] },
-            "HR6": { name: "HR6", image: "", items: [{id:"h6a",name:"Sandwich",price:50}] },
-            "HR7": { name: "HR7", image: "", items: [{id:"h7a",name:"Rolls",price:80}] },
-            "HR8": { name: "HR8", image: "", items: [{id:"h8a",name:"Juice",price:40}] },
-            "HR9": { name: "HR9", image: "", items: [{id:"h9a",name:"Shake",price:60}] },
-            "HR10": { name: "HR10", image: "", items: [{id:"h10a",name:"Thali",price:100}] },
-            "HR11": { name: "HR11", image: "", items: [{id:"h11a",name:"Dosa",price:70}] },
-            "HR12": { name: "HR12", image: "", items: [{id:"h12a",name:"Chowmein",price:50}] },
+            "HR1": { name: "HR1", items: generateMenuItems("HR1", 15) },
+            "HR2": { name: "HR2", items: generateMenuItems("HR2", 15) },
+            "HR3": { name: "HR3", items: generateMenuItems("HR3", 15) },
+            "HR4": { name: "HR4", items: generateMenuItems("HR4", 15) },
+            "HR5": { name: "HR5", items: generateMenuItems("HR5", 15) },
+            "HR6": { name: "HR6", items: generateMenuItems("HR6", 15) },
+            "HR7": { name: "HR7", items: generateMenuItems("HR7", 15) },
+            "HR8": { name: "HR8", items: generateMenuItems("HR8", 15) },
+            "HR9": { name: "HR9", items: generateMenuItems("HR9", 15) },
+            "HR10": { name: "HR10", items: generateMenuItems("HR10", 15) },
+            "HR11": { name: "HR11", items: generateMenuItems("HR11", 15) },
+            "HR12": { name: "HR12", items: generateMenuItems("HR12", 15) },
         };
 
-        // --- STATE ---
-        let state = { user: null, role: null, cart: {}, activeCafe: null, unsub: null };
+        // --- Global State ---
+        let currentUser = null;
+        let userDetails = null;
+        let unsubscribe = null; 
+        let cart = {};
+        let currentOpenCafeId = null;
+        let currentRole = null; // 'student' or 'deliverer'
 
-        // --- DOM ---
-        const UI = {
-            login: document.getElementById('login-modal'),
-            role: document.getElementById('role-selection-modal'),
-            app: document.getElementById('app'),
-            header: document.getElementById('main-header'),
-            studentView: document.getElementById('student-view'),
-            delivererView: document.getElementById('deliverer-view'),
-            loader: document.getElementById('loader')
-        };
+        // --- UI Elements ---
+        const loginModal = document.getElementById('login-modal');
+        const googleSignInBtn = document.getElementById('google-signin-btn');
+        const roleSelectionModal = document.getElementById('role-selection-modal');
+        const selectStudentBtn = document.getElementById('select-student-btn');
+        const selectDelivererBtn = document.getElementById('select-deliverer-btn');
+        const appContainer = document.getElementById('app');
+        const mainHeader = document.getElementById('main-header');
+        const themeSwitcher = document.getElementById('theme-switcher');
+        const sunIcon = document.getElementById('sun-icon');
+        const moonIcon = document.getElementById('moon-icon');
+        const studentView = document.getElementById('student-view');
+        const delivererView = document.getElementById('deliverer-view');
+        const loader = document.getElementById('loader');
+        const userInfo = document.getElementById('userInfo');
+        const userAvatar = document.getElementById('user-avatar');
+        const logoutBtn = document.getElementById('logout-btn');
+        const cafeGridContainer = document.getElementById('cafe-grid-container');
+        const cartButton = document.getElementById('cart-button');
+        const cartButtonText = document.getElementById('cart-button-text');
+        const menuModal = document.getElementById('menu-modal');
+        const menuModalContent = document.getElementById('menu-modal-content');
+        const menuModalTitle = document.getElementById('menu-modal-title');
+        const menuItemsContainer = document.getElementById('menu-items-container');
+        const menuCloseBtn = document.getElementById('menu-close-btn');
+        const cartModal = document.getElementById('cart-modal');
+        const cartModalContent = document.getElementById('cart-modal-content');
+        const cartItemsContainer = document.getElementById('cart-items-container');
+        const cartTotalPrice = document.getElementById('cart-total-price');
+        const cartCloseBtn = document.getElementById('cart-close-btn');
+        const checkoutBtn = document.getElementById('checkout-btn');
+        const checkoutModal = document.getElementById('checkout-modal');
+        const checkoutModalContent = document.getElementById('checkout-modal-content');
+        const checkoutForm = document.getElementById('checkout-form');
+        const checkoutTotalDisplay = document.getElementById('checkout-total-display');
+        const checkoutErrorMessage = document.getElementById('checkout-error-message');
+        const checkoutCancelBtn = document.getElementById('checkout-cancel-btn');
+        const loadingModal = document.getElementById('loading-modal');
+        const orderHistoryBtn = document.getElementById('order-history-btn');
+        const historyModal = document.getElementById('history-modal');
+        const historyModalContent = document.getElementById('history-modal-content');
+        const historyCloseBtn = document.getElementById('history-close-btn');
+        const historyItemsContainer = document.getElementById('history-items-container');
+        const activeOrderBar = document.getElementById('active-order-bar');
+        const activeOrderBarStatus = document.getElementById('active-order-bar-status');
+        const deliveryStats = document.getElementById('delivery-stats');
 
-        // --- AUTH & INIT ---
+        // --- Theme Logic ---
+        function applyTheme(theme) {
+            if (theme === 'dark') {
+                document.documentElement.classList.add('dark');
+                sunIcon.classList.add('hidden');
+                moonIcon.classList.remove('hidden');
+            } else {
+                document.documentElement.classList.remove('dark');
+                sunIcon.classList.remove('hidden');
+                moonIcon.classList.add('hidden');
+            }
+        }
+        themeSwitcher.addEventListener('click', () => {
+            const isDark = document.documentElement.classList.toggle('dark');
+            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+            applyTheme(isDark ? 'dark' : 'light');
+        });
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        applyTheme(savedTheme);
+
+        // --- Authentication & User Setup ---
         onAuthStateChanged(auth, (user) => {
             if (user) {
-                state.user = { uid: user.uid, name: user.displayName, photo: user.photoURL };
-                UI.login.classList.add('hidden');
+                currentUser = user;
+                userDetails = { name: user.displayName, uid: user.uid, photoURL: user.photoURL };
+                loginModal.classList.add('hidden');
                 
-                const savedRole = localStorage.getItem('role');
+                // Check local storage for persistent role
+                const savedRole = localStorage.getItem('userRole');
                 if (savedRole) {
-                    setRole(savedRole);
+                    currentRole = savedRole;
+                    roleSelectionModal.classList.add('hidden');
+                    if (currentRole === 'student') {
+                        studentView.classList.remove('hidden');
+                        delivererView.classList.add('hidden');
+                        cartButton.classList.add('hidden'); // Initially hidden, shows if items
+                        deliveryStats.classList.add('hidden');
+                    } else {
+                        studentView.classList.add('hidden');
+                        delivererView.classList.remove('hidden');
+                        cartButton.classList.add('hidden'); // Strictly hidden for deliverer
+                        deliveryStats.classList.remove('hidden');
+                    }
+                    setupUserHeader("Welcome");
+                    startApp();
                 } else {
-                    UI.role.classList.remove('hidden');
+                    roleSelectionModal.classList.remove('hidden');
+                    setupUserHeader("Welcome");
                 }
-                updateHeader();
             } else {
-                state = { user: null, role: null, cart: {}, activeCafe: null, unsub: null };
-                localStorage.removeItem('role');
-                UI.login.classList.remove('hidden');
-                UI.app.classList.add('hidden');
-                UI.header.classList.add('hidden');
-                UI.role.classList.add('hidden');
+                currentUser = null;
+                userDetails = null;
+                currentRole = null;
+                localStorage.removeItem('userRole');
+                loginModal.classList.remove('hidden');
+                roleSelectionModal.classList.add('hidden');
+                appContainer.classList.add('hidden');
+                mainHeader.classList.add('hidden');
+                logoutBtn.classList.add('hidden');
+                userInfo.textContent = "Please sign in.";
+                userAvatar.classList.add('hidden');
+                userAvatar.src = '';
+                orderHistoryBtn.classList.add('hidden');
+                deliveryStats.classList.add('hidden');
+            }
+        });
+        
+        async function signInWithGoogle() {
+            const provider = new GoogleAuthProvider();
+            try {
+                await signInWithPopup(auth, provider);
+            } catch (error) {
+                console.error("Google Sign-in Error:", error);
+                alert("Could not sign in with Google. Please try again.");
+            }
+        }
+        
+        function setupUserHeader(greeting) {
+            userInfo.innerHTML = `<p class="font-semibold">${greeting}, ${userDetails.name}!</p>`;
+            if (userDetails.photoURL) {
+                userAvatar.src = userDetails.photoURL;
+                userAvatar.classList.remove('hidden');
+            } else {
+                userAvatar.classList.add('hidden');
+            }
+            logoutBtn.classList.remove('hidden');
+            orderHistoryBtn.classList.remove('hidden');
+            mainHeader.classList.remove('hidden');
+        }
+
+        // --- App Start Logic ---
+        function startApp() {
+            roleSelectionModal.classList.add('hidden');
+            appContainer.classList.remove('hidden');
+            if (!studentView.classList.contains('hidden')) {
+                renderCafes();
+                fetchAndDisplayRequests();
+            } else {
+                fetchAndDisplayRequests();
+            }
+        }
+
+        // --- UI Logic ---
+        function renderCafes() {
+            cafeGridContainer.innerHTML = '';
+            // "Coming Soon" placeholder
+            const comingSoonImg = "https://placehold.co/400x300/1f2937/FFF?text=Coming+Soon";
+            
+            const activeCafes = ['HR1', 'HR2', 'HR3', 'HR4'];
+
+            for (const cafeId in CAFE_DATA) {
+                const cafe = CAFE_DATA[cafeId];
+                const isActive = activeCafes.includes(cafeId);
+                const cafeBox = document.createElement('div');
+                cafeBox.className = 'cafe-box';
+                cafeBox.dataset.cafeId = cafeId;
+                
+                if (!isActive) {
+                    cafeBox.classList.add('disabled-cafe');
+                }
+
+                if (isActive) {
+                    // HR1-HR4: Active, show text/icon style (Classic look)
+                    cafeBox.innerHTML = `
+                        <div class="cafe-box-image">${cafe.name}</div>
+                        <div class="cafe-box-name">${cafe.name}</div>
+                    `;
+                } else {
+                    // Others: Inactive, show "Coming Soon" image
+                    cafeBox.innerHTML = `
+                        <div class="cafe-box-image-img">
+                            <img src="${comingSoonImg}" alt="Coming Soon" loading="lazy">
+                        </div>
+                        <div class="cafe-box-name">${cafe.name}</div>
+                    `;
+                }
+                cafeGridContainer.appendChild(cafeBox);
+            }
+        }
+
+        function openMenuModal(cafeId) {
+            // Only allow HR1-HR4
+            const activeCafes = ['HR1', 'HR2', 'HR3', 'HR4'];
+            if (!activeCafes.includes(cafeId)) {
+                alert("Coming Soon!");
+                return;
+            }
+
+            currentOpenCafeId = cafeId;
+            const cafe = CAFE_DATA[cafeId];
+            menuModalTitle.textContent = cafe.name;
+            renderMenu(cafeId);
+            
+            menuModal.classList.remove('hidden');
+            setTimeout(() => {
+                menuModal.classList.remove('opacity-0');
+                menuModalContent.classList.remove('scale-95');
+            }, 10);
+        }
+
+        function renderMenu(cafeId) {
+            const cafe = CAFE_DATA[cafeId];
+            menuItemsContainer.innerHTML = '';
+            
+            cafe.items.forEach(item => {
+                const itemInCart = cart[item.id];
+                const quantity = itemInCart ? itemInCart.quantity : 0;
+
+                const itemElement = document.createElement('div');
+                itemElement.className = 'menu-item';
+                itemElement.innerHTML = `
+                    <div>
+                        <p class="font-semibold text-primary">${item.name}</p>
+                        <p class="text-sm text-secondary">₹${item.price.toFixed(2)}</p>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <button data-item-id="${item.id}" data-change="-1" class="update-quantity-btn btn-round-qty btn-secondary ${quantity === 0 ? 'opacity-50' : ''}">-</button>
+                        <span id="quantity-${item.id}" class="font-bold w-6 text-center">${quantity}</span>
+                        <button data-item-id="${item.id}" data-change="1" class="update-quantity-btn btn-round-qty btn-accent">+</button>
+                    </div>
+                `;
+                menuItemsContainer.appendChild(itemElement);
+            });
+        }
+
+        function updateCart(itemId, change) {
+            const firstItem = Object.values(cart)[0];
+            if (firstItem && firstItem.cafeId !== currentOpenCafeId) {
+                if (confirm("Your cart contains items from another cafe. Would you like to clear it and start a new order?")) {
+                    cart = {};
+                } else {
+                    return;
+                }
+            }
+            
+            const cafe = CAFE_DATA[currentOpenCafeId];
+            const item = cafe.items.find(i => i.id === itemId);
+            if (!item) return;
+
+            let itemInCart = cart[itemId];
+            if (!itemInCart) {
+                itemInCart = {
+                    name: item.name,
+                    price: item.price,
+                    quantity: 0,
+                    cafeId: currentOpenCafeId,
+                    cafeName: cafe.name
+                };
+                cart[itemId] = itemInCart;
+            }
+
+            itemInCart.quantity += change;
+
+            if (itemInCart.quantity <= 0) {
+                delete cart[itemId];
+            }
+            
+            renderMenu(currentOpenCafeId);
+            updateCartUI();
+        }
+
+        function updateCartUI() {
+            const itemCount = Object.values(cart).reduce((sum, item) => sum + item.quantity, 0);
+            
+            const isStudentView = !studentView.classList.contains('hidden');
+
+            if (itemCount > 0 && isStudentView) {
+                cartButtonText.textContent = `View Cart (${itemCount})`;
+                cartButton.classList.remove('hidden');
+            } else {
+                cartButton.classList.add('hidden');
+            }
+        }
+
+        function openCartModal() {
+            cartItemsContainer.innerHTML = '';
+            let totalPrice = 0;
+
+            if (Object.keys(cart).length === 0) {
+                cartItemsContainer.innerHTML = `<p class="text-secondary text-center">Your cart is empty.</p>`;
+                cartTotalPrice.textContent = '₹0.00';
+                checkoutBtn.disabled = true;
+                checkoutBtn.style.opacity = '0.5';
+            } else {
+                checkoutBtn.disabled = false;
+                checkoutBtn.style.opacity = '1';
+
+                for (const itemId in cart) {
+                    const item = cart[itemId];
+                    const itemElement = document.createElement('div');
+                    itemElement.className = 'cart-item';
+                    
+                    itemElement.innerHTML = `
+                        <div class="flex items-center gap-3">
+                            <button data-item-id="${itemId}" class="remove-from-cart-btn btn-icon" style="color: var(--danger-bg); font-weight: bold; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center;">&times;</button>
+                            <div>
+                                <p class="font-semibold text-primary">${item.name} <span class="text-sm font-normal text-primary">x ${item.quantity}</span></p>
+                                <p class="text-sm text-secondary">from ${item.cafeName}</p>
+                            </div>
+                        </div>
+                        <p class="font-semibold">₹${(item.price * item.quantity).toFixed(2)}</p>
+                    `;
+                    cartItemsContainer.appendChild(itemElement);
+                    totalPrice += item.price * item.quantity;
+                }
+                cartTotalPrice.textContent = `₹${totalPrice.toFixed(2)}`;
+            }
+
+            cartModal.classList.remove('hidden');
+            setTimeout(() => {
+                cartModal.classList.remove('opacity-0');
+                cartModalContent.classList.remove('scale-95');
+            }, 10);
+        }
+
+        function closeCartModal() {
+            cartModal.classList.add('opacity-0');
+            cartModalContent.classList.add('scale-95');
+            setTimeout(() => cartModal.classList.add('hidden'), 300);
+        }
+
+        function closeMenuModal() {
+            menuModal.classList.add('opacity-0');
+            menuModalContent.classList.add('scale-95');
+            setTimeout(() => menuModal.classList.add('hidden'), 300);
+        }
+
+        function openCheckoutModal() {
+            closeCartModal();
+            const itemTotal = Object.values(cart).reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            const deliveryFee = 50.00;
+            const finalTotal = itemTotal + deliveryFee;
+            checkoutTotalDisplay.textContent = `₹${finalTotal.toFixed(2)}`;
+            checkoutErrorMessage.classList.add('hidden');
+
+            checkoutModal.classList.remove('hidden');
+            setTimeout(() => {
+                checkoutModal.classList.remove('opacity-0');
+                checkoutModalContent.classList.remove('scale-95');
+            }, 10);
+        }
+
+        function closeCheckoutModal() {
+            checkoutModal.classList.add('opacity-0');
+            checkoutModalContent.classList.add('scale-95');
+            setTimeout(() => checkoutModal.classList.add('hidden'), 300);
+        }
+        
+        function openHistoryModal() {
+            historyModal.classList.remove('hidden');
+            setTimeout(() => {
+                historyModal.classList.remove('opacity-0');
+                historyModalContent.classList.remove('scale-95');
+            }, 10);
+        }
+
+        function closeHistoryModal() {
+            historyModal.classList.add('opacity-0');
+            historyModalContent.classList.add('scale-95');
+            setTimeout(() => historyModal.classList.add('hidden'), 300);
+        }
+
+        function renderOrderHistory(allOrders) {
+            historyItemsContainer.innerHTML = '';
+            
+            // Filter logic for History based on Role
+            let relevantOrders = [];
+            if (currentRole === 'deliverer') {
+                // Show orders I DELIVERED
+                relevantOrders = allOrders.filter(req => req.delivererId === currentUser.uid && req.status === 'completed');
+            } else {
+                // Show orders I REQUESTED
+                relevantOrders = allOrders.filter(req => req.requesterId === currentUser.uid && req.status === 'completed');
+            }
+
+            if (relevantOrders.length === 0) {
+                historyItemsContainer.innerHTML = `<p class="text-secondary text-center">No completed orders found.</p>`;
+                return;
+            }
+            
+            // Sort by latest
+            relevantOrders.sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
+
+            relevantOrders.forEach(req => {
+                const card = createRequestCard(req, 'history-view');
+                historyItemsContainer.appendChild(card);
+            });
+        }
+
+
+        async function submitOrder(e) {
+            e.preventDefault();
+            const submitBtn = checkoutForm.querySelector('button[type="submit"]');
+            checkoutErrorMessage.classList.add('hidden');
+
+            const blockVal = document.getElementById('block-select').value;
+            const roomInput = document.getElementById('room-input');
+            const roomVal = roomInput.value.trim();
+            
+            // Validation for Block
+            if (!blockVal) {
+                checkoutErrorMessage.textContent = "Please select a block.";
+                checkoutErrorMessage.classList.remove('hidden');
+                return;
+            }
+
+            // Validation for Room Number (must be exactly 3 digits)
+            const roomNumberPattern = /^\d{3}$/;
+            if (!roomNumberPattern.test(roomVal)) {
+                checkoutErrorMessage.textContent = "Please enter a valid 3-digit room number (e.g., 102).";
+                checkoutErrorMessage.classList.remove('hidden');
+                // Optional: shake the input or focus it
+                roomInput.focus();
+                return;
+            }
+
+            const dropoffValue = `${blockVal} - Room ${roomVal}`;
+
+            submitBtn.disabled = true;
+            loadingModal.classList.remove('hidden');
+
+            const itemTotal = Object.values(cart).reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            const deliveryFee = 50.00;
+            const finalTotal = itemTotal + deliveryFee;
+            const firstItem = Object.values(cart)[0];
+
+            const request = {
+                items: Object.values(cart).map(item => ({
+                    name: item.name,
+                    quantity: item.quantity,
+                    price: item.price
+                })),
+                itemPrice: itemTotal,
+                pickupLocation: firstItem.cafeName,
+                dropoffLocation: dropoffValue,
+                deliveryFee: deliveryFee,
+                totalAmount: finalTotal,
+                status: 'open',
+                requesterId: currentUser.uid,
+                requesterName: userDetails.name,
+                requesterPhotoURL: userDetails.photoURL,
+                requesterUid: userDetails.uid,
+                delivererId: null,
+                delivererName: null,
+                createdAt: serverTimestamp(),
+                subStatus: null, 
+                estimatedTime: null
+            };
+
+            setTimeout(async () => {
+                try {
+                    const collectionPath = `/artifacts/${appId}/public/data/deliveries`;
+                    await addDoc(collection(db, collectionPath), request);
+                    
+                    loadingModal.classList.add('hidden');
+                    closeCheckoutModal();
+                    cart = {};
+                    updateCartUI();
+                    checkoutForm.reset();
+                    submitBtn.disabled = false;
+
+                } catch (error) {
+                    console.error("Error adding document: ", error);
+                    loadingModal.classList.add('hidden');
+                    checkoutErrorMessage.textContent = "Failed to post request. Please try again.";
+                    checkoutErrorMessage.classList.remove('hidden');
+                    submitBtn.disabled = false;
+                }
+            }, 2500);
+        }
+
+        async function logout() {
+            try {
+                localStorage.removeItem('userRole'); // Clear role on logout
+                await signOut(auth);
+            } catch (error) {
+                console.error("Logout Error:", error);
+            }
+        }
+
+        // --- Firestore Logic (Fetching) ---
+        function fetchAndDisplayRequests() {
+           if (!currentUser) return;
+           if(unsubscribe) unsubscribe();
+           loader.classList.remove('hidden');
+           const collectionPath = `/artifacts/${appId}/public/data/deliveries`;
+           const q = query(collection(db, collectionPath));
+           
+           unsubscribe = onSnapshot(q, (querySnapshot) => {
+               loader.classList.add('hidden');
+               const nowInSeconds = Date.now() / 1000;
+               const maxAge = 900;
+               let activeRequests = [];
+               let allHistoryOrders = []; // To pass to history modal logic
+
+               let totalDeliveriesCount = 0;
+
+               querySnapshot.forEach((doc) => {
+                   const req = { id: doc.id, ...doc.data() };
+                   
+                   // Count completed deliveries by this user
+                   if (req.delivererId === currentUser.uid && req.status === 'completed') {
+                       totalDeliveriesCount++;
+                   }
+
+                   // Collect all for history purpose
+                   allHistoryOrders.push(req);
+
+                   // Filter logic for main view (clean up old open requests)
+                   if (req.status === 'open' && req.createdAt && (nowInSeconds - req.createdAt.seconds > maxAge)) {
+                       if (req.requesterId === currentUser.uid) {
+                           deleteDoc(doc.ref);
+                       }
+                   } else {
+                       activeRequests.push(req);
+                   }
+               });
+               
+               // Update Delivery Counter
+               if (currentRole === 'deliverer') {
+                   deliveryStats.textContent = `Deliveries: ${totalDeliveriesCount}`;
+               }
+
+               // Sort by latest for view
+               activeRequests.sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
+               displayRequests(activeRequests);
+               
+               // Pass filtered list to history render (it will filter internally based on role)
+               renderOrderHistory(allHistoryOrders);
+
+           }, (error) => {
+               console.error("Error fetching requests: ", error);
+               loader.classList.add('hidden');
+           });
+        }
+        
+        function getStatusBadge(status) {
+            switch(status) {
+                case 'open': return `<span class="badge badge-open">Open</span>`;
+                case 'in-progress': return `<span class="badge badge-progress">In Progress</span>`;
+                case 'completed': return `<span class="badge badge-completed">Completed</span>`;
+                default: return `<span class="badge" style="background: #e5e7eb; color: #1f2937;">Unknown</span>`;
+            }
+        }
+
+        function displayRequests(requests) {
+            const myRequestsList = document.getElementById('my-requests-list');
+            const allRequestsListDeliverer = document.getElementById('all-requests-list-deliverer');
+            const myCurrentDeliveriesList = document.getElementById('my-current-deliveries-list');
+            const availableDeliveriesContainer = document.getElementById('available-deliveries-container');
+            const singleDeliveryMessage = document.getElementById('single-delivery-message');
+            
+            myRequestsList.innerHTML = '';
+            allRequestsListDeliverer.innerHTML = '';
+            myCurrentDeliveriesList.innerHTML = '';
+            
+            const myReqs = requests.filter(r => r.requesterId === currentUser.uid);
+            const myCurrentDeliveries = requests.filter(r => r.delivererId === currentUser.uid);
+            const openDeliveries = requests.filter(r => r.status === 'open');
+            const hasActiveDelivery = myCurrentDeliveries.some(r => r.status === 'in-progress');
+
+            const myActiveOrders = myReqs.filter(r => r.status === 'open' || r.status === 'in-progress');
+            const myCompletedOrders = myReqs.filter(r => r.status === 'completed');
+            const myInProgressOrder = myReqs.find(r => r.status === 'in-progress');
+            
+            myRequestsList.innerHTML = myActiveOrders.length ? '' : `<p class="text-secondary">You have no active orders.</p>`;
+            myActiveOrders.forEach(req => myRequestsList.appendChild(createRequestCard(req, 'student-own')));
+            
+            // Note: History is rendered inside the snapshot listener now to catch updates
+            
+            if (myInProgressOrder) {
+                activeOrderBarStatus.textContent = formatSubStatus(myInProgressOrder.subStatus);
+                activeOrderBar.classList.remove('hidden');
+                activeOrderBar.dataset.orderId = `order-${myInProgressOrder.id}`;
+            } else {
+                activeOrderBar.classList.add('hidden');
+            }
+
+            myCurrentDeliveriesList.innerHTML = myCurrentDeliveries.length ? '' : `<p class="text-secondary">You have no active or completed deliveries.</p>`;
+            myCurrentDeliveries.forEach(req => myCurrentDeliveriesList.appendChild(createRequestCard(req, 'deliverer-own')));
+            if (hasActiveDelivery) {
+                availableDeliveriesContainer.classList.add('hidden');
+                singleDeliveryMessage.classList.remove('hidden');
+            } else {
+                availableDeliveriesContainer.classList.remove('hidden');
+                singleDeliveryMessage.classList.add('hidden');
+                allRequestsListDeliverer.innerHTML = openDeliveries.length ? '' : `<p class="text-secondary">No available deliveries right now. Check back soon!</p>`;
+                openDeliveries.forEach(req => allRequestsListDeliverer.appendChild(createRequestCard(req, 'deliverer')));
+            }
+        }
+        
+        function formatSubStatus(status) {
+            if (!status) return 'Awaiting deliverer updates...';
+            switch(status) {
+                case 'reached-cafe': return 'Reached the cafe';
+                case 'picked-up': return 'Order picked up';
+                default: return 'In progress';
+            }
+        }
+
+        function createRequestCard(req, viewType) {
+            const card = document.createElement('div');
+            card.className = 'card-panel';
+            if (viewType === 'student-own') {
+                card.id = `order-${req.id}`;
+            }
+
+            const timeAgo = req.createdAt ? getTimeAgo(req.createdAt.seconds) : 'just now';
+            const isMyOwnRequestView = viewType === 'student-own';
+            const isMyDelivery = req.delivererId === currentUser.uid;
+
+            let itemContent;
+            if (req.items && Array.isArray(req.items)) {
+                itemContent = req.items.map(item => `
+                    <p class="font-semibold" style="color: var(--accent-color);">${item.name} <span class="text-sm font-normal text-primary">x ${item.quantity}</span></p>
+                `).join('');
+            } else {
+                itemContent = `<h4 class="text-lg font-bold" style="color: var(--accent-color);">${req.itemName || 'Order'}</h4>`;
+            }
+            
+            const totalAmount = req.totalAmount ? req.totalAmount.toFixed(2) : (req.itemPrice + req.deliveryFee).toFixed(2);
+            const itemPriceDisplay = req.itemPrice ? req.itemPrice.toFixed(2) : 'N/A';
+            
+            let timerElement = '';
+            if (req.status === 'open' && req.createdAt?.seconds) {
+                const nowInSeconds = Date.now() / 1000;
+                const ageInSeconds = nowInSeconds - req.createdAt.seconds;
+                const maxAge = 900;
+                const remainingSeconds = maxAge - ageInSeconds;
+                if (remainingSeconds > 0) {
+                    const minutes = Math.floor(remainingSeconds / 60);
+                    const seconds = Math.floor(remainingSeconds % 60);
+                    timerElement = `<p class="text-xs mt-2 font-medium" style="color: var(--danger-bg);">Expires in: ${minutes}:${seconds.toString().padStart(2, '0')}</p>`;
+                }
+            }
+            
+            let requesterInfo = '';
+            if (!isMyOwnRequestView && viewType !== 'history-view') {
+                const requesterPhoto = req.requesterPhotoURL ? `<img src="${req.requesterPhotoURL}" class="avatar" style="margin-right: 0.5rem;" alt="Requester">` : `<div class="avatar" style="background: #e5e7eb; display: flex; align-items: center; justify-content: center; font-weight: bold; margin-right: 0.5rem; color: #4b5563;">?</div>`;
+                requesterInfo = `
+                    <div class="flex items-center text-sm text-secondary mt-2">
+                        ${requesterPhoto}
+                        <p><strong>Requester:</strong> ${req.requesterName}</p>
+                    </div>
+                `;
+            }
+            
+            let delivererInfo = '';
+            if (req.delivererName) {
+                delivererInfo = `<p class="text-sm text-muted mt-2"><strong>Deliverer:</strong> ${req.delivererName}</p>`;
+            }
+
+            let statusTracker = '';
+            if (req.status === 'in-progress' && (isMyOwnRequestView || isMyDelivery)) {
+                 statusTracker = `
+                    <div class="mt-4 pt-4 border-t border-custom space-y-2" style="border-top: 1px solid var(--border-color); padding-top: 1rem;">
+                        <p class="text-sm text-secondary"><strong>Deliverer ETA:</strong> <span class="font-semibold" style="color: var(--accent-color);">${req.estimatedTime ? req.estimatedTime + ' mins' : 'Not set'}</span></p>
+                        <p class="text-sm text-secondary"><strong>Live Status:</strong> <span class="font-semibold" style="color: var(--accent-color);">${formatSubStatus(req.subStatus)}</span></p>
+                    </div>
+                 `;
+            }
+
+            let actionButtonOrPanel = '';
+            if (isMyDelivery && req.status === 'in-progress') {
+                
+                // ETA Logic: Show input only if not set
+                let etaSection = '';
+                if (!req.estimatedTime) {
+                    const etaInput = `<input type="number" id="eta-${req.id}" min="1" max="40" class="form-input text-sm" placeholder="1-40 mins" style="padding: 0.25rem 0.5rem; width: 100%;">`;
+                    const updateEtaBtn = `<button data-id="${req.id}" class="update-eta-btn btn btn-accent btn-sm" style="white-space: nowrap;">Set ETA</button>`;
+                    etaSection = `
+                        <div class="flex flex-col md:flex-row md:items-center gap-2 mb-2">
+                            ${etaInput}
+                            ${updateEtaBtn}
+                        </div>`;
+                } else {
+                    etaSection = `<div class="text-sm text-green-600 font-bold mb-2">ETA Set: ${req.estimatedTime} mins</div>`;
+                }
+
+                let nextActionBtn = '';
+                if (req.subStatus === null) {
+                    nextActionBtn = `<button data-id="${req.id}" class="reached-cafe-btn btn btn-accent w-full mt-2">Reached Cafe</button>`;
+                } else if (req.subStatus === 'reached-cafe') {
+                    nextActionBtn = `<button data-id="${req.id}" class="picked-up-btn btn btn-accent w-full mt-2">Picked Up Order</button>`;
+                } else if (req.subStatus === 'picked-up') {
+                    nextActionBtn = `<button data-id="${req.id}" class="delivered-btn w-full mt-2" style="background-color: var(--info-bg); color: white; padding: 0.5rem; border-radius: var(--radius-md); font-weight: 700;">Delivered</button>`;
+                }
+                actionButtonOrPanel = `
+                    <div class="space-y-3 mt-3">
+                        ${etaSection}
+                        <div>
+                            ${nextActionBtn}
+                        </div>
+                    </div>
+                `;
+            } 
+            else if (viewType === 'deliverer' && req.status === 'open') {
+                if (req.requesterId === currentUser.uid) {
+                    actionButtonOrPanel = `<p class="text-sm text-muted text-center italic mt-2">This is your own request.</p>`;
+                } else {
+                    const earnings = req.deliveryFee ? req.deliveryFee : 50;
+                    actionButtonOrPanel = `
+                        <div class="flex flex-col items-end gap-2">
+                            <p class="text-sm font-bold" style="color: var(--success-bg);">You'll get: ₹${earnings.toFixed(2)}</p>
+                            <button data-id="${req.id}" class="accept-btn btn btn-deliverer btn-sm w-full md:w-auto">Accept Job</button>
+                        </div>
+                    `;
+                }
+            } 
+            else if (isMyOwnRequestView && req.status === 'open') {
+                actionButtonOrPanel = `<button data-id="${req.id}" class="cancel-request-btn btn btn-danger btn-sm w-full mt-3 md:mt-0">Cancel</button>`;
+            }
+
+            card.innerHTML = `
+                <div class="flex flex-col md:flex-row md:justify-between gap-3">
+                    <div class="flex-grow">
+                        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-2 gap-1">
+                            <div class="space-y-1">
+                                ${itemContent}
+                            </div>
+                            <div class="mt-1 sm:mt-0">
+                                ${getStatusBadge(req.status)}
+                            </div>
+                        </div>
+                        ${requesterInfo}
+                        <p class="text-sm text-secondary"><strong>Item Total:</strong> ₹${itemPriceDisplay}</p>
+                        <p class="text-sm text-secondary"><strong>From:</strong> ${req.pickupLocation}</p>
+                        <p class="text-sm text-secondary"><strong>To:</strong> ${req.dropoffLocation}</p>
+                        ${delivererInfo}
+                        <p class="text-xs text-muted mt-2">Posted ${timeAgo}</p>
+                        ${timerElement}
+                        ${statusTracker}
+                    </div>
+                    <div class="mt-2 md:mt-0 md:text-right md:pl-4 flex-shrink-0">
+                        <p class="text-sm text-secondary mb-1">Total Amount</p>
+                        <p class="text-2xl font-bold" style="color: var(--success-bg);">₹${totalAmount}</p>
+                        <div class="mt-2">
+                            ${actionButtonOrPanel}
+                        </div>
+                    </div>
+                </div>
+            `;
+            return card;
+        }
+        
+        function getTimeAgo(seconds) {
+            const now = Date.now() / 1000;
+            const diff = now - seconds;
+            if (diff < 60) return 'a few seconds ago';
+            if (diff < 3600) return `${Math.floor(diff / 60)} minutes ago`;
+            if (diff < 86400) return `${Math.floor(diff / 3600)} hours ago`;
+            return `${Math.floor(diff / 86400)} days ago`;
+        }
+        
+        async function handleAction(e) {
+            if (!currentUser || !userDetails) return;
+            const target = e.target.closest('button');
+            if (!target) return;
+            const requestId = target.dataset.id;
+            if (!requestId) return;
+
+            const docRef = doc(db, `/artifacts/${appId}/public/data/deliveries`, requestId);
+            try {
+                if (target.classList.contains('accept-btn')) {
+                    await updateDoc(docRef, { status: 'in-progress', delivererId: currentUser.uid, delivererName: userDetails.name });
+                } else if (target.classList.contains('update-eta-btn')) {
+                    const etaInput = document.getElementById(`eta-${requestId}`);
+                    if (etaInput) {
+                        const val = parseInt(etaInput.value);
+                        if (val >= 1 && val <= 40) {
+                            await updateDoc(docRef, { estimatedTime: val.toString() });
+                        } else {
+                            alert("Please enter a time between 1 and 40 minutes.");
+                        }
+                    }
+                } else if (target.classList.contains('reached-cafe-btn')) {
+                    await updateDoc(docRef, { subStatus: 'reached-cafe' });
+                } else if (target.classList.contains('picked-up-btn')) {
+                    await updateDoc(docRef, { subStatus: 'picked-up' });
+                } else if (target.classList.contains('delivered-btn')) {
+                      await updateDoc(docRef, { status: 'completed' });
+                } else if (target.classList.contains('cancel-request-btn')) {
+                    await deleteDoc(docRef);
+                }
+            } catch (error) {
+                console.error("Error updating document:", error);
+            }
+        }
+        
+        // --- Event Listeners ---
+        googleSignInBtn.addEventListener('click', signInWithGoogle);
+        
+        selectStudentBtn.addEventListener('click', () => {
+            currentRole = 'student';
+            localStorage.setItem('userRole', 'student');
+            roleSelectionModal.classList.add('hidden');
+            studentView.classList.remove('hidden');
+            delivererView.classList.add('hidden');
+            deliveryStats.classList.add('hidden');
+            startApp();
+            updateCartUI();
+        });
+        
+        selectDelivererBtn.addEventListener('click', () => {
+            currentRole = 'deliverer';
+            localStorage.setItem('userRole', 'deliverer');
+            roleSelectionModal.classList.add('hidden');
+            studentView.classList.add('hidden');
+            delivererView.classList.remove('hidden');
+            deliveryStats.classList.remove('hidden');
+            cartButton.classList.add('hidden');
+            startApp();
+        });
+        
+        cafeGridContainer.addEventListener('click', (e) => {
+            const cafeBox = e.target.closest('.cafe-box');
+            if (cafeBox) {
+                openMenuModal(cafeBox.dataset.cafeId);
+            }
+        });
+        menuItemsContainer.addEventListener('click', (e) => {
+            const button = e.target.closest('.update-quantity-btn');
+            if (button) {
+                const itemId = button.dataset.itemId;
+                const change = parseInt(button.dataset.change);
+                updateCart(itemId, change);
+            }
+        });
+        menuCloseBtn.addEventListener('click', closeMenuModal);
+        menuModal.addEventListener('click', (e) => e.target === menuModal && closeMenuModal());
+        cartButton.addEventListener('click', openCartModal);
+        cartCloseBtn.addEventListener('click', closeCartModal);
+        cartModal.addEventListener('click', (e) => e.target === cartModal && closeCartModal());
+
+        cartItemsContainer.addEventListener('click', (e) => {
+            const removeButton = e.target.closest('.remove-from-cart-btn');
+            if (removeButton) {
+                const itemId = removeButton.dataset.itemId;
+                if (cart[itemId]) {
+                    delete cart[itemId];
+                    updateCartUI();
+                    openCartModal();
+                }
             }
         });
 
-        function updateHeader() {
-            document.getElementById('userInfo').textContent = `Hi, ${state.user.name}!`;
-            const avatar = document.getElementById('user-avatar');
-            if (state.user.photo) {
-                avatar.src = state.user.photo;
-                avatar.classList.remove('hidden');
-            }
-            UI.header.classList.remove('hidden');
-        }
-
-        function setRole(role) {
-            state.role = role;
-            localStorage.setItem('role', role);
-            UI.role.classList.add('hidden');
-            UI.app.classList.remove('hidden');
-            
-            if (role === 'student') {
-                UI.studentView.classList.remove('hidden');
-                UI.delivererView.classList.add('hidden');
-                document.getElementById('cart-button').classList.add('hidden');
-                renderCafes();
-            } else {
-                UI.studentView.classList.add('hidden');
-                UI.delivererView.classList.remove('hidden');
-                document.getElementById('cart-button').classList.add('hidden');
-                document.getElementById('delivery-stats').classList.remove('hidden');
-            }
-            fetchData();
-        }
-
-        // --- THEME LOGIC ---
-        function toggleTheme() {
-            const isDark = document.documentElement.classList.toggle('dark');
-            document.getElementById('sun-icon').classList.toggle('hidden', isDark);
-            document.getElementById('moon-icon').classList.toggle('hidden', !isDark);
-        }
-        document.getElementById('theme-switcher').addEventListener('click', toggleTheme);
-
-        // --- CAFE & MENU ---
-        function renderCafes() {
-            const container = document.getElementById('cafe-grid-container');
-            container.innerHTML = '';
-            Object.entries(CAFE_DATA).forEach(([id, cafe]) => {
-                const div = document.createElement('div');
-                div.className = 'cafe-box';
-                div.innerHTML = `
-                    <div class="cafe-box-media">
-                        ${cafe.image ? `<img src="${cafe.image}">` : `<span class="cafe-box-media-text">${cafe.name}</span>`}
-                    </div>
-                    <div class="cafe-box-name">${cafe.name}</div>
-                `;
-                div.onclick = () => openMenu(id);
-                container.appendChild(div);
-            });
-        }
-
-        function openMenu(id) {
-            state.activeCafe = id;
-            const modal = document.getElementById('menu-modal');
-            const container = document.getElementById('menu-items-container');
-            document.getElementById('menu-modal-title').textContent = CAFE_DATA[id].name;
-            container.innerHTML = '';
-
-            CAFE_DATA[id].items.forEach(item => {
-                const qty = state.cart[item.id]?.qty || 0;
-                const div = document.createElement('div');
-                div.className = 'menu-item';
-                div.innerHTML = `
-                    <div><p class="font-bold">${item.name}</p><p class="text-sm">₹${item.price}</p></div>
-                    <div class="flex items-center gap-2">
-                        <button class="btn-qty" onclick="modCart('${item.id}',-1)">-</button>
-                        <span class="font-bold w-6 text-center">${qty}</span>
-                        <button class="btn-qty add" onclick="modCart('${item.id}',1)">+</button>
-                    </div>
-                `;
-                // Manually bind for module scope
-                div.querySelectorAll('button')[0].onclick = () => modCart(item.id, -1);
-                div.querySelectorAll('button')[1].onclick = () => modCart(item.id, 1);
-                container.appendChild(div);
-            });
-            toggleModal(modal, true);
-        }
-
-        function modCart(itemId, change) {
-            const cafe = CAFE_DATA[state.activeCafe];
-            const item = cafe.items.find(i => i.id === itemId);
-            
-            // Clear check
-            const currentFirst = Object.values(state.cart)[0];
-            if (currentFirst && currentFirst.cafeId !== state.activeCafe) {
-                if(!confirm("Clear cart to order from new cafe?")) return;
-                state.cart = {};
-            }
-
-            if (!state.cart[itemId]) state.cart[itemId] = { ...item, qty: 0, cafeId: state.activeCafe, cafeName: cafe.name };
-            state.cart[itemId].qty += change;
-            if (state.cart[itemId].qty <= 0) delete state.cart[itemId];
-            
-            // Re-render menu qty
-            openMenu(state.activeCafe); 
-            updateCartBtn();
-        }
-
-        function updateCartBtn() {
-            const total = Object.values(state.cart).reduce((a,b)=>a+b.qty,0);
-            const btn = document.getElementById('cart-button');
-            if(total > 0 && state.role === 'student') {
-                btn.classList.remove('hidden');
-                document.getElementById('cart-button-text').textContent = `View Cart (${total})`;
-            } else {
-                btn.classList.add('hidden');
-            }
-        }
-
-        // --- CART & ORDER ---
-        document.getElementById('cart-button').onclick = () => {
-            const container = document.getElementById('cart-items-container');
-            container.innerHTML = '';
-            let total = 0;
-            Object.values(state.cart).forEach(item => {
-                total += item.price * item.qty;
-                const div = document.createElement('div');
-                div.className = 'cart-item';
-                div.innerHTML = `<div>${item.name} x${item.qty}</div><div>₹${item.price * item.qty}</div>`;
-                container.appendChild(div);
-            });
-            document.getElementById('cart-total-price').textContent = `₹${total}`;
-            toggleModal(document.getElementById('cart-modal'), true);
-        };
-
-        document.getElementById('checkout-btn').onclick = () => {
-            toggleModal(document.getElementById('cart-modal'), false);
-            const total = Object.values(state.cart).reduce((a,b)=>a+(b.price*b.qty),0) + APP_CONFIG.deliveryFee;
-            document.getElementById('checkout-total-display').textContent = `₹${total}`;
-            toggleModal(document.getElementById('checkout-modal'), true);
-        };
-
-        document.getElementById('checkout-form').onsubmit = async (e) => {
-            e.preventDefault();
-            const btn = e.target.querySelector('button[type="submit"]');
-            btn.disabled = true;
-            toggleModal(document.getElementById('loading-modal'), true);
-            
-            const block = document.getElementById('block-select').value;
-            const room = document.getElementById('room-input').value;
-            const items = Object.values(state.cart);
-            const itemPrice = items.reduce((a,b)=>a+(b.price*b.qty),0);
-            
-            try {
-                await addDoc(collection(db, `orders`), {
-                    items, itemPrice, deliveryFee: APP_CONFIG.deliveryFee,
-                    total: itemPrice + APP_CONFIG.deliveryFee,
-                    loc: `${block}-${room}`, cafe: items[0].cafeName,
-                    status: 'open', reqId: state.user.uid, reqName: state.user.name,
-                    ts: serverTimestamp()
-                });
-                state.cart = {}; updateCartBtn();
-                toggleModal(document.getElementById('checkout-modal'), false);
-            } catch(err) { alert("Error placing order"); console.error(err); }
-            finally { 
-                toggleModal(document.getElementById('loading-modal'), false); 
-                btn.disabled = false; 
-            }
-        };
-
-        // --- DATA FETCHING (Fixed) ---
-        function fetchData() {
-            if (state.unsub) state.unsub();
-            UI.loader.classList.remove('hidden');
-            
-            const q = query(collection(db, 'orders'));
-            state.unsub = onSnapshot(q, (snap) => {
-                UI.loader.classList.add('hidden'); // Ensure loader hides
-                const list = [];
-                snap.forEach(d => list.push({id: d.id, ...d.data()}));
-                list.sort((a,b) => (b.ts?.seconds||0) - (a.ts?.seconds||0));
-                renderOrders(list);
-            });
-        }
-
-        function renderOrders(list) {
-            const myReqs = list.filter(o => o.reqId === state.user.uid);
-            const active = myReqs.filter(o => o.status !== 'completed');
-            
-            // Student View
-            const sList = document.getElementById('my-requests-list');
-            sList.innerHTML = active.length ? '' : '<p class="text-center text-secondary py-4">No active orders</p>';
-            active.forEach(o => sList.appendChild(makeCard(o, 'student')));
-
-            const inProg = active.find(o => o.status === 'in-progress');
-            if(inProg && state.role === 'student') {
-                document.getElementById('active-order-bar').classList.remove('hidden');
-                document.getElementById('active-order-bar-status').textContent = inProg.subStatus || 'On the way';
-            } else {
-                document.getElementById('active-order-bar').classList.add('hidden');
-            }
-
-            // Deliverer View
-            if (state.role === 'deliverer') {
-                const dList = document.getElementById('my-current-deliveries-list');
-                const job = list.find(o => o.delId === state.user.uid && o.status === 'in-progress');
-                dList.innerHTML = job ? '' : '<p class="text-center text-secondary">No active jobs</p>';
-                if(job) dList.appendChild(makeCard(job, 'deliverer-active'));
-
-                const openList = document.getElementById('all-requests-list-deliverer');
-                const openJobs = list.filter(o => o.status === 'open');
-                openList.innerHTML = openJobs.length ? '' : '<p class="text-center text-secondary">No available jobs</p>';
-                if(!job) openJobs.forEach(o => openList.appendChild(makeCard(o, 'deliverer-open')));
-            }
-            
-            // History
-            window.historyList = list; // Store for modal
-        }
-
-        function makeCard(o, type) {
-            const div = document.createElement('div');
-            div.className = 'card-panel';
-            const itemTxt = o.items.map(i=>`${i.name} x${i.qty}`).join(', ');
-            
-            let action = '';
-            if (type === 'student' && o.status === 'open') {
-                action = `<button class="btn btn-danger btn-sm w-full mt-2" onclick="act('${o.id}','cancel')">Cancel</button>`;
-            } else if (type === 'deliverer-open') {
-                action = o.reqId !== state.user.uid 
-                    ? `<button class="btn btn-deliverer btn-sm w-full mt-2" onclick="act('${o.id}','accept')">Accept (₹${o.deliveryFee})</button>`
-                    : `<p class="text-xs text-center italic mt-2">Your Order</p>`;
-            } else if (type === 'deliverer-active') {
-                action = `<div class="flex flex-col gap-2 mt-2">
-                    ${!o.eta ? `<div class="flex gap-2"><input id="eta-${o.id}" type="number" class="form-input text-xs" placeholder="Mins"><button class="btn btn-accent btn-sm" onclick="act('${o.id}','eta')">Set</button></div>` : `<p class="text-xs text-green-600 font-bold">ETA: ${o.eta}m</p>`}
-                    ${!o.subStatus ? `<button class="btn btn-accent btn-sm w-full" onclick="act('${o.id}','reached')">Reached Cafe</button>` :
-                      o.subStatus === 'reached' ? `<button class="btn btn-accent btn-sm w-full" onclick="act('${o.id}','picked')">Picked Up</button>` :
-                      `<button class="btn btn-success btn-sm w-full" style="background:var(--info-bg);color:white" onclick="act('${o.id}','done')">Delivered</button>`}
-                </div>`;
-            }
-
-            div.innerHTML = `
-                <div class="flex justify-between mb-1"><span class="font-bold text-accent">${itemTxt}</span><span class="badge badge-${o.status}">${o.status}</span></div>
-                <p class="text-sm text-secondary">${o.cafe} &rarr; ${o.loc}</p>
-                <div class="flex justify-between items-end mt-2">
-                    <span class="font-bold">₹${o.total}</span>
-                    <div style="min-width:100px">${action}</div>
-                </div>
-            `;
-            // Bind actions
-            div.querySelectorAll('button').forEach(b => {
-                const call = b.getAttribute('onclick');
-                if(call) {
-                    const [id, actType] = call.match(/'([^']+)'/g).map(s=>s.replace(/'/g,''));
-                    b.onclick = () => handleAct(id, actType);
-                    b.removeAttribute('onclick');
-                }
-            });
-            return div;
-        }
-
-        async function handleAct(id, type) {
-            const ref = doc(db, 'orders', id);
-            if(type==='cancel') await deleteDoc(ref);
-            if(type==='accept') await updateDoc(ref, { status:'in-progress', delId:state.user.uid, delName:state.user.name });
-            if(type==='eta') { const v=document.getElementById(`eta-${id}`).value; if(v) await updateDoc(ref,{eta:v}); }
-            if(type==='reached') await updateDoc(ref, { subStatus:'reached' });
-            if(type==='picked') await updateDoc(ref, { subStatus:'picked' });
-            if(type==='done') await updateDoc(ref, { status:'completed' });
-        }
-
-        // --- HELPERS ---
-        function toggleModal(el, show) {
-            if(show) { el.classList.remove('hidden'); setTimeout(()=>el.classList.remove('opacity-0'),10); }
-            else { el.classList.add('opacity-0'); setTimeout(()=>el.classList.add('hidden'),300); }
-        }
+        checkoutBtn.addEventListener('click', openCheckoutModal);
+        checkoutCancelBtn.addEventListener('click', closeCheckoutModal);
+        checkoutModal.addEventListener('click', (e) => e.target === checkoutModal && closeCheckoutModal());
+        checkoutForm.addEventListener('submit', submitOrder);
         
-        // --- BUTTONS ---
-        document.getElementById('google-signin-btn').onclick = () => signInWithPopup(auth, new GoogleAuthProvider());
-        document.getElementById('logout-btn').onclick = () => signOut(auth);
-        document.getElementById('select-student-btn').onclick = () => setRole('student');
-        document.getElementById('select-deliverer-btn').onclick = () => setRole('deliverer');
+        document.getElementById('main-content').addEventListener('click', handleAction);
+        logoutBtn.addEventListener('click', logout);
         
-        document.getElementById('menu-close-btn').onclick = () => toggleModal(document.getElementById('menu-modal'), false);
-        document.getElementById('cart-close-btn').onclick = () => toggleModal(document.getElementById('cart-modal'), false);
-        document.getElementById('checkout-cancel-btn').onclick = () => toggleModal(document.getElementById('checkout-modal'), false);
-        
-        document.getElementById('order-history-btn').onclick = () => {
-            const container = document.getElementById('history-items-container');
-            container.innerHTML = '';
-            const list = (window.historyList || []).filter(o => o.status === 'completed' && (state.role==='student' ? o.reqId===state.user.uid : o.delId===state.user.uid));
-            if(!list.length) container.innerHTML = '<p class="text-center py-4">No history</p>';
-            list.forEach(o => {
-                const d = document.createElement('div');
-                d.className = 'card-panel';
-                d.innerHTML = `<p class="font-bold">${o.items.map(i=>i.name).join(', ')}</p><p class="text-sm">Total: ₹${o.total}</p>`;
-                container.appendChild(d);
-            });
-            toggleModal(document.getElementById('history-modal'), true);
-        };
-        document.getElementById('history-close-btn').onclick = () => toggleModal(document.getElementById('history-modal'), false);
+        orderHistoryBtn.addEventListener('click', openHistoryModal);
+        historyCloseBtn.addEventListener('click', closeHistoryModal);
+        historyModal.addEventListener('click', (e) => e.target === historyModal && closeHistoryModal());
 
+        activeOrderBar.addEventListener('click', () => {
+            const orderId = activeOrderBar.dataset.orderId;
+            const orderElement = document.getElementById(orderId);
+            if (orderElement) {
+                orderElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                orderElement.classList.add('highlight-pulse');
+                setTimeout(() => {
+                    orderElement.classList.remove('highlight-pulse');
+                }, 2000);
+            }
+        });
     </script>
 </body>
 </html>
