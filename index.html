@@ -280,26 +280,11 @@
             font-weight: 700;
             color: var(--text-secondary);
         }
-        /* Image style for Coming Soon Cafes */
-        .cafe-box-image-img {
-            height: 140px;
-            background-color: var(--bg-primary);
-            overflow: hidden;
-        }
-        .cafe-box-image-img img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
         .cafe-box-name {
             padding: 0.75rem;
             text-align: center;
             font-weight: 600;
             color: var(--text-primary);
-        }
-        .disabled-cafe {
-            cursor: not-allowed;
-            opacity: 0.8;
         }
 
         /* 6. Lists & Cards */
@@ -417,14 +402,14 @@
         /* --- Responsive Queries --- */
         @media (min-width: 641px) {
             .cafe-grid { grid-template-columns: repeat(3, 1fr); }
-            .cafe-box-image, .cafe-box-image-img { height: 160px; }
+            .cafe-box-image { height: 160px; }
             #app { padding: 1.5rem; }
             .modal-content { max-width: 90%; }
         }
         
         @media (min-width: 1025px) {
             .cafe-grid { grid-template-columns: repeat(4, 1fr); }
-            .cafe-box-image, .cafe-box-image-img { height: 180px; }
+            .cafe-box-image { height: 180px; }
         }
 
         @media (max-width: 768px) {
@@ -900,49 +885,26 @@
         // --- UI Logic ---
         function renderCafes() {
             cafeGridContainer.innerHTML = '';
-            // "Coming Soon" placeholder
-            const comingSoonImg = "https://placehold.co/400x300/1f2937/FFF?text=Coming+Soon";
             
-            const activeCafes = ['HR1', 'HR2', 'HR3', 'HR4'];
-
+            // Loop through ALL cafes in CAFE_DATA (HR1 to HR12)
             for (const cafeId in CAFE_DATA) {
                 const cafe = CAFE_DATA[cafeId];
-                const isActive = activeCafes.includes(cafeId);
                 const cafeBox = document.createElement('div');
                 cafeBox.className = 'cafe-box';
                 cafeBox.dataset.cafeId = cafeId;
                 
-                if (!isActive) {
-                    cafeBox.classList.add('disabled-cafe');
-                }
-
-                if (isActive) {
-                    // HR1-HR4: Active, show text/icon style (Classic look)
-                    cafeBox.innerHTML = `
-                        <div class="cafe-box-image">${cafe.name}</div>
-                        <div class="cafe-box-name">${cafe.name}</div>
-                    `;
-                } else {
-                    // Others: Inactive, show "Coming Soon" image
-                    cafeBox.innerHTML = `
-                        <div class="cafe-box-image-img">
-                            <img src="${comingSoonImg}" alt="Coming Soon" loading="lazy">
-                        </div>
-                        <div class="cafe-box-name">${cafe.name}</div>
-                    `;
-                }
+                // Active look for ALL cafes
+                cafeBox.innerHTML = `
+                    <div class="cafe-box-image">${cafe.name}</div>
+                    <div class="cafe-box-name">${cafe.name}</div>
+                `;
+                
                 cafeGridContainer.appendChild(cafeBox);
             }
         }
 
         function openMenuModal(cafeId) {
-            // Only allow HR1-HR4
-            const activeCafes = ['HR1', 'HR2', 'HR3', 'HR4'];
-            if (!activeCafes.includes(cafeId)) {
-                alert("Coming Soon!");
-                return;
-            }
-
+            // Restriction removed: All cafes are now accessible
             currentOpenCafeId = cafeId;
             const cafe = CAFE_DATA[cafeId];
             menuModalTitle.textContent = cafe.name;
