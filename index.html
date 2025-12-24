@@ -1,101 +1,128 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Gravli | Coming Soon</title>
+<meta charset="UTF-8">
+<title>Gravli | Coming Soon</title>
 
-    <style>
-        /* Reset */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family: "Segoe UI", Arial, sans-serif;
+}
 
-        body {
-            height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-family: Arial, Helvetica, sans-serif;
-            color: #ffffff;
+body{
+    height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    color:white;
 
-            /* Animated linear gradient background */
-            background: linear-gradient(
-                135deg,
-                #0f172a,
-                #1e1b4b,
-                #7c3aed,
-                #0ea5e9
-            );
-            background-size: 400% 400%;
-            animation: gradientMove 14s ease infinite;
-        }
+    /* SAME smooth background vibe */
+    background: linear-gradient(135deg,
+        #120b3a,
+        #2b0a5e,
+        #0b4aa2,
+        #0cc6d3
+    );
+    background-size: 400% 400%;
+    animation: bgMove 15s ease infinite;
+}
 
-        @keyframes gradientMove {
-            0%   { background-position: 0% 50%; }
-            50%  { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
+@keyframes bgMove{
+    0%{background-position:0% 50%;}
+    50%{background-position:100% 50%;}
+    100%{background-position:0% 50%;}
+}
 
-        .wrapper {
-            text-align: center;
-        }
+/* Center wrapper */
+.wrapper{
+    text-align:center;
+}
 
-        .circle-box {
-            position: relative;
-            width: 220px;
-            height: 220px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin: auto;
-        }
+/* Ring container */
+.ring-box{
+    position:relative;
+    width:260px;
+    height:260px;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+}
 
-        /* Rotating multicolor ring */
-        .ring {
-            position: absolute;
-            width: 220px;
-            height: 220px;
-            border-radius: 50%;
-            border: 4px solid transparent;
-            border-top-color: #22d3ee;
-            border-right-color: #8b5cf6;
-            border-bottom-color: #f59e0b;
-            border-left-color: #ec4899;
-            animation: spin 2.2s linear infinite;
+/* Rotating neon ring */
+.ring{
+    position:absolute;
+    width:260px;
+    height:260px;
+    border-radius:50%;
+    background: conic-gradient(
+        #00f0ff,
+        #7b61ff,
+        #ff4ecd,
+        #ffae00,
+        #00f0ff
+    );
+    filter: blur(0.3px);
+    animation: spin 6s linear infinite;
+}
 
-            /* Subtle glow */
-            box-shadow: 0 0 25px rgba(255, 255, 255, 0.25);
-        }
+/* Inner dark circle */
+.ring::after{
+    content:"";
+    position:absolute;
+    inset:8px;
+    background:#050a24;
+    border-radius:50%;
+}
 
-        @keyframes spin {
-            from { transform: rotate(0deg); }
-            to   { transform: rotate(360deg); }
-        }
+/* Glow */
+.glow{
+    position:absolute;
+    width:260px;
+    height:260px;
+    border-radius:50%;
+    box-shadow: 0 0 40px rgba(0,255,255,0.35),
+                0 0 80px rgba(123,97,255,0.35);
+}
 
-        h1 {
-            font-size: 2.6rem;
-            letter-spacing: 1px;
-            z-index: 1;
-        }
+/* Logo text */
+.logo{
+    position:relative;
+    font-size:48px;
+    font-weight:700;
+    letter-spacing:1px;
+    background: linear-gradient(90deg,#ffffff,#c7d2fe);
+    -webkit-background-clip:text;
+    -webkit-text-fill-color:transparent;
+    z-index:2;
+}
 
-        p {
-            margin-top: 14px;
-            font-size: 1.1rem;
-            opacity: 0.85;
-        }
-    </style>
+@keyframes spin{
+    from{transform:rotate(0deg);}
+    to{transform:rotate(360deg);}
+}
+
+/* Coming soon text */
+p{
+    margin-top:24px;
+    font-size:18px;
+    opacity:0.85;
+}
+</style>
 </head>
+
 <body>
 
-    <div class="wrapper">
-        <div class="circle-box">
-            <div class="ring"></div>
-            <h1>Gravli</h1>
-        </div>
-        <p>Coming Soon</p>
+<div class="wrapper">
+    <div class="ring-box">
+        <div class="glow"></div>
+        <div class="ring"></div>
+        <div class="logo">Gravli</div>
     </div>
+    <p>Coming Soon</p>
+</div>
 
 </body>
 </html>
