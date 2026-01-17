@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Coming Soon</title>
 
-<!-- Font Awesome for icons -->
+<!-- Font Awesome -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
 <style>
@@ -19,7 +19,7 @@
     body {
         height: 100vh;
         background:
-            radial-gradient(circle at top, rgba(255,255,255,0.05), transparent 40%),
+            radial-gradient(circle at top, rgba(255,255,255,0.06), transparent 40%),
             linear-gradient(135deg, #2E1065, #1E0836);
         display: flex;
         align-items: center;
@@ -29,74 +29,105 @@
 
     .container {
         text-align: center;
-        max-width: 700px;
+        max-width: 800px;
         width: 90%;
     }
 
     h1 {
-        font-size: 48px;
-        letter-spacing: 1px;
+        font-size: 52px;
         margin-bottom: 15px;
+        letter-spacing: 1px;
     }
 
     p {
         font-size: 18px;
         opacity: 0.9;
-        margin-bottom: 35px;
+        margin-bottom: 40px;
     }
 
+    /* ===== Glassmorphism Email Box ===== */
     .email-box {
         display: flex;
         justify-content: center;
-        margin-bottom: 40px;
+        gap: 12px;
+        margin-bottom: 45px;
         flex-wrap: wrap;
     }
 
     .email-box input {
-        padding: 14px;
-        width: 320px;
-        border: none;
-        outline: none;
+        width: 420px;
+        padding: 16px 18px;
         font-size: 16px;
+        color: #fff;
+
+        background: rgba(255, 255, 255, 0.12);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+
+        border-radius: 14px;
+        border: 1px solid rgba(255, 255, 255, 0.25);
+        outline: none;
+
+        box-shadow: 0 8px 25px rgba(0,0,0,0.25);
+    }
+
+    .email-box input::placeholder {
+        color: rgba(255,255,255,0.7);
+    }
+
+    .email-box input:focus {
+        border-color: rgba(255,255,255,0.6);
+        background: rgba(255,255,255,0.18);
     }
 
     .email-box button {
-        padding: 14px 25px;
-        border: 1px solid #fff;
-        background: transparent;
-        color: #fff;
+        padding: 16px 28px;
         font-size: 16px;
+        border-radius: 14px;
         cursor: pointer;
-        transition: 0.3s;
+
+        background: rgba(255,255,255,0.15);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+
+        border: 1px solid rgba(255,255,255,0.35);
+        color: #fff;
+
+        transition: 0.3s ease;
+        box-shadow: 0 8px 25px rgba(0,0,0,0.25);
     }
 
     .email-box button:hover {
-        background: #fff;
+        background: rgba(255,255,255,0.9);
         color: #1E0836;
+        transform: translateY(-2px);
     }
 
+    /* ===== Social Icons ===== */
     .socials a {
+        font-size: 24px;
+        margin: 0 14px;
         color: #fff;
-        font-size: 22px;
-        margin: 0 12px;
         transition: 0.3s;
     }
 
     .socials a:hover {
-        color: #ddd;
-        transform: scale(1.1);
+        color: #d8b4fe;
+        transform: scale(1.15);
     }
 
-    @media (max-width: 600px) {
+    @media (max-width: 650px) {
         h1 {
-            font-size: 36px;
+            font-size: 38px;
         }
         .email-box {
             flex-direction: column;
         }
         .email-box input {
             width: 100%;
-            margin-bottom: 10px;
+        }
+        .email-box button {
+            width: 100%;
         }
     }
 </style>
@@ -109,7 +140,7 @@
     <p>It's going to be amazing! Sign up to find out when it's ready.</p>
 
     <div class="email-box">
-        <input type="email" placeholder="Email Address">
+        <input type="email" placeholder="Enter your email">
         <button>Notify Me</button>
     </div>
 
