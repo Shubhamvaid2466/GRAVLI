@@ -48,13 +48,19 @@
             position: relative;
             z-index: 2;
             text-align: center;
-            padding: 2rem;
+            padding: 3rem; /* Increased padding slightly since subtitle is gone */
             max-width: 600px;
+            width: 90%;
             background: rgba(5, 5, 5, 0.6);
             backdrop-filter: blur(5px);
             border-radius: 20px;
             border: 1px solid rgba(255, 255, 255, 0.1);
             animation: float 6s ease-in-out infinite;
+            min-height: 300px; /* Fixed height to prevent jumping when content changes */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
         }
 
         /* Typography */
@@ -67,17 +73,9 @@
             -webkit-background-clip: text;
             background-clip: text;
             color: transparent;
-            margin-bottom: 0.5rem;
+            margin-bottom: 2rem;
             text-transform: uppercase;
             animation: glow 3s infinite alternate;
-        }
-
-        p.subtitle {
-            font-size: 1.2rem;
-            letter-spacing: 2px;
-            color: #cccccc;
-            margin-bottom: 2.5rem;
-            font-weight: 300;
         }
 
         /* Form Styling */
@@ -86,6 +84,8 @@
             gap: 10px;
             justify-content: center;
             flex-wrap: wrap;
+            width: 100%;
+            transition: opacity 0.3s ease;
         }
 
         input[type="email"] {
@@ -123,6 +123,45 @@
             box-shadow: 0 0 20px rgba(112, 0, 255, 0.4);
         }
 
+        /* Success Message & Tick Animation */
+        .success-message {
+            display: none; /* Hidden by default */
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 0.5s ease forwards;
+        }
+
+        .tick-circle {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(45deg, var(--secondary), var(--primary));
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 0 20px rgba(0, 242, 255, 0.4);
+            margin-bottom: 10px;
+        }
+
+        .tick {
+            width: 15px;
+            height: 30px;
+            border-bottom: 4px solid white;
+            border-right: 4px solid white;
+            transform: rotate(45deg);
+            margin-top: -5px;
+            animation: tickPop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+
+        .success-text {
+            font-family: 'Orbitron', sans-serif;
+            color: var(--primary);
+            letter-spacing: 2px;
+            margin-top: 10px;
+            font-size: 1.2rem;
+        }
+
         /* Animations */
         @keyframes float {
             0%, 100% { transform: translateY(0); }
@@ -132,6 +171,17 @@
         @keyframes glow {
             0% { text-shadow: 0 0 10px rgba(0, 242, 255, 0.1); }
             100% { text-shadow: 0 0 30px rgba(0, 242, 255, 0.5), 0 0 60px rgba(112, 0, 255, 0.3); }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.8); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        @keyframes tickPop {
+            0% { width: 0; height: 0; opacity: 0; }
+            50% { width: 15px; height: 0; opacity: 1; }
+            100% { width: 15px; height: 30px; opacity: 1; }
         }
 
         /* Responsive */
@@ -148,16 +198,45 @@
 
     <div class="container">
         <h1>Gravli</h1>
-        <p class="subtitle">GRAVITY DEFYING INNOVATION.</p>
         
-        <div class="input-group">
-            <input type="email" placeholder="Enter your email" required>
-            <button type="button">NOTIFY ME</button>
+        <div class="input-group" id="inputGroup">
+            <input type="email" id="emailInput" placeholder="Enter your email" required>
+            <button type="button" id="notifyBtn">NOTIFY ME</button>
+        </div>
+
+        <div class="success-message" id="successMessage">
+            <div class="tick-circle">
+                <div class="tick"></div>
+            </div>
+            <div class="success-text">YOU'RE ON THE LIST</div>
         </div>
     </div>
 
     <script>
-        /* --- JAVASCRIPT ANIMATION --- */
+        /* --- JAVASCRIPT ANIMATION & LOGIC --- */
+        
+        // 1. Email Submission Logic
+        const notifyBtn = document.getElementById('notifyBtn');
+        const emailInput = document.getElementById('emailInput');
+        const inputGroup = document.getElementById('inputGroup');
+        const successMessage = document.getElementById('successMessage');
+
+        notifyBtn.addEventListener('click', () => {
+            const emailValue = emailInput.value.trim();
+            // Simple validation to ensure email isn't empty and contains '@'
+            if(emailValue !== "" && emailValue.includes('@')) {
+                // Hide Input Group
+                inputGroup.style.display = 'none';
+                // Show Success Message
+                successMessage.style.display = 'flex';
+            } else {
+                // Optional: visual cue for error (shake animation or alert)
+                emailInput.style.borderColor = 'red';
+                setTimeout(() => emailInput.style.borderColor = 'rgba(255, 255, 255, 0.1)', 1000);
+            }
+        });
+
+        // 2. Canvas Background Logic (Original Code)
         const canvas = document.getElementById('canvas');
         const ctx = canvas.getContext('2d');
         canvas.width = window.innerWidth;
@@ -200,7 +279,6 @@
 
             // Update method
             update() {
-                // Check if particle is still within canvas
                 if (this.x > canvas.width || this.x < 0) {
                     this.directionX = -this.directionX;
                 }
@@ -208,14 +286,13 @@
                     this.directionY = -this.directionY;
                 }
 
-                // Collision detection with mouse (Gravitational Pull effect)
                 let dx = mouse.x - this.x;
                 let dy = mouse.y - this.y;
                 let distance = Math.sqrt(dx*dx + dy*dy);
                 
                 if (distance < mouse.radius + this.size) {
                     if (mouse.x < this.x && this.x < canvas.width - this.size * 10) {
-                        this.x += 3; // Push away effect, flip sign to pull
+                        this.x += 3; 
                     }
                     if (mouse.x > this.x && this.x > this.size * 10) {
                         this.x -= 3;
@@ -234,7 +311,6 @@
             }
         }
 
-        // Create particle array
         function init() {
             particlesArray = [];
             let numberOfParticles = (canvas.height * canvas.width) / 9000;
@@ -242,7 +318,7 @@
                 let size = (Math.random() * 3) + 1;
                 let x = (Math.random() * ((innerWidth - size * 2) - (size * 2)) + size * 2);
                 let y = (Math.random() * ((innerHeight - size * 2) - (size * 2)) + size * 2);
-                let directionX = (Math.random() * 2) - 1; // Speed
+                let directionX = (Math.random() * 2) - 1; 
                 let directionY = (Math.random() * 2) - 1;
                 let color = '#ffffff';
 
@@ -250,7 +326,6 @@
             }
         }
 
-        // Animation Loop
         function animate() {
             requestAnimationFrame(animate);
             ctx.clearRect(0,0,innerWidth, innerHeight);
@@ -261,7 +336,6 @@
             connect();
         }
 
-        // Connect particles with lines
         function connect() {
             let opacityValue = 1;
             for (let a = 0; a < particlesArray.length; a++) {
@@ -271,7 +345,7 @@
                     
                     if (distance < (canvas.width/7) * (canvas.height/7)) {
                         opacityValue = 1 - (distance/20000);
-                        ctx.strokeStyle = 'rgba(112, 0, 255,' + opacityValue + ')'; // Purple lines
+                        ctx.strokeStyle = 'rgba(112, 0, 255,' + opacityValue + ')'; 
                         ctx.lineWidth = 1;
                         ctx.beginPath();
                         ctx.moveTo(particlesArray[a].x, particlesArray[a].y);
@@ -282,7 +356,6 @@
             }
         }
 
-        // Resize event
         window.addEventListener('resize', () => {
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
