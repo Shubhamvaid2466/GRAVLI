@@ -5,129 +5,131 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Coming Soon</title>
 
-<!-- Font Awesome -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
 <style>
-    * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-        font-family: "Segoe UI", sans-serif;
-    }
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Segoe UI", sans-serif;
+}
 
-    body {
-        height: 100vh;
-        background:
-            radial-gradient(circle at top, rgba(255,255,255,0.15), transparent 40%),
-            linear-gradient(135deg, #8B5CF6, #6D28D9);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: #fff;
-    }
+body {
+    height: 100vh;
+    background:
+        radial-gradient(circle at top, rgba(255,255,255,0.12), transparent 40%),
+        linear-gradient(135deg, #7C3AED, #4C1D95);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+}
 
-    .container {
-        text-align: center;
-        max-width: 800px;
-        width: 90%;
-    }
+.container {
+    text-align: center;
+    max-width: 800px;
+    width: 90%;
+}
 
-    h1 {
-        font-size: 52px;
-        margin-bottom: 15px;
-        letter-spacing: 1px;
-    }
+h1 {
+    font-size: 52px;
+    margin-bottom: 15px;
+}
 
-    p {
-        font-size: 18px;
-        opacity: 0.95;
-        margin-bottom: 40px;
-    }
+p {
+    font-size: 18px;
+    opacity: 0.95;
+    margin-bottom: 40px;
+}
 
-    /* ===== Glassmorphism Email Box ===== */
-    .email-box {
-        display: flex;
-        justify-content: center;
-        gap: 14px;
-        margin-bottom: 45px;
-        flex-wrap: wrap;
-    }
+/* ===== Glass Email Box ===== */
+.email-box {
+    display: flex;
+    justify-content: center;
+    gap: 14px;
+    margin-bottom: 45px;
+    flex-wrap: wrap;
+}
 
-    .email-box input {
-        width: 440px;
-        padding: 18px;
-        font-size: 16px;
-        color: #fff;
+.email-box input {
+    width: 440px;
+    padding: 18px;
+    font-size: 16px;
+    color: #fff;
 
-        background: rgba(255, 255, 255, 0.18);
-        backdrop-filter: blur(14px);
-        -webkit-backdrop-filter: blur(14px);
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(14px);
 
-        border-radius: 16px;
-        border: 1px solid rgba(255, 255, 255, 0.35);
-        outline: none;
+    border-radius: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    outline: none;
 
-        box-shadow: 0 10px 30px rgba(0,0,0,0.25);
-    }
+    box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+}
 
-    .email-box input::placeholder {
-        color: rgba(255,255,255,0.75);
-    }
+.email-box input::placeholder {
+    color: rgba(255,255,255,0.8);
+}
 
-    .email-box input:focus {
-        background: rgba(255,255,255,0.25);
-        border-color: rgba(255,255,255,0.7);
-    }
+.email-box button {
+    padding: 18px 32px;
+    font-size: 16px;
+    border-radius: 16px;
+    cursor: pointer;
 
-    .email-box button {
-        padding: 18px 32px;
-        font-size: 16px;
-        border-radius: 16px;
-        cursor: pointer;
+    background: rgba(255,255,255,0.25);
+    backdrop-filter: blur(14px);
 
-        background: rgba(255,255,255,0.25);
-        backdrop-filter: blur(14px);
-        -webkit-backdrop-filter: blur(14px);
+    border: 1px solid rgba(255,255,255,0.45);
+    color: #fff;
 
-        border: 1px solid rgba(255,255,255,0.45);
-        color: #fff;
+    transition: all 0.3s ease;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+}
 
-        transition: all 0.3s ease;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.25);
-    }
+.email-box button:hover {
+    background: #ffffff;
+    color: #4C1D95;
+    transform: translateY(-3px);
+}
 
-    .email-box button:hover {
-        background: #ffffff;
-        color: #6D28D9;
-        transform: translateY(-3px);
-    }
+/* ===== Success State ===== */
+.success {
+    display: none;
+    font-size: 20px;
+    color: #E9D5FF;
+    animation: fadeIn 0.5s ease;
+}
 
-    /* ===== Social Icons ===== */
-    .socials a {
-        font-size: 26px;
-        margin: 0 16px;
-        color: #fff;
-        transition: 0.3s;
-    }
+.success i {
+    color: #22C55E;
+    margin-right: 8px;
+}
 
-    .socials a:hover {
-        color: #E9D5FF;
-        transform: scale(1.2);
-    }
+@keyframes fadeIn {
+    from { opacity: 0; transform: scale(0.9); }
+    to { opacity: 1; transform: scale(1); }
+}
 
-    @media (max-width: 650px) {
-        h1 {
-            font-size: 38px;
-        }
-        .email-box {
-            flex-direction: column;
-        }
-        .email-box input,
-        .email-box button {
-            width: 100%;
-        }
-    }
+/* ===== Social Icons ===== */
+.socials a {
+    font-size: 26px;
+    margin: 0 16px;
+    color: #fff;
+    transition: 0.3s;
+}
+
+.socials a:hover {
+    color: #E9D5FF;
+    transform: scale(1.2);
+}
+
+@media (max-width: 650px) {
+    h1 { font-size: 38px; }
+    .email-box input,
+    .email-box button { width: 100%; }
+}
 </style>
 </head>
 
@@ -137,21 +139,34 @@
     <h1>Something Awesome Is Coming</h1>
     <p>It's going to be amazing! Sign up to find out when it's ready.</p>
 
-    <div class="email-box">
-        <input type="email" placeholder="Enter your email">
-        <button>Notify Me</button>
+    <div class="email-box" id="emailBox">
+        <input type="email" id="emailInput" placeholder="Enter your email" required>
+        <button onclick="submitEmail()">Notify Me</button>
+    </div>
+
+    <div class="success" id="successMsg">
+        <i class="fas fa-check-circle"></i> Done! We’ll notify you.
     </div>
 
     <div class="socials">
-        <a href="https://www.instagram.com/__apnahandle__" target="_blank">
+        <a href="https://www.instagram.com/yourhandle" target="_blank">
             <i class="fab fa-instagram"></i>
         </a>
-        <a href="https://www.linkedin.com/in/__apnahandle__" target="_blank">
+        <a href="https://www.linkedin.com/in/yourhandle" target="_blank">
             <i class="fab fa-linkedin-in"></i>
         </a>
     </div>
 </div>
 
+<script>
+function submitEmail() {
+    const email = document.getElementById("emailInput").value;
+    if (!email) return;
+
+    document.getElementById("emailBox").style.display = "none";
+    document.getElementById("successMsg").style.display = "block";
+}
+</script>
+
 </body>
 </html>
-
