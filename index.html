@@ -18,9 +18,16 @@
 
 body {
     height: 100vh;
-    background:
-        radial-gradient(circle at top, rgba(255,255,255,0.12), transparent 40%),
-        linear-gradient(135deg, #7C3AED, #4C1D95);
+    background: linear-gradient(
+        120deg,
+        #7C3AED,
+        #6D28D9,
+        #4C1D95,
+        #8B5CF6
+    );
+    background-size: 400% 400%;
+    animation: gradientMove 18s ease infinite;
+
     display: flex;
     align-items: center;
     justify-content: center;
@@ -108,9 +115,16 @@ p {
     margin-right: 8px;
 }
 
-@keyframes fadeIn {
-    from { opacity: 0; transform: scale(0.9); }
-    to { opacity: 1; transform: scale(1); }
+@keyframes gradientMove {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
 }
 
 /* ===== Social Icons ===== */
@@ -171,6 +185,7 @@ function submitEmail() {
 
 </body>
 </html>
+
 
 
 
