@@ -5,151 +5,153 @@ ___LANDING PAGE___
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="google-site-verification" content="2hYCkiLnUPKcV_jMMcXpB1DYRrIiMdB-ewxQLF5cDYw" />
-<title>Coming Soon</title>
+    <title>Gravli</title>
 
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="icon" type="image/png" href="LOGO.png">
 
-<style>
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: "Segoe UI", sans-serif;
-}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
-body {
-    height: 100vh;
-    background: linear-gradient(
-        120deg,
-        #7C3AED,
-        #6D28D9,
-        #4C1D95,
-        #8B5CF6
-    );
-    background-size: 400% 400%;
-    animation: gradientMove 18s ease infinite;
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Segoe UI", sans-serif;
+        }
 
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #fff;
-}
+        body {
+            height: 100vh;
+            background: linear-gradient(
+                120deg,
+                #7C3AED,
+                #6D28D9,
+                #4C1D95,
+                #8B5CF6
+            );
+            background-size: 400% 400%;
+            animation: gradientMove 18s ease infinite;
 
-.container {
-    text-align: center;
-    max-width: 800px;
-    width: 90%;
-}
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+        }
 
-h1 {
-    font-size: 52px;
-    margin-bottom: 15px;
-}
+        .container {
+            text-align: center;
+            max-width: 800px;
+            width: 90%;
+        }
 
-p {
-    font-size: 18px;
-    opacity: 0.95;
-    margin-bottom: 40px;
-}
+        h1 {
+            font-size: 52px;
+            margin-bottom: 15px;
+        }
 
-/* ===== Glass Email Box ===== */
-.email-box {
-    display: flex;
-    justify-content: center;
-    gap: 14px;
-    margin-bottom: 45px;
-    flex-wrap: wrap;
-}
+        p {
+            font-size: 18px;
+            opacity: 0.95;
+            margin-bottom: 40px;
+        }
 
-.email-box input {
-    width: 440px;
-    padding: 18px;
-    font-size: 16px;
-    color: #fff;
+        /* ===== Glass Email Box ===== */
+        .email-box {
+            display: flex;
+            justify-content: center;
+            gap: 14px;
+            margin-bottom: 45px;
+            flex-wrap: wrap;
+        }
 
-    background: rgba(255, 255, 255, 0.2);
-    backdrop-filter: blur(14px);
+        .email-box input {
+            width: 440px;
+            padding: 18px;
+            font-size: 16px;
+            color: #fff;
 
-    border-radius: 16px;
-    border: 1px solid rgba(255, 255, 255, 0.4);
-    outline: none;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(14px);
 
-    box-shadow: 0 10px 30px rgba(0,0,0,0.25);
-}
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            outline: none;
 
-.email-box input::placeholder {
-    color: rgba(255,255,255,0.8);
-}
+            box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+        }
 
-.email-box button {
-    padding: 18px 32px;
-    font-size: 16px;
-    border-radius: 16px;
-    cursor: pointer;
+        .email-box input::placeholder {
+            color: rgba(255,255,255,0.8);
+        }
 
-    background: rgba(255,255,255,0.25);
-    backdrop-filter: blur(14px);
+        .email-box button {
+            padding: 18px 32px;
+            font-size: 16px;
+            border-radius: 16px;
+            cursor: pointer;
 
-    border: 1px solid rgba(255,255,255,0.45);
-    color: #fff;
+            background: rgba(255,255,255,0.25);
+            backdrop-filter: blur(14px);
 
-    transition: all 0.3s ease;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.25);
-}
+            border: 1px solid rgba(255,255,255,0.45);
+            color: #fff;
 
-.email-box button:hover {
-    background: #ffffff;
-    color: #4C1D95;
-    transform: translateY(-3px);
-}
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+        }
 
-/* ===== Success State ===== */
-.success {
-    display: none;
-    font-size: 20px;
-    color: #E9D5FF;
-    animation: fadeIn 0.5s ease;
-}
+        .email-box button:hover {
+            background: #ffffff;
+            color: #4C1D95;
+            transform: translateY(-3px);
+        }
 
-.success i {
-    color: #22C55E;
-    margin-right: 8px;
-}
+        /* ===== Success State ===== */
+        .success {
+            display: none;
+            font-size: 20px;
+            color: #E9D5FF;
+            animation: fadeIn 0.5s ease;
+        }
 
-@keyframes gradientMove {
-    0% {
-        background-position: 0% 50%;
-    }
-    50% {
-        background-position: 100% 50%;
-    }
-    100% {
-        background-position: 0% 50%;
-    }
-}
+        .success i {
+            color: #22C55E;
+            margin-right: 8px;
+        }
 
-/* ===== Social Icons ===== */
-.socials a {
-    font-size: 26px;
-    margin: 0 16px;
-    color: #fff;
-    transition: 0.3s;
-}
+        @keyframes gradientMove {
+            0% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+            100% {
+                background-position: 0% 50%;
+            }
+        }
 
-.socials a:hover {
-    color: #E9D5FF;
-    transform: scale(1.2);
-}
+        /* ===== Social Icons ===== */
+        .socials a {
+            font-size: 26px;
+            margin: 0 16px;
+            color: #fff;
+            transition: 0.3s;
+        }
 
-@media (max-width: 650px) {
-    h1 { font-size: 38px; }
-    .email-box input,
-    .email-box button { width: 100%; }
-}
-</style>
+        .socials a:hover {
+            color: #E9D5FF;
+            transform: scale(1.2);
+        }
+
+        @media (max-width: 650px) {
+            h1 { font-size: 38px; }
+            .email-box input,
+            .email-box button { width: 100%; }
+        }
+    </style>
 </head>
 
 <body>
@@ -168,11 +170,10 @@ p {
     </div>
 
     <div class="socials">
-        <a href="https://www.instagram.com/__apnahandle__" target="_blank">
+        <a href="https://www.instagram.com/gravli.in" target="_blank">
             <i class="fab fa-instagram"></i>
         </a>
         <a href="https://www.linkedin.com/company/gravli" target="_blank">
-           
             <i class="fab fa-linkedin-in"></i>
         </a>
     </div>
@@ -190,10 +191,6 @@ function submitEmail() {
 
 </body>
 </html>
-
-
-
-
 
 
 
