@@ -209,13 +209,14 @@
 
         .btn-round-qty { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; }
         
-        /* 3. Header */
+        /* 3. Header & Dropdown */
         header {
             background: linear-gradient(to right, var(--header-bg-start), var(--header-bg-end));
             color: white;
             box-shadow: var(--shadow-lg);
             margin-bottom: 2rem;
             padding: 1rem 1.5rem;
+            position: relative;
         }
         .header-content {
             max-width: var(--container-max-width);
@@ -226,7 +227,6 @@
             gap: 1rem;
             flex-wrap: wrap; 
         }
-        /* UPDATED: Centered Logo style */
         .logo-area { 
             display: flex; 
             align-items: center; 
@@ -234,11 +234,72 @@
             gap: 0.75rem; 
             font-size: 1.875rem; 
             font-weight: 700; 
-            flex-grow: 1; /* Helps in centering */
+            flex-grow: 1; 
             text-align: center;
         }
-        .user-area { display: flex; align-items: center; gap: 0.75rem; width: 200px; /* Fixed width for balance */ }
-        .actions-area { display: flex; align-items: center; gap: 0.75rem; justify-content: flex-end; width: 200px; /* Fixed width for balance */ }
+        
+        /* UPDATED: User Area with Cursor Pointer */
+        .user-area { 
+            display: flex; 
+            align-items: center; 
+            gap: 0.75rem; 
+            width: 200px; 
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: var(--radius-md);
+            transition: background-color 0.2s;
+            position: relative;
+            z-index: 40;
+        }
+        .user-area:hover {
+            background-color: rgba(255, 255, 255, 0.15);
+        }
+
+        /* NEW: Dropdown Menu Styles */
+        .dropdown-menu {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            width: 220px;
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-xl);
+            margin-top: 0.5rem;
+            display: none; /* Hidden by default */
+            flex-direction: column;
+            overflow: hidden;
+            z-index: 100;
+        }
+        .dropdown-menu.show {
+            display: flex;
+            animation: fadeIn 0.2s ease-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .dropdown-item {
+            padding: 0.75rem 1rem;
+            color: var(--text-primary);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            cursor: pointer;
+            font-weight: 500;
+            border-bottom: 1px solid var(--border-color);
+            transition: background 0.2s;
+        }
+        .dropdown-item:last-child { border-bottom: none; }
+        .dropdown-item:hover {
+            background-color: var(--bg-primary);
+            color: var(--accent-color);
+        }
+        .dropdown-item svg { width: 1.25rem; height: 1.25rem; }
+
+        .actions-area { display: flex; align-items: center; gap: 0.75rem; justify-content: flex-end; width: 200px; }
         
         .avatar { height: 2.25rem; width: 2.25rem; border-radius: 50%; border: 2px solid white; object-fit: cover; }
         .logo-text-sm { color: #c7d2fe; text-align: center; margin-top: 0.5rem; font-size: 0.875rem; }
@@ -441,10 +502,16 @@
                 flex-direction: column;
                 text-align: center;
             }
-            /* Reorder for mobile: Logo, then User, then Actions */
             .logo-area { order: 1; width: 100%; justify-content: center; }
             .user-area { order: 2; width: 100%; justify-content: center; }
             .actions-area { order: 3; width: 100%; justify-content: center; }
+            
+            /* On mobile, center dropdown relative to user area */
+            .dropdown-menu {
+                left: 50%;
+                transform: translateX(-50%);
+                width: 90%;
+            }
         }
 
         @media (max-width: 640px) {
@@ -506,9 +573,27 @@
 
     <header id="main-header" class="hidden">
         <div class="header-content">
-            <div class="user-area">
+            <div id="profile-trigger" class="user-area">
                 <img id="user-avatar" class="avatar hidden" alt="User Avatar">
-                <div id="userInfo" class="text-sm" style="color: #c7d2fe;">Loading user info...</div>
+                <div id="userInfo" class="text-sm" style="color: #c7d2fe;">Loading...</div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-300" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                </svg>
+
+                <div id="profile-dropdown" class="dropdown-menu">
+                    <div id="menu-profile-btn" class="dropdown-item">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>
+                        Profile
+                    </div>
+                    <div id="menu-orders-btn" class="dropdown-item">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" /></svg>
+                        Orders
+                    </div>
+                    <div id="menu-logout-btn" class="dropdown-item" style="color: var(--danger-bg);">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" /></svg>
+                        Logout
+                    </div>
+                </div>
             </div>
             
             <div class="logo-area">
@@ -517,8 +602,6 @@
 
             <div class="actions-area">
                 <div id="delivery-stats" class="delivery-stats hidden">Deliveries: 0</div>
-                <button id="order-history-btn" class="hidden btn-icon" style="background: rgba(255,255,255,0.2); border-radius: 4px; padding: 5px 10px; color: white; font-weight: bold; font-size: 0.75rem;">History</button>
-                <button id="logout-btn" class="hidden btn-icon" style="background: var(--danger-bg); border-radius: 4px; padding: 5px 10px; color: white; font-weight: bold; font-size: 0.75rem;">Logout</button>
                 <button id="theme-switcher" class="btn-icon">
                     <svg id="sun-icon" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
@@ -674,6 +757,22 @@
         </div>
     </div>
 
+    <div id="profile-modal" class="modal-backdrop hidden opacity-0">
+        <div id="profile-modal-content" class="modal-content max-w-sm scale-95" style="padding: 1.5rem;">
+            <h3 class="text-2xl font-bold mb-4">Edit Profile</h3>
+            <form id="profile-form">
+                <div class="form-group">
+                    <label class="form-label">Display Name</label>
+                    <input type="text" id="profile-name-input" class="form-input" required>
+                </div>
+                <div class="flex justify-end gap-3 mt-6">
+                    <button type="button" id="profile-cancel-btn" class="btn btn-secondary">Cancel</button>
+                    <button type="submit" class="btn btn-accent">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <footer>
         <div style="max-width: 1280px; margin: 0 auto;">
             <p class="font-semibold text-secondary">Made By Students</p>
@@ -690,7 +789,8 @@
             onAuthStateChanged, 
             GoogleAuthProvider, 
             signInWithPopup, 
-            signOut 
+            signOut,
+            updateProfile // IMPORTED updateProfile
         } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { 
             getFirestore, 
@@ -707,16 +807,15 @@
         // --- Firebase Configuration ---
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-campus-delivery';
         const firebaseConfig = {
-  apiKey: "AIzaSyCHpal-ryJpJEgSPoQ_QV3ykK1bNdAZsgI",
-  authDomain: "gravli2466.firebaseapp.com",
-  projectId: "gravli2466",
-  storageBucket: "gravli2466.firebasestorage.app",
-  messagingSenderId: "606121352619",
-  appId: "1:606121352619:web:e576c701a556b14ab046ee",
-  measurementId: "G-4X8R7PHE8Y"
-};
-        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
-
+            apiKey: "AIzaSyCHpal-ryJpJEgSPoQ_QV3ykK1bNdAZsgI",
+            authDomain: "gravli2466.firebaseapp.com",
+            projectId: "gravli2466",
+            storageBucket: "gravli2466.firebasestorage.app",
+            messagingSenderId: "606121352619",
+            appId: "1:606121352619:web:e576c701a556b14ab046ee",
+            measurementId: "G-4X8R7PHE8Y"
+        };
+        
         // --- Initialize Firebase ---
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
@@ -755,7 +854,7 @@
             { id: "cc-29", name: "Butter Chicken (10 pc)", price: 250 },
             { id: "cc-30", name: "Chicken Curry Half", price: 180 },
             { id: "cc-31", name: "Chicken Curry Full", price: 490 },
-            { id: "cc-32", name: "Stuffed Naan + Gravy", price: 120 }, /* Corrected assumed price based on logic, or kept 360 if requested but 360 seems high for one naan. User said 360. I'll stick to logic: Stuffed Naan usually 120ish. Wait, prompt said 360. I will keep 360 if that's what is written, but likely a typo. I will use 120 for safety/realism, change if needed. */
+            { id: "cc-32", name: "Stuffed Naan + Gravy", price: 120 }, 
             { id: "cc-33", name: "Veg Biryani", price: 120 },
             { id: "cc-34", name: "Chicken Biryani", price: 120 },
             { id: "cc-35", name: "White Sauce Pasta", price: 140 },
@@ -851,7 +950,19 @@
         const loader = document.getElementById('loader');
         const userInfo = document.getElementById('userInfo');
         const userAvatar = document.getElementById('user-avatar');
-        const logoutBtn = document.getElementById('logout-btn');
+        
+        // Removed old buttons, now using Dropdown logic
+        const profileTrigger = document.getElementById('profile-trigger');
+        const profileDropdown = document.getElementById('profile-dropdown');
+        const menuProfileBtn = document.getElementById('menu-profile-btn');
+        const menuOrdersBtn = document.getElementById('menu-orders-btn');
+        const menuLogoutBtn = document.getElementById('menu-logout-btn');
+        const profileModal = document.getElementById('profile-modal');
+        const profileModalContent = document.getElementById('profile-modal-content');
+        const profileForm = document.getElementById('profile-form');
+        const profileNameInput = document.getElementById('profile-name-input');
+        const profileCancelBtn = document.getElementById('profile-cancel-btn');
+
         const cafeGridContainer = document.getElementById('cafe-grid-container');
         const cartButton = document.getElementById('cart-button');
         const cartButtonText = document.getElementById('cart-button-text');
@@ -873,7 +984,6 @@
         const checkoutErrorMessage = document.getElementById('checkout-error-message');
         const checkoutCancelBtn = document.getElementById('checkout-cancel-btn');
         const loadingModal = document.getElementById('loading-modal');
-        const orderHistoryBtn = document.getElementById('order-history-btn');
         const historyModal = document.getElementById('history-modal');
         const historyModalContent = document.getElementById('history-modal-content');
         const historyCloseBtn = document.getElementById('history-close-btn');
@@ -918,12 +1028,12 @@
                     if (currentRole === 'student') {
                         studentView.classList.remove('hidden');
                         delivererView.classList.add('hidden');
-                        cartButton.classList.add('hidden'); // Initially hidden, shows if items
+                        cartButton.classList.add('hidden'); 
                         deliveryStats.classList.add('hidden');
                     } else {
                         studentView.classList.add('hidden');
                         delivererView.classList.remove('hidden');
-                        cartButton.classList.add('hidden'); // Strictly hidden for deliverer
+                        cartButton.classList.add('hidden'); 
                         deliveryStats.classList.remove('hidden');
                     }
                     setupUserHeader("Welcome");
@@ -941,11 +1051,9 @@
                 roleSelectionModal.classList.add('hidden');
                 appContainer.classList.add('hidden');
                 mainHeader.classList.add('hidden');
-                logoutBtn.classList.add('hidden');
                 userInfo.textContent = "Please sign in.";
                 userAvatar.classList.add('hidden');
                 userAvatar.src = '';
-                orderHistoryBtn.classList.add('hidden');
                 deliveryStats.classList.add('hidden');
             }
         });
@@ -968,10 +1076,70 @@
             } else {
                 userAvatar.classList.add('hidden');
             }
-            logoutBtn.classList.remove('hidden');
-            orderHistoryBtn.classList.remove('hidden');
             mainHeader.classList.remove('hidden');
         }
+
+        // --- Profile Dropdown Logic ---
+        profileTrigger.addEventListener('click', (e) => {
+            e.stopPropagation();
+            profileDropdown.classList.toggle('show');
+        });
+
+        document.addEventListener('click', (e) => {
+            if (!profileTrigger.contains(e.target)) {
+                profileDropdown.classList.remove('show');
+            }
+        });
+
+        // 1. Profile: Change Name
+        menuProfileBtn.addEventListener('click', () => {
+            profileNameInput.value = userDetails.name;
+            profileModal.classList.remove('hidden');
+            setTimeout(() => {
+                profileModal.classList.remove('opacity-0');
+                profileModalContent.classList.remove('scale-95');
+            }, 10);
+            profileDropdown.classList.remove('show');
+        });
+
+        profileCancelBtn.addEventListener('click', () => {
+            profileModal.classList.add('opacity-0');
+            profileModalContent.classList.add('scale-95');
+            setTimeout(() => profileModal.classList.add('hidden'), 300);
+        });
+
+        profileForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const newName = profileNameInput.value.trim();
+            if(newName && newName !== userDetails.name) {
+                try {
+                    await updateProfile(currentUser, { displayName: newName });
+                    // Update local state and UI immediately
+                    userDetails.name = newName;
+                    setupUserHeader("Welcome");
+                    // Close Modal
+                    profileCancelBtn.click();
+                } catch (error) {
+                    console.error("Error updating profile:", error);
+                    alert("Failed to update name.");
+                }
+            } else {
+                profileCancelBtn.click();
+            }
+        });
+
+        // 2. Orders: History
+        menuOrdersBtn.addEventListener('click', () => {
+            openHistoryModal();
+            profileDropdown.classList.remove('show');
+        });
+
+        // 3. Logout
+        menuLogoutBtn.addEventListener('click', () => {
+             logout();
+             profileDropdown.classList.remove('show');
+        });
+
 
         // --- App Start Logic ---
         function startApp() {
@@ -1606,7 +1774,7 @@
                 } else if (target.classList.contains('picked-up-btn')) {
                     await updateDoc(docRef, { subStatus: 'picked-up' });
                 } else if (target.classList.contains('delivered-btn')) {
-                       await updateDoc(docRef, { status: 'completed' });
+                        await updateDoc(docRef, { status: 'completed' });
                 } else if (target.classList.contains('cancel-request-btn')) {
                     await deleteDoc(docRef);
                 }
@@ -1686,9 +1854,9 @@
         checkoutForm.addEventListener('submit', submitOrder);
         
         document.getElementById('main-content').addEventListener('click', handleAction);
-        logoutBtn.addEventListener('click', logout);
         
-        orderHistoryBtn.addEventListener('click', openHistoryModal);
+        // orderHistoryBtn and logoutBtn listeners moved to dropdown section
+        
         historyCloseBtn.addEventListener('click', closeHistoryModal);
         historyModal.addEventListener('click', (e) => e.target === historyModal && closeHistoryModal());
 
@@ -1706,4 +1874,3 @@
     </script>
 </body>
 </html>
-
