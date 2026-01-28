@@ -238,34 +238,39 @@
             text-align: center;
         }
         
-        /* UPDATED: User Area with Cursor Pointer */
+        /* UPDATED: User Area to be Highlighted and Arrow Free */
         .user-area { 
             display: flex; 
             align-items: center; 
+            justify-content: center; /* Center content now that arrow is gone */
             gap: 0.75rem; 
             width: 200px; 
             cursor: pointer;
-            padding: 0.5rem;
-            border-radius: var(--radius-md);
-            transition: background-color 0.2s;
+            padding: 0.5rem 1rem; /* Added horizontal padding */
+            border-radius: 50px; /* Pill shape for highlight effect */
+            background-color: rgba(255, 255, 255, 0.2); /* Semi-transparent background */
+            border: 1px solid rgba(255, 255, 255, 0.25); /* Subtle border highlight */
+            transition: all 0.2s;
             position: relative;
             z-index: 40;
+            backdrop-filter: blur(4px);
         }
         .user-area:hover {
-            background-color: rgba(255, 255, 255, 0.15);
+            background-color: rgba(255, 255, 255, 0.3); /* Brighter on hover */
+            transform: translateY(-1px);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
         }
 
         /* NEW: Dropdown Menu Styles */
         .dropdown-menu {
             position: absolute;
-            top: 100%;
+            top: 120%; /* Pushed down slightly */
             left: 0;
-            width: 220px;
+            width: 100%; /* Match parent width */
             background-color: var(--bg-secondary);
             border: 1px solid var(--border-color);
             border-radius: var(--radius-md);
             box-shadow: var(--shadow-xl);
-            margin-top: 0.5rem;
             display: none; /* Hidden by default */
             flex-direction: column;
             overflow: hidden;
@@ -575,11 +580,7 @@
         <div class="header-content">
             <div id="profile-trigger" class="user-area">
                 <img id="user-avatar" class="avatar hidden" alt="User Avatar">
-                <div id="userInfo" class="text-sm" style="color: #c7d2fe;">Loading...</div>
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-300" viewBox="0 0 20 20" fill="currentColor">
-                    <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
-                </svg>
-
+                <div id="userInfo" class="text-sm" style="color: #ffffff; font-weight: 500;">Loading...</div>
                 <div id="profile-dropdown" class="dropdown-menu">
                     <div id="menu-profile-btn" class="dropdown-item">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>
