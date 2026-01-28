@@ -3,29 +3,45 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gravli - Brutalist Edition</title>
+    <title>Gravli - Glassmorphism Edition</title>
     <link rel="icon" type="image/png" href="LOGO.png">
-    <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     
     <style>
-        /* --- BRUTALIST THEME VARIABLES --- */
+        /* --- GLASSMORPHISM THEME VARIABLES --- */
         :root {
-            --bg-red: #ff3b30;       /* The vibrant red from the left side */
-            --bg-beige: #fdf5e6;     /* The beige/newsprint from the right side */
-            --black: #000000;
-            --white: #ffffff;
+            /* The vibrant, multi-color gradient background */
+            --bg-gradient: linear-gradient(135deg, #1cb5e0 0%, #000851 100%), 
+                           linear-gradient(45deg, #ff00cc 0%, #333399 100%);
+            --bg-blend: screen; /* Blend mode for the multi-layer background */
             
-            --border-thick: 4px solid var(--black);
-            --border-thin: 2px solid var(--black);
+            /* Glass Effect Variables */
+            --glass-bg: rgba(255, 255, 255, 0.1); /* Semi-transparent white */
+            --glass-border: 1px solid rgba(255, 255, 255, 0.15); /* Subtle light border */
+            --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37); /* Soft shadow for depth */
+            --glass-blur: blur(15px); /* The frosted effect */
             
-            --shadow-hard: 6px 6px 0px 0px var(--black);
-            --shadow-hover: 2px 2px 0px 0px var(--black);
-            
-            --font-display: 'Archivo Black', sans-serif;
-            --font-body: 'Space Mono', monospace;
+            /* Text & Accents */
+            --text-primary: #ffffff;
+            --text-secondary: rgba(255, 255, 255, 0.7);
+            --accent-color: #00d2ff; /* A bright, glowing blue for accents */
+            --accent-hover: #3a7bd5;
+
+            /* Status Colors (adapted for glass) */
+            --success-bg: rgba(34, 197, 94, 0.2);
+            --success-text: #4ade80;
+            --danger-bg: rgba(239, 68, 68, 0.2);
+            --danger-text: #f87171;
+            --warning-bg: rgba(245, 158, 11, 0.2);
+            --warning-text: #fbbf24;
+
+            /* Layout & Spacing */
+            --container-max-width: 1280px;
+            --radius-lg: 1rem;
+            --radius-xl: 1.5rem;
         }
 
-        /* --- RESET & BASE --- */
+        /* --- RESET & BASE STYLES --- */
         * {
             box-sizing: border-box;
             margin: 0;
@@ -33,613 +49,464 @@
         }
 
         body {
-            font-family: var(--font-body);
-            color: var(--black);
-            background: var(--bg-beige); /* Fallback */
-            /* The Split Background Effect */
-            background: linear-gradient(90deg, var(--bg-red) 0%, var(--bg-red) 40%, var(--bg-beige) 40%, var(--bg-beige) 100%);
+            font-family: 'Inter', sans-serif;
+            color: var(--text-primary);
+            line-height: 1.5;
             min-height: 100vh;
+            /* Apply the complex gradient background */
+            background: var(--bg-gradient);
+            background-blend-mode: var(--bg-blend);
+            background-attachment: fixed; /* Keeps background still while scrolling */
             overflow-x: hidden;
         }
 
-        /* Responsive Background for Mobile */
-        @media (max-width: 768px) {
-            body {
-                background: var(--bg-red); /* Mostly red on mobile, or stack them */
-                background: linear-gradient(180deg, var(--bg-red) 30%, var(--bg-beige) 30%);
-            }
+        /* THE GLASS CLASS - Apply this to any container for the effect */
+        .glass {
+            background: var(--glass-bg);
+            box-shadow: var(--glass-shadow);
+            backdrop-filter: var(--glass-blur);
+            -webkit-backdrop-filter: var(--glass-blur); /* For Safari */
+            border-radius: var(--radius-lg);
+            border: var(--glass-border);
         }
 
-        /* --- BACKGROUND DECORATION (The "BRUTALISM" Text) --- */
-        .bg-text {
-            position: fixed;
-            top: 10%;
-            right: -5%;
-            font-family: var(--font-display);
-            font-size: 12rem;
-            color: var(--black);
-            opacity: 0.1; /* Subtle */
-            pointer-events: none;
-            z-index: 0;
-            overflow: hidden;
-            line-height: 0.8;
-            transform: rotate(-5deg);
-        }
-
-        /* --- TYPOGRAPHY --- */
-        h1, h2, h3, h4 {
-            font-family: var(--font-display);
-            text-transform: uppercase;
-            letter-spacing: -1px;
-            line-height: 1;
-        }
-
-        button {
-            cursor: pointer;
-            font-family: var(--font-display);
-            text-transform: uppercase;
-        }
-
-        /* --- UTILS --- */
+        /* --- TYPOGRAPHY & UTILITIES --- */
+        h1, h2, h3, h4 { font-weight: 700; letter-spacing: -0.025em; }
+        .text-secondary { color: var(--text-secondary); }
+        .font-bold { font-weight: 700; }
+        .text-2xl { font-size: 1.5rem; }
         .hidden { display: none !important; }
         .flex { display: flex; }
         .flex-col { flex-direction: column; }
         .items-center { align-items: center; }
         .justify-between { justify-content: space-between; }
-        .justify-end { justify-content: flex-end; }
-        .gap-2 { gap: 0.5rem; }
+        .gap-4 { gap: 1rem; }
         .w-full { width: 100%; }
         .mb-4 { margin-bottom: 1rem; }
-        .text-2xl { font-size: 1.5rem; }
-        .font-bold { font-weight: bold; }
+        .text-center { text-align: center; }
         
         /* --- HEADER --- */
         header {
-            background-color: var(--bg-beige);
-            border-bottom: var(--border-thick);
+            /* The header itself is a glass element */
+            @extend .glass;
+            background: rgba(255, 255, 255, 0.05); /* Slightly more transparent than other glass */
             padding: 1rem 2rem;
+            margin-bottom: 3rem;
+            border-top: none; border-left: none; border-right: none;
+            border-radius: 0 0 var(--radius-lg) var(--radius-lg);
             position: relative;
-            z-index: 20;
+            z-index: 50;
         }
-
         .header-content {
-            max-width: 1400px;
+            max-width: var(--container-max-width);
             margin: 0 auto;
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
+        .logo-area { font-size: 2rem; font-weight: 900; background: linear-gradient(to right, #fff, var(--accent-color)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .logo-text-sm { text-align: center; margin-top: 0.5rem; opacity: 0.8; font-size: 0.9rem; }
 
-        /* Logo Area */
-        .logo-area {
-            font-family: var(--font-display);
-            font-size: 2rem;
-            text-transform: uppercase;
-            border: var(--border-thick);
-            padding: 0.5rem 1rem;
-            background: var(--white);
-            box-shadow: var(--shadow-hard);
-        }
-
-        /* User Profile Button */
+        /* User Area & Dropdown */
         .user-area {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
+            /* User area is a nested glass element */
+            @extend .glass;
             padding: 0.5rem 1rem;
-            background: var(--white);
-            border: var(--border-thick);
+            border-radius: 50px; /* Pill shape */
             cursor: pointer;
-            transition: all 0.1s;
+            display: flex; align-items: center; gap: 0.75rem;
+            transition: all 0.3s ease;
         }
-        .user-area:hover {
-            transform: translate(2px, 2px);
-            box-shadow: var(--shadow-hover);
-        }
-        .user-area:active {
-            transform: translate(4px, 4px);
-            box-shadow: none;
-        }
-        .avatar {
-            width: 40px;
-            height: 40px;
-            border: 2px solid var(--black);
-            border-radius: 50%; /* Keep avatar round or make square for full brute? Let's keep round for contrast */
-            object-fit: cover;
-        }
+        .user-area:hover { background: rgba(255, 255, 255, 0.2); transform: translateY(-2px); }
+        .avatar { width: 36px; height: 36px; border-radius: 50%; border: 2px solid var(--accent-color); }
 
-        /* Dropdown Menu */
         .dropdown-menu {
+            /* Dropdown is a glass element */
+            @extend .glass;
             position: absolute;
-            top: 110%;
-            left: 0;
-            width: 250px;
-            background: var(--white);
-            border: var(--border-thick);
-            box-shadow: var(--shadow-hard);
+            top: 100%; left: 0;
+            width: 220px;
+            margin-top: 10px;
             display: none;
             flex-direction: column;
+            overflow: hidden;
             z-index: 100;
         }
-        .dropdown-menu.show { display: flex; }
-        
+        .dropdown-menu.show { display: flex; animation: fadeIn 0.2s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
         .dropdown-item {
-            padding: 1rem;
-            border-bottom: var(--border-thin);
-            font-weight: bold;
-            display: flex;
-            align-items: center;
-            gap: 10px;
+            padding: 0.8rem 1rem;
+            display: flex; align-items: center; gap: 0.75rem;
+            cursor: pointer;
             transition: background 0.2s;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
         }
-        .dropdown-item:hover {
-            background: var(--black);
-            color: var(--white);
-        }
+        .dropdown-item:hover { background: rgba(255, 255, 255, 0.1); color: var(--accent-color); }
         .dropdown-item:last-child { border-bottom: none; }
 
-        /* --- LAYOUT --- */
-        #app {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 2rem;
-            position: relative;
-            z-index: 10;
-        }
-
-        /* --- CAFE GRID (The Cards) --- */
-        .cafe-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 2rem;
-        }
-        
-        /* The "Corner Cafe" Feature Effect (First Item) */
-        @media (min-width: 1024px) {
-            .cafe-grid > .cafe-box:first-child {
-                grid-column: span 2;
-                grid-row: span 2;
-                background: var(--white);
-            }
-            .cafe-grid > .cafe-box:first-child .cafe-box-image {
-                height: 300px;
-                font-size: 3rem;
-            }
-        }
-
-        .cafe-box {
-            background: var(--white); /* Default card bg */
-            border: var(--border-thick);
-            box-shadow: var(--shadow-hard);
-            transition: transform 0.1s, box-shadow 0.1s;
-            cursor: pointer;
-            display: flex;
-            flex-direction: column;
-            position: relative;
-        }
-
-        /* Varying backgrounds for that random brutalist look */
-        .cafe-box:nth-child(even) { background: #e0e7ff; } /* Light blue-ish */
-        .cafe-box:nth-child(3n) { background: #fef3c7; } /* Light yellow-ish */
-
-        .cafe-box:hover {
-            transform: translate(-4px, -4px);
-            box-shadow: 10px 10px 0px 0px var(--black);
-            z-index: 5;
-        }
-        .cafe-box:active {
-            transform: translate(2px, 2px);
-            box-shadow: 2px 2px 0px 0px var(--black);
-        }
-
-        .cafe-box-image {
-            height: 150px;
-            border-bottom: var(--border-thick);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-family: var(--font-display);
-            font-size: 1.5rem;
-            text-align: center;
-            padding: 1rem;
-            background: rgba(0,0,0,0.05); /* Texture */
-        }
-        
-        /* Add an icon placeholder style */
-        .cafe-box-image::before {
-            content: '☕'; 
-            display: block;
-            font-size: 2em;
-            margin-bottom: 0.2em;
-        }
-
-        .cafe-box-name {
-            padding: 1rem;
-            font-weight: bold;
-            text-align: center;
-            font-size: 1.2rem;
-            text-transform: uppercase;
-        }
-
         /* --- BUTTONS --- */
+        button { cursor: pointer; font-family: inherit; border: none; }
         .btn {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
+            /* Buttons are also glass elements */
+            @extend .glass;
+            display: inline-flex; align-items: center; justify-content: center;
             padding: 0.8rem 1.5rem;
-            border: var(--border-thick);
-            font-weight: bold;
-            transition: all 0.1s;
-            box-shadow: 4px 4px 0px 0px var(--black);
+            font-weight: 600;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.1); /* Base glass button */
+            color: var(--text-primary);
         }
-        .btn:active {
-            transform: translate(2px, 2px);
-            box-shadow: none;
-        }
+        .btn:hover { transform: translateY(-2px); box-shadow: 0 10px 20px -10px rgba(0,0,0,0.5); }
+        .btn:active { transform: translateY(0); }
 
-        .btn-google { background: var(--white); color: var(--black); }
-        .btn-student { background: var(--bg-red); color: var(--white); width: 100%; font-size: 1.2rem; }
-        .btn-deliverer { background: var(--black); color: var(--white); width: 100%; font-size: 1.2rem; }
-        .btn-accent { background: var(--bg-red); color: var(--white); }
-        .btn-secondary { background: var(--white); color: var(--black); }
-        .btn-danger { background: var(--black); color: var(--white); border-color: var(--white); }
-        .btn-sm { padding: 0.4rem 0.8rem; font-size: 0.8rem; box-shadow: 2px 2px 0px 0px var(--black); }
-        .btn-icon { border: none; box-shadow: none; padding: 0.5rem; }
-        .btn-round-qty { 
-            width: 30px; height: 30px; 
-            border: 2px solid var(--black); 
-            display: flex; align-items: center; justify-content: center; 
-            font-weight: bold; 
-            background: var(--white);
-        }
-        .btn-round-qty:active { background: var(--black); color: var(--white); }
-
-        /* --- MODALS --- */
-        .modal-backdrop {
-            position: fixed; inset: 0;
-            background: rgba(0,0,0,0.8); /* Darker backdrop */
-            backdrop-filter: blur(2px);
-            z-index: 50;
-            display: flex; align-items: center; justify-content: center;
-            padding: 1rem;
-        }
+        .btn-accent { background: linear-gradient(135deg, var(--accent-color), #3a7bd5); border: none; }
+        .btn-accent:hover { background: linear-gradient(135deg, #3a7bd5, var(--accent-color)); }
         
-        .modal-content {
-            background: var(--white);
-            border: var(--border-thick);
-            box-shadow: 15px 15px 0px 0px var(--black); /* Massive shadow */
-            width: 100%;
-            max-width: 500px;
-            max-height: 90vh;
-            padding: 2rem;
-            display: flex; flex-direction: column;
+        .btn-google { background: rgba(255, 255, 255, 0.9); color: #333; border: none; }
+        .btn-google:hover { background: #fff; }
+        
+        .btn-secondary { background: rgba(255, 255, 255, 0.05); }
+        .btn-secondary:hover { background: rgba(255, 255, 255, 0.15); }
+        
+        .btn-danger { background: linear-gradient(135deg, #ff416c, #ff4b2b); border: none; }
+        
+        .btn-icon { padding: 0.5rem; border-radius: 50%; background: transparent; color: var(--text-primary); transition: background 0.2s; }
+        .btn-icon:hover { background: rgba(255,255,255,0.1); }
+
+        /* --- CARDS & GRID --- */
+        #app { max-width: var(--container-max-width); margin: 0 auto; padding: 2rem; }
+        .cafe-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 1.5rem; }
+        
+        .cafe-box {
+            /* Cafe cards are glass elements */
+            @extend .glass;
+            cursor: pointer;
+            transition: all 0.3s ease;
             overflow: hidden;
-            transform: rotate(-1deg); /* Slight tilt for attitude */
+            display: flex; flex-direction: column;
         }
-        
-        /* Reset modal rotation on small screens */
-        @media (max-width: 640px) {
-            .modal-content { transform: none; box-shadow: 8px 8px 0px 0px var(--black); }
+        .cafe-box:hover { transform: translateY(-5px) scale(1.02); border-color: var(--accent-color); }
+        .cafe-box-image {
+            height: 160px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 3rem; font-weight: 700;
+            background: rgba(0,0,0,0.1); /* Slight tint for image area */
+            border-bottom: 1px solid rgba(255,255,255,0.05);
         }
+        .cafe-box-name { padding: 1rem; text-align: center; font-weight: 600; }
 
-        .login-card {
-            background: var(--white);
-            border: var(--border-thick);
-            box-shadow: var(--shadow-hard);
-            padding: 3rem;
-            text-align: center;
-            max-width: 400px;
-        }
-
-        /* --- LISTS & CART --- */
         .card-panel {
-            background: var(--white);
-            border: var(--border-thick);
-            box-shadow: 4px 4px 0px 0px var(--black);
+            /* Order/List items are glass panels */
+            @extend .glass;
             padding: 1.5rem;
             margin-bottom: 1rem;
         }
 
-        .menu-item, .cart-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 2px dashed var(--black);
-            padding: 1rem 0;
+        /* --- MODALS --- */
+        .modal-backdrop {
+            position: fixed; inset: 0; z-index: 100;
+            background: rgba(0, 0, 0, 0.6); /* Darker backdrop for contrast */
+            backdrop-filter: blur(5px);
+            display: flex; align-items: center; justify-content: center; padding: 1rem;
+            opacity: 0; pointer-events: none; transition: all 0.3s;
         }
-        .menu-item:last-child { border-bottom: none; }
+        .modal-backdrop.show { opacity: 1; pointer-events: auto; }
+        
+        .modal-content {
+            /* Modals are large glass containers */
+            @extend .glass;
+            background: rgba(255, 255, 255, 0.15); /* Slightly more opaque */
+            padding: 2rem;
+            width: 100%; max-width: 500px;
+            max-height: 90vh; overflow-y: auto;
+            transform: scale(0.95); transition: all 0.3s;
+        }
+        .modal-backdrop.show .modal-content { transform: scale(1); }
 
-        .request-list { gap: 1.5rem; display: flex; flex-direction: column; }
-
-        /* --- INPUTS --- */
+        /* --- FORMS --- */
         .form-input, .form-select {
-            width: 100%;
-            padding: 0.8rem;
-            border: var(--border-thick);
-            background: var(--white);
-            font-family: var(--font-body);
-            font-size: 1rem;
-            border-radius: 0;
+            width: 100%; padding: 0.8rem 1rem;
+            @extend .glass;
+            background: rgba(0, 0, 0, 0.2); /* Darker glass for inputs */
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: var(--text-primary);
+            border-radius: var(--radius-lg);
+            outline: none; transition: border-color 0.3s;
         }
-        .form-input:focus {
-            background: #fffbea;
-            outline: none;
-            box-shadow: 4px 4px 0px 0px var(--black);
-        }
+        .form-input:focus, .form-select:focus { border-color: var(--accent-color); }
+        .form-label { display: block; margin-bottom: 0.5rem; font-weight: 600; }
+        select.form-select option { background-color: #333; color: white; } /* Fix for select dropdowns */
 
         /* --- FLOATING ELEMENTS --- */
         #cart-button {
-            position: fixed;
-            bottom: 2rem; right: 2rem;
-            background: var(--bg-red);
-            color: var(--white);
-            padding: 1rem 2rem;
-            border: var(--border-thick);
-            box-shadow: var(--shadow-hard);
-            font-family: var(--font-display);
-            text-transform: uppercase;
-            font-size: 1.2rem;
-            z-index: 40;
-            transition: transform 0.2s;
+            /* Floating cart is a glass button */
+            @extend .btn; @extend .btn-accent;
+            position: fixed; bottom: 2rem; right: 2rem; z-index: 90;
+            padding: 1rem 1.5rem; border-radius: 50px;
+            box-shadow: 0 10px 25px -5px rgba(0, 210, 255, 0.5);
         }
-        #cart-button:hover { transform: scale(1.1) rotate(-3deg); }
 
         #active-order-bar {
-            position: fixed; bottom: 0; left: 0; right: 0;
-            background: var(--black);
-            color: var(--white);
-            padding: 1rem;
-            border-top: 4px solid var(--white);
-            z-index: 30;
-            cursor: pointer;
+            /* Active order bar is a glass bar at the bottom */
+            @extend .glass;
+            position: fixed; bottom: 1rem; left: 50%; transform: translateX(-50%);
+            width: 90%; max-width: var(--container-max-width);
+            z-index: 80; cursor: pointer;
+            padding: 1rem 1.5rem;
+            border-radius: 50px;
+            background: rgba(0, 210, 255, 0.15); /* Accent tint */
+            border: 1px solid rgba(0, 210, 255, 0.3);
         }
-        .active-order-content {
-            max-width: 1400px; margin: 0 auto;
-            display: flex; justify-content: space-between; align-items: center;
-        }
+        .active-order-content { display: flex; justify-content: space-between; align-items: center; }
 
-        /* --- UTILITY ANIMATIONS --- */
-        .animate-spin { animation: spin 1s linear infinite; }
-        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-
-        /* --- Badges --- */
-        .badge {
-            display: inline-block;
-            padding: 0.2rem 0.5rem;
-            border: 2px solid var(--black);
-            font-weight: bold;
-            font-size: 0.8rem;
-            text-transform: uppercase;
-        }
-        .badge-open { background: #6ee7b7; color: black; }
-        .badge-progress { background: #fcd34d; color: black; }
-        .badge-completed { background: #93c5fd; color: black; }
-
-        /* --- Footer --- */
-        footer {
-            background: var(--black);
-            color: var(--white);
-            padding: 4rem 2rem;
-            text-align: center;
-            font-family: var(--font-body);
-            border-top: 4px solid var(--white);
-            margin-top: 4rem;
-        }
+        /* --- MISC & FOOTER --- */
+        .menu-item, .cart-item { padding: 1rem 0; border-bottom: 1px solid rgba(255,255,255,0.1); display: flex; justify-content: space-between; align-items: center; }
+        .badge { padding: 0.25rem 0.75rem; border-radius: 50px; font-size: 0.75rem; font-weight: 600; }
+        .badge-open { background: var(--success-bg); color: var(--success-text); }
+        .badge-progress { background: var(--warning-bg); color: var(--warning-text); }
+        .badge-completed { background: rgba(255,255,255,0.1); color: var(--text-primary); }
         
-        .scrollable-y { overflow-y: auto; flex: 1; }
+        footer { text-align: center; padding: 3rem; margin-top: 4rem; border-top: 1px solid rgba(255,255,255,0.05); color: var(--text-secondary); }
+        .scrollable-y { overflow-y: auto; max-height: 60vh; padding-right: 0.5rem; }
+        /* Custom scrollbar for glass look */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: rgba(255,255,255,0.05); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.3); }
+
+        /* Utility class for elements that need the glass style */
+        .glass {
+            background: var(--glass-bg);
+            box-shadow: var(--glass-shadow);
+            backdrop-filter: var(--glass-blur);
+            -webkit-backdrop-filter: var(--glass-blur);
+            border-radius: var(--radius-lg);
+            border: var(--glass-border);
+        }
     </style>
 </head>
 <body>
 
-    <div class="bg-text">BRUTALISM</div>
-
-    <div id="login-modal" class="modal-backdrop">
-        <div class="login-card">
-            <h2 class="text-2xl mb-4">GRAVLI</h2>
-            <p class="mb-8 font-bold">CAMPUS DELIVERY SYSTEM</p>
+    <div id="login-modal" class="modal-backdrop show">
+        <div class="login-card modal-content text-center">
+            <h2 class="text-2xl font-bold mb-4">Welcome to Gravli!</h2>
+            <p class="mb-8 text-secondary">Sign in to your on-campus delivery hub.</p>
             <button id="google-signin-btn" class="btn btn-google w-full">
-                <svg class="w-6 h-6 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="24" height="24"><path fill="#FFC107" d="M43.6 20.3h-2.2V20.3H24v7.3h10.9c-1.5 4.8-5.7 8.3-10.9 8.3-6.5 0-11.8-5.3-11.8-11.8S17.5 12.1 24 12.1c3.1 0 5.9 1.2 7.9 3.2l5.8-5.8C34.5 6.3 29.6 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.6-.4-3.7z"/><path fill="#FF3D00" d="m6.3 14.8 5.8 4.6C10.6 22.5 10 25.6 10 29s.6 6.5 1.7 9.6l-5.8 4.6C3.9 39.1 2 34.3 2 29s1.9-10.1 4.3-14.2z"/><path fill="#4CAF50" d="m29 45.1 6.1-4.7c1.8 1.1 3.8 1.8 6 1.8 2.2 0 4.2-.7 6-1.8l6.1 4.7c-3.6 3.1-8.1 5-13.1 5s-9.5-1.9-13.1-5z"/><path fill="#1976D2" d="M43.6 20.3h-2.2V20.3H24v7.3h10.9c-1.5 4.8-5.7 8.3-10.9 8.3-6.5 0-11.8-5.3-11.8-11.8S17.5 12.1 24 12.1c3.1 0 5.9 1.2 7.9 3.2l5.8-5.8C34.5 6.3 29.6 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.6-.4-3.7z"/></svg>
+                <svg class="w-6 h-6 mr-3" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="24px" height="24px"><path fill="#FFC107" d="M43.6 20.3h-2.2V20.3H24v7.3h10.9c-1.5 4.8-5.7 8.3-10.9 8.3-6.5 0-11.8-5.3-11.8-11.8S17.5 12.1 24 12.1c3.1 0 5.9 1.2 7.9 3.2l5.8-5.8C34.5 6.3 29.6 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.6-.4-3.7z"/><path fill="#FF3D00" d="m6.3 14.8 5.8 4.6C10.6 22.5 10 25.6 10 29s.6 6.5 1.7 9.6l-5.8 4.6C3.9 39.1 2 34.3 2 29s1.9-10.1 4.3-14.2z"/><path fill="#4CAF50" d="m29 45.1 6.1-4.7c1.8 1.1 3.8 1.8 6 1.8 2.2 0 4.2-.7 6-1.8l6.1 4.7c-3.6 3.1-8.1 5-13.1 5s-9.5-1.9-13.1-5z"/><path fill="#1976D2" d="M43.6 20.3h-2.2V20.3H24v7.3h10.9c-1.5 4.8-5.7 8.3-10.9 8.3-6.5 0-11.8-5.3-11.8-11.8S17.5 12.1 24 12.1c3.1 0 5.9 1.2 7.9 3.2l5.8-5.8C34.5 6.3 29.6 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.6-.4-3.7z"/></svg>
                 Sign in with Google
             </button>
         </div>
     </div>
 
-    <div id="role-selection-modal" class="modal-backdrop hidden">
-        <div class="modal-content" style="text-align: center;">
-            <h2 class="text-2xl mb-4">CHOOSE YOUR ROLE</h2>
-            <div class="flex flex-col gap-4 w-full">
-                <button id="select-student-btn" class="btn btn-student">
-                    I WANT FOOD (ORDER)
+    <div id="role-selection-modal" class="modal-backdrop">
+        <div class="modal-content text-center">
+            <h2 class="text-2xl font-bold mb-2">Choose Your Role</h2>
+            <p class="text-secondary mb-8">How will you use Gravli today?</p>
+            <div class="flex flex-col gap-4">
+                <button id="select-student-btn" class="btn btn-accent" style="padding: 1.2rem; font-size: 1.1rem;">
+                    I Want to Order Food
                 </button>
-                <button id="select-deliverer-btn" class="btn btn-deliverer">
-                    I WILL DELIVER (EARN)
+                <button id="select-deliverer-btn" class="btn btn-secondary" style="padding: 1.2rem; font-size: 1.1rem;">
+                    I Want to Deliver & Earn
                 </button>
             </div>
         </div>
     </div>
 
-    <header id="main-header" class="hidden">
+    <header id="main-header" class="glass hidden">
         <div class="header-content">
-            <div id="profile-trigger" class="user-area">
-                <img id="user-avatar" class="avatar hidden" alt="Avatar">
-                <div id="userInfo" style="font-weight: bold;">LOADING...</div>
+            <div id="profile-trigger" class="user-area glass">
+                <img id="user-avatar" class="avatar hidden" alt="User Avatar">
+                <div id="userInfo" class="text-sm font-bold">Loading...</div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-secondary" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
                 
-                <div id="profile-dropdown" class="dropdown-menu">
-                    <div id="menu-profile-btn" class="dropdown-item">EDIT PROFILE</div>
-                    <div id="menu-orders-btn" class="dropdown-item">ORDER HISTORY</div>
-                    <div id="menu-logout-btn" class="dropdown-item" style="color: red;">LOGOUT</div>
+                <div id="profile-dropdown" class="dropdown-menu glass">
+                    <div id="menu-profile-btn" class="dropdown-item">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>
+                        Edit Profile
+                    </div>
+                    <div id="menu-orders-btn" class="dropdown-item">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" /></svg>
+                        Order History
+                    </div>
+                    <div id="menu-logout-btn" class="dropdown-item" style="color: var(--danger-text);">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" /></svg>
+                        Logout
+                    </div>
                 </div>
             </div>
             
-            <div class="logo-area">
-                GRAVLI
-            </div>
+            <div class="logo-area">Gravli</div>
 
             <div class="flex items-center gap-4">
-                <div id="delivery-stats" class="badge badge-progress hidden">DELIVERIES: 0</div>
-                <button id="theme-switcher" class="btn-icon">
-                   Sun/Moon
-                </button>
+                <div id="delivery-stats" class="badge glass hidden" style="padding: 0.5rem 1rem;">Deliveries: 0</div>
             </div>
         </div>
+        <p class="logo-text-sm">Your on-campus delivery solution. Fast, easy, and by students, for students.</p>
     </header>
 
     <div id="app" class="hidden">
         <main id="main-content">
             <div id="student-view">
                 <div id="new-order-section" class="mb-4">
-                    <h2 class="text-2xl mb-4" style="color: var(--black); background: var(--white); display: inline-block; padding: 0.5rem; border: var(--border-thick);">PLACE A NEW ORDER</h2>
+                    <h2 class="text-2xl font-bold mb-6">Place a New Order</h2>
                     <div id="cafe-grid-container" class="cafe-grid">
                         </div>
                 </div>
-                <div id="my-orders-section">
-                    <h2 class="text-2xl mb-4" style="color: var(--white); background: var(--black); display: inline-block; padding: 0.5rem;">MY ACTIVE ORDERS</h2>
-                    <div id="my-requests-list" class="request-list">
-                    </div>
+                <div id="my-orders-section" class="mt-8">
+                    <h2 class="text-2xl font-bold mb-6">My Active Orders</h2>
+                    <div id="my-requests-list" class="flex flex-col gap-4">
+                        </div>
                 </div>
             </div>
 
             <div id="deliverer-view" class="hidden">
-                <h2 class="text-2xl mb-4">MY CURRENT DELIVERIES</h2>
-                <div id="my-current-deliveries-list" class="request-list mb-8"></div>
-                <div id="single-delivery-message" class="hidden card-panel text-center">
-                    <p>COMPLETE YOUR CURRENT DELIVERY FIRST.</p>
+                <h2 class="text-2xl font-bold mb-6">My Current Deliveries</h2>
+                <div id="my-current-deliveries-list" class="flex flex-col gap-4 mb-8"></div>
+                <div id="single-delivery-message" class="card-panel glass hidden text-center text-secondary">
+                    <p>Please complete your current delivery before accepting new ones.</p>
                 </div>
                 <div id="available-deliveries-container">
-                    <h2 class="text-2xl mb-4">AVAILABLE DELIVERIES</h2>
-                    <div id="all-requests-list-deliverer" class="request-list"></div>
+                    <h2 class="text-2xl font-bold mb-6">Available Deliveries</h2>
+                    <div id="all-requests-list-deliverer" class="flex flex-col gap-4"></div>
                 </div>
             </div>
         </main>
         
         <div id="loader" class="text-center py-10 hidden">
-            <div class="text-2xl font-bold">LOADING...</div>
+            <svg class="animate-spin h-8 w-8 mx-auto text-accent" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            <p class="mt-2 text-secondary">Loading...</p>
         </div>
     </div>
 
-    <button id="cart-button" class="hidden">
-        <span id="cart-button-text">VIEW CART</span>
+    <button id="cart-button" class="glass hidden">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
+        <span id="cart-button-text">View Cart</span>
     </button>
 
-    <div id="active-order-bar" class="hidden">
+    <div id="active-order-bar" class="glass hidden">
         <div class="active-order-content">
             <div>
-                <span style="font-weight: bold; color: #6ee7b7;">IN PROGRESS: </span>
-                <span id="active-order-bar-status">AWAITING UPDATE...</span>
+                <p class="text-sm text-secondary">Order In Progress</p>
+                <p id="active-order-bar-status" class="font-bold" style="color: var(--accent-color);">Awaiting update...</p>
             </div>
-            <span>VIEW DETAILS &rarr;</span>
+            <span class="text-sm font-bold text-accent">View &rarr;</span>
         </div>
     </div>
 
-    <div id="menu-modal" class="modal-backdrop hidden">
-        <div id="menu-modal-content" class="modal-content">
+    <div id="menu-modal" class="modal-backdrop">
+        <div id="menu-modal-content" class="modal-content glass">
             <div class="flex justify-between items-center mb-4">
-                <h3 id="menu-modal-title" class="text-2xl">MENU</h3>
-                <button id="menu-close-btn" style="font-size: 2rem;">&times;</button>
+                <h3 id="menu-modal-title" class="text-2xl font-bold">Menu</h3>
+                <button id="menu-close-btn" class="btn-icon"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg></button>
             </div>
-            <input type="text" id="menu-search-input" class="form-input mb-4" placeholder="SEARCH ITEMS..." autocomplete="off">
-            <div id="menu-items-container" class="space-y-3 scrollable-y">
-            </div>
+            <input type="text" id="menu-search-input" class="form-input mb-4" placeholder="Search items..." autocomplete="off">
+            <div id="menu-items-container" class="scrollable-y flex flex-col gap-2">
+                </div>
         </div>
     </div>
 
-    <div id="cart-modal" class="modal-backdrop hidden">
-        <div id="cart-modal-content" class="modal-content">
+    <div id="cart-modal" class="modal-backdrop">
+        <div id="cart-modal-content" class="modal-content glass">
             <div class="flex justify-between items-center mb-4">
-                <h3 class="text-2xl">YOUR CART</h3>
-                <button id="cart-close-btn" style="font-size: 2rem;">&times;</button>
+                <h3 class="text-2xl font-bold">Your Cart</h3>
+                <button id="cart-close-btn" class="btn-icon"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg></button>
             </div>
-            <div id="cart-items-container" class="space-y-4 scrollable-y">
-            </div>
-            <div style="margin-top: 1.5rem; padding-top: 1rem; border-top: 4px solid black;">
-                <div class="flex justify-between items-center font-bold text-2xl">
-                    <span>TOTAL</span>
+            <div id="cart-items-container" class="scrollable-y flex flex-col gap-2 mb-4">
+                </div>
+            <div class="pt-4 border-t border-glass">
+                <div class="flex justify-between items-center font-bold text-lg mb-4">
+                    <span>Total</span>
                     <span id="cart-total-price">₹0.00</span>
                 </div>
-                <button id="checkout-btn" class="btn btn-accent w-full mt-4">PROCEED TO CHECKOUT</button>
+                <button id="checkout-btn" class="btn btn-accent w-full">Proceed to Checkout</button>
             </div>
         </div>
     </div>
 
-    <div id="checkout-modal" class="modal-backdrop hidden">
-        <div id="checkout-modal-content" class="modal-content">
-            <h3 class="text-2xl mb-4">CONFIRM ORDER</h3>
+    <div id="checkout-modal" class="modal-backdrop">
+        <div id="checkout-modal-content" class="modal-content glass">
+            <h3 class="text-2xl font-bold mb-6">Confirm Order</h3>
             <form id="checkout-form">
-                <label class="form-label mb-2 font-bold block">DROP-OFF LOCATION</label>
-                <div class="flex gap-4 mb-4">
-                    <div class="w-full">
-                        <select id="block-select" class="form-select" required>
-                            <option value="" disabled selected>BLOCK</option>
+                <div class="mb-6">
+                    <label class="form-label">Drop-off Location</label>
+                    <div class="flex gap-4">
+                        <select id="block-select" class="form-select flex-1" required>
+                            <option value="" disabled selected>Select Block</option>
                             <option value="B1">B1</option>
                             <option value="B2">B2</option>
                             <option value="B3">B3</option>
                             <option value="B4">B4</option>
                             <option value="G1">G1</option>
                             <option value="G2">G2</option>
-                            <option value="Main Library">LIBRARY</option>
-                            <option value="Admin Block">ADMIN</option>
+                            <option value="Main Library">Main Library</option>
+                            <option value="Admin Block">Admin Block</option>
                         </select>
-                    </div>
-                    <div class="w-full">
-                        <input id="room-input" type="text" inputmode="numeric" pattern="\d{3}" maxlength="3" class="form-input" placeholder="ROOM (e.g. 102)" required>
+                        <input id="room-input" type="text" inputmode="numeric" pattern="\d{3}" maxlength="3" class="form-input flex-1" placeholder="Room (e.g., 102)" required>
                     </div>
                 </div>
                 
-                <div class="mb-4 text-center p-4 border-2 border-black bg-gray-100">
-                    <p>TOTAL AMOUNT (INC. FEE)</p>
-                    <p id="checkout-total-display" class="text-2xl font-bold">₹0.00</p>
+                <div class="glass p-4 mb-4 text-center">
+                    <p class="text-secondary mb-1">Total to Pay (incl. fee)</p>
+                    <p id="checkout-total-display" class="text-3xl font-bold text-accent">₹0.00</p>
                 </div>
-                <p id="checkout-error-message" class="text-sm mb-4 text-center hidden text-red-600 font-bold"></p>
+                <p id="checkout-error-message" class="text-sm mb-4 text-center hidden" style="color: var(--danger-text);"></p>
                 <div class="flex justify-end gap-4">
-                    <button type="button" id="checkout-cancel-btn" class="btn btn-secondary">CANCEL</button>
-                    <button type="submit" class="btn btn-accent">CONFIRM</button>
+                    <button type="button" id="checkout-cancel-btn" class="btn btn-secondary">Cancel</button>
+                    <button type="submit" class="btn btn-accent">Confirm Order</button>
                 </div>
             </form>
         </div>
     </div>
 
-    <div id="loading-modal" class="modal-backdrop hidden">
-        <div class="modal-content" style="text-align: center; max-width: 300px;">
-            <div class="text-4xl animate-spin mb-4">⚙️</div>
-            <p class="font-bold">PROCESSING...</p>
-        </div>
-    </div>
-
-    <div id="history-modal" class="modal-backdrop hidden">
-        <div id="history-modal-content" class="modal-content" style="max-width: 800px;">
-            <div class="flex justify-between items-center mb-4">
-                <h3 class="text-2xl">ORDER HISTORY</h3>
-                <button id="history-close-btn" style="font-size: 2rem;">&times;</button>
-            </div>
-            <div id="history-items-container" class="space-y-4 scrollable-y">
-            </div>
-        </div>
-    </div>
-
-    <div id="profile-modal" class="modal-backdrop hidden">
-        <div id="profile-modal-content" class="modal-content">
-            <h3 class="text-2xl mb-4">EDIT PROFILE</h3>
+    <div id="profile-modal" class="modal-backdrop">
+        <div id="profile-modal-content" class="modal-content glass">
+            <h3 class="text-2xl font-bold mb-4">Edit Profile</h3>
             <form id="profile-form">
-                <div class="mb-4">
-                    <label class="font-bold block mb-2">DISPLAY NAME</label>
+                <div class="mb-6">
+                    <label class="form-label">Display Name</label>
                     <input type="text" id="profile-name-input" class="form-input" required>
                 </div>
-                <div class="flex justify-end gap-3 mt-6">
-                    <button type="button" id="profile-cancel-btn" class="btn btn-secondary">CANCEL</button>
-                    <button type="submit" class="btn btn-accent">SAVE</button>
+                <div class="flex justify-end gap-3">
+                    <button type="button" id="profile-cancel-btn" class="btn btn-secondary">Cancel</button>
+                    <button type="submit" class="btn btn-accent">Save Changes</button>
                 </div>
             </form>
+        </div>
+    </div>
+
+    <div id="history-modal" class="modal-backdrop">
+        <div id="history-modal-content" class="modal-content glass" style="max-width: 700px;">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-2xl font-bold">Order History</h3>
+                <button id="history-close-btn" class="btn-icon"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg></button>
+            </div>
+            <div id="history-items-container" class="scrollable-y flex flex-col gap-4"></div>
+        </div>
+    </div>
+
+    <div id="loading-modal" class="modal-backdrop">
+        <div class="modal-content glass text-center" style="max-width: 300px;">
+            <svg class="animate-spin h-10 w-10 mx-auto text-accent" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            <p class="mt-4 font-bold">Placing your order...</p>
         </div>
     </div>
 
     <footer>
         <div style="max-width: 1280px; margin: 0 auto;">
-            <p class="font-bold">MADE BY STUDENTS. FOR STUDENTS.</p>
-            <p class="mt-2 text-sm">GRAVLI CAMPUS DELIVERY</p>
+            <p class="font-bold mb-2" style="color: var(--text-primary);">Made By Students, For Students</p>
+            <p class="text-sm">© 2024 Gravli Campus Delivery</p>
         </div>
     </footer>
 
     <script type="module">
+        // Firebase Imports
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, signOut, updateProfile } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, collection, addDoc, onSnapshot, query, doc, updateDoc, serverTimestamp, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
@@ -659,453 +526,232 @@
         const db = getFirestore(app);
         const auth = getAuth(app);
         
-        // --- MENU DATA ---
+        // --- Data & State ---
         const CORNER_CAFE_MENU = [
-            { id: "cc-1", name: "Aloo Parantha", price: 40 },
-            { id: "cc-2", name: "Gobhi Parantha", price: 50 },
-            { id: "cc-3", name: "Mix Parantha", price: 60 },
-            { id: "cc-4", name: "Paneer Parantha", price: 70 },
-            { id: "cc-5", name: "Bread Omelette", price: 60 },
-            { id: "cc-6", name: "Tea", price: 20 },
-            { id: "cc-7", name: "Coffee", price: 25 },
-            { id: "cc-8", name: "Cold Coffee", price: 70 },
-            { id: "cc-9", name: "Grilled Sandwich", price: 60 },
-            { id: "cc-10", name: "Sandwich + Fries", price: 109 },
-            { id: "cc-11", name: "Veg Burger", price: 60 },
-            { id: "cc-12", name: "French Fries", price: 60 },
-            { id: "cc-13", name: "Veg Thali", price: 100 },
-            { id: "cc-14", name: "Butter Chicken", price: 250 },
-            { id: "cc-15", name: "Chicken Biryani", price: 120 },
-            { id: "cc-16", name: "White Sauce Pasta", price: 140 },
-            { id: "cc-17", name: "Fried Rice", price: 89 },
-            { id: "cc-18", name: "Hakka Noodles", price: 109 },
-            { id: "cc-19", name: "Manchurian", price: 119 },
+            { id: "cc-1", name: "Aloo Parantha", price: 40 }, { id: "cc-2", name: "Gobhi Parantha", price: 50 }, { id: "cc-3", name: "Mix Parantha", price: 60 },
+            { id: "cc-4", name: "Paneer Parantha", price: 70 }, { id: "cc-5", name: "Bread Omelette", price: 60 }, { id: "cc-6", name: "Tea", price: 20 },
+            { id: "cc-7", name: "Coffee", price: 25 }, { id: "cc-8", name: "Cold Coffee", price: 70 }, { id: "cc-9", name: "Grilled Sandwich", price: 60 },
+            { id: "cc-10", name: "Sandwich + Fries", price: 109 }, { id: "cc-11", name: "Veg Burger", price: 60 }, { id: "cc-12", name: "French Fries", price: 60 },
+            { id: "cc-13", name: "Veg Thali", price: 100 }, { id: "cc-14", name: "Butter Chicken", price: 250 }, { id: "cc-15", name: "Chicken Biryani", price: 120 },
+            { id: "cc-16", name: "White Sauce Pasta", price: 140 }, { id: "cc-17", name: "Fried Rice", price: 89 }, { id: "cc-18", name: "Hakka Noodles", price: 109 },
             { id: "cc-20", name: "Butter Naan", price: 30 }
         ];
-
         function generateMenuItems(cafeId, count = 15) {
-            const items = [];
-            for (let i = 1; i <= count; i++) {
-                items.push({ id: `${cafeId.toLowerCase()}-${i}`, name: `Item ${i}`, price: 100 + (i * 5) });
-            }
-            return items;
+            return Array.from({ length: count }, (_, i) => ({ id: `${cafeId.toLowerCase()}-${i + 1}`, name: `Item ${i + 1}`, price: 100 + (i * 5) }));
         }
-
         const CAFE_DATA = {
-            "HR1": { name: "Corner Cafe", items: CORNER_CAFE_MENU },
-            "HR2": { name: "HR Cafe", items: generateMenuItems("HR2", 15) },
-            "HR3": { name: "HR3", items: generateMenuItems("HR3", 15) },
-            "HR4": { name: "HR4", items: generateMenuItems("HR4", 15) },
-            "HR5": { name: "HR5", items: generateMenuItems("HR5", 15) },
-            "HR6": { name: "HR6", items: generateMenuItems("HR6", 15) },
-            "HR7": { name: "HR7", items: generateMenuItems("HR7", 15) },
-            "HR8": { name: "HR8", items: generateMenuItems("HR8", 15) },
+            "HR1": { name: "Corner Cafe", items: CORNER_CAFE_MENU }, "HR2": { name: "HR Cafe", items: generateMenuItems("HR2") },
+            "HR3": { name: "HR3", items: generateMenuItems("HR3") }, "HR4": { name: "HR4", items: generateMenuItems("HR4") },
+            "HR5": { name: "HR5", items: generateMenuItems("HR5") }, "HR6": { name: "HR6", items: generateMenuItems("HR6") },
+            "HR7": { name: "HR7", items: generateMenuItems("HR7") }, "HR8": { name: "HR8", items: generateMenuItems("HR8") },
         };
 
-        // --- STATE & DOM ---
         let currentUser = null, userDetails = null, unsubscribe = null, cart = {}, currentOpenCafeId = null, currentRole = null;
 
-        const loginModal = document.getElementById('login-modal');
-        const roleSelectionModal = document.getElementById('role-selection-modal');
-        const appContainer = document.getElementById('app');
-        const mainHeader = document.getElementById('main-header');
-        const userInfo = document.getElementById('userInfo');
-        const userAvatar = document.getElementById('user-avatar');
-        
-        // --- Auth Logic ---
+        // --- DOM Elements ---
+        const elements = {
+            loginModal: document.getElementById('login-modal'), roleModal: document.getElementById('role-selection-modal'),
+            appContainer: document.getElementById('app'), mainHeader: document.getElementById('main-header'),
+            userInfo: document.getElementById('userInfo'), userAvatar: document.getElementById('user-avatar'),
+            profileTrigger: document.getElementById('profile-trigger'), profileDropdown: document.getElementById('profile-dropdown'),
+            studentView: document.getElementById('student-view'), delivererView: document.getElementById('deliverer-view'),
+            cartButton: document.getElementById('cart-button'), deliveryStats: document.getElementById('delivery-stats'),
+            cafeGrid: document.getElementById('cafe-grid-container'), menuModal: document.getElementById('menu-modal'),
+            menuItems: document.getElementById('menu-items-container'), menuSearch: document.getElementById('menu-search-input'),
+            cartModal: document.getElementById('cart-modal'), cartItems: document.getElementById('cart-items-container'),
+            cartTotal: document.getElementById('cart-total-price'), checkoutModal: document.getElementById('checkout-modal'),
+            checkoutTotal: document.getElementById('checkout-total-display'), loadingModal: document.getElementById('loading-modal'),
+            activeOrderBar: document.getElementById('active-order-bar'), activeOrderStatus: document.getElementById('active-order-bar-status')
+        };
+
+        // --- Auth & Role Logic ---
         onAuthStateChanged(auth, (user) => {
             if (user) {
                 currentUser = user;
                 userDetails = { name: user.displayName, uid: user.uid, photoURL: user.photoURL };
-                loginModal.classList.add('hidden');
-                
+                toggleModal(elements.loginModal, false);
                 const savedRole = localStorage.getItem('userRole');
                 if (savedRole) {
                     currentRole = savedRole;
-                    roleSelectionModal.classList.add('hidden');
                     setupViewForRole(currentRole);
-                    setupUserHeader("WELCOME");
+                    setupUserHeader();
                     startApp();
                 } else {
-                    roleSelectionModal.classList.remove('hidden');
-                    setupUserHeader("WELCOME");
+                    toggleModal(elements.roleModal, true);
+                    setupUserHeader();
                 }
             } else {
-                // Logout State
-                currentUser = null;
-                userDetails = null;
-                currentRole = null;
-                localStorage.removeItem('userRole');
-                loginModal.classList.remove('hidden');
-                roleSelectionModal.classList.add('hidden');
-                appContainer.classList.add('hidden');
-                mainHeader.classList.add('hidden');
+                resetAppState();
             }
         });
+
+        function setupUserHeader() {
+            elements.userInfo.textContent = userDetails.name;
+            if (userDetails.photoURL) {
+                elements.userAvatar.src = userDetails.photoURL;
+                elements.userAvatar.classList.remove('hidden');
+            }
+            elements.mainHeader.classList.remove('hidden');
+        }
+
+        function resetAppState() {
+            currentUser = null; userDetails = null; currentRole = null; localStorage.removeItem('userRole');
+            toggleModal(elements.loginModal, true); toggleModal(elements.roleModal, false);
+            elements.appContainer.classList.add('hidden'); elements.mainHeader.classList.add('hidden');
+        }
 
         function setupViewForRole(role) {
-            if (role === 'student') {
-                document.getElementById('student-view').classList.remove('hidden');
-                document.getElementById('deliverer-view').classList.add('hidden');
-                document.getElementById('cart-button').classList.add('hidden'); // hidden until items added
-                document.getElementById('delivery-stats').classList.add('hidden');
-            } else {
-                document.getElementById('student-view').classList.add('hidden');
-                document.getElementById('deliverer-view').classList.remove('hidden');
-                document.getElementById('cart-button').classList.add('hidden');
-                document.getElementById('delivery-stats').classList.remove('hidden');
-            }
+            elements.studentView.classList.toggle('hidden', role !== 'student');
+            elements.delivererView.classList.toggle('hidden', role !== 'deliverer');
+            elements.cartButton.classList.add('hidden');
+            elements.deliveryStats.classList.toggle('hidden', role !== 'deliverer');
         }
 
-        async function signInWithGoogle() {
-            try { await signInWithPopup(auth, new GoogleAuthProvider()); } 
-            catch (error) { alert("Login failed."); }
-        }
-
-        function setupUserHeader(greeting) {
-            userInfo.textContent = `${greeting}, ${userDetails.name.toUpperCase()}!`;
-            if (userDetails.photoURL) {
-                userAvatar.src = userDetails.photoURL;
-                userAvatar.classList.remove('hidden');
-            }
-            mainHeader.classList.remove('hidden');
-        }
-
-        // --- Dropdown Logic ---
-        const profileTrigger = document.getElementById('profile-trigger');
-        const profileDropdown = document.getElementById('profile-dropdown');
-        profileTrigger.addEventListener('click', (e) => { e.stopPropagation(); profileDropdown.classList.toggle('show'); });
-        document.addEventListener('click', () => profileDropdown.classList.remove('show'));
-
-        document.getElementById('menu-logout-btn').addEventListener('click', () => signOut(auth));
+        // --- UI Functions ---
+        function toggleModal(modal, show) { modal.classList.toggle('show', show); }
         
-        document.getElementById('menu-profile-btn').addEventListener('click', () => {
-            document.getElementById('profile-name-input').value = userDetails.name;
-            document.getElementById('profile-modal').classList.remove('hidden');
-        });
-        
-        document.getElementById('profile-cancel-btn').addEventListener('click', () => document.getElementById('profile-modal').classList.add('hidden'));
-        
-        document.getElementById('profile-form').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const newName = document.getElementById('profile-name-input').value.trim();
-            if (newName) {
-                await updateProfile(currentUser, { displayName: newName });
-                userDetails.name = newName;
-                setupUserHeader("WELCOME");
-                document.getElementById('profile-modal').classList.add('hidden');
-            }
-        });
-
-        document.getElementById('menu-orders-btn').addEventListener('click', () => {
-            document.getElementById('history-modal').classList.remove('hidden');
-        });
-        document.getElementById('history-close-btn').addEventListener('click', () => document.getElementById('history-modal').classList.add('hidden'));
-
-        document.getElementById('google-signin-btn').addEventListener('click', signInWithGoogle);
-        document.getElementById('select-student-btn').addEventListener('click', () => {
-            currentRole = 'student'; localStorage.setItem('userRole', 'student');
-            roleSelectionModal.classList.add('hidden'); setupViewForRole('student'); startApp();
-        });
-        document.getElementById('select-deliverer-btn').addEventListener('click', () => {
-            currentRole = 'deliverer'; localStorage.setItem('userRole', 'deliverer');
-            roleSelectionModal.classList.add('hidden'); setupViewForRole('deliverer'); startApp();
-        });
-
-        // --- APP LOGIC ---
-        function startApp() {
-            appContainer.classList.remove('hidden');
-            renderCafes();
-            fetchAndDisplayRequests();
-        }
-
         function renderCafes() {
-            const container = document.getElementById('cafe-grid-container');
-            container.innerHTML = '';
-            for (const cafeId in CAFE_DATA) {
-                const cafe = CAFE_DATA[cafeId];
-                const box = document.createElement('div');
-                box.className = 'cafe-box';
-                box.dataset.cafeId = cafeId;
-                box.innerHTML = `<div class="cafe-box-image">${cafe.name}</div><div class="cafe-box-name">${cafe.name}</div>`;
-                box.addEventListener('click', () => openMenuModal(cafeId));
-                container.appendChild(box);
-            }
-        }
-
-        function openMenuModal(cafeId) {
-            currentOpenCafeId = cafeId;
-            document.getElementById('menu-modal-title').textContent = CAFE_DATA[cafeId].name;
-            renderMenu(cafeId);
-            document.getElementById('menu-modal').classList.remove('hidden');
+            elements.cafeGrid.innerHTML = Object.entries(CAFE_DATA).map(([id, cafe]) => `
+                <div class="cafe-box glass" data-id="${id}">
+                    <div class="cafe-box-image">☕</div>
+                    <div class="cafe-box-name">${cafe.name}</div>
+                </div>
+            `).join('');
         }
 
         function renderMenu(cafeId, filter = "") {
-            const container = document.getElementById('menu-items-container');
-            container.innerHTML = '';
             const items = CAFE_DATA[cafeId].items.filter(i => i.name.toLowerCase().includes(filter.toLowerCase()));
-            
-            items.forEach(item => {
+            elements.menuItems.innerHTML = items.map(item => {
                 const qty = cart[item.id]?.quantity || 0;
-                const el = document.createElement('div');
-                el.className = 'menu-item';
-                el.innerHTML = `
-                    <div><p style="font-weight:bold;">${item.name}</p><p class="text-sm">₹${item.price}</p></div>
-                    <div class="flex items-center gap-2">
-                        <button class="btn-round-qty update-qty" data-id="${item.id}" data-chg="-1">-</button>
+                return `
+                <div class="menu-item">
+                    <div><p class="font-bold">${item.name}</p><p class="text-sm text-secondary">₹${item.price}</p></div>
+                    <div class="flex items-center gap-3 glass p-1 rounded-full">
+                        <button class="btn-icon update-qty" data-id="${item.id}" data-chg="-1">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4" /></svg>
+                        </button>
                         <span class="font-bold w-6 text-center">${qty}</span>
-                        <button class="btn-round-qty update-qty" data-id="${item.id}" data-chg="1">+</button>
+                        <button class="btn-icon update-qty" data-id="${item.id}" data-chg="1">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" /></svg>
+                        </button>
                     </div>
-                `;
-                container.appendChild(el);
-            });
-            
-            // Re-attach listeners because innerHTML wipes them
-            document.querySelectorAll('.update-qty').forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    updateCart(e.target.dataset.id, parseInt(e.target.dataset.chg));
-                });
-            });
+                </div>`;
+            }).join('');
         }
-        
-        document.getElementById('menu-search-input').addEventListener('input', (e) => renderMenu(currentOpenCafeId, e.target.value));
-        document.getElementById('menu-close-btn').addEventListener('click', () => document.getElementById('menu-modal').classList.add('hidden'));
 
         function updateCart(itemId, change) {
-            // Cafe check logic
-            const firstItem = Object.values(cart)[0];
-            if (firstItem && firstItem.cafeId !== currentOpenCafeId) {
-                if(!confirm("Clear cart to order from new cafe?")) return;
-                cart = {};
-            }
-
             const cafe = CAFE_DATA[currentOpenCafeId];
             const item = cafe.items.find(i => i.id === itemId);
-            
+            if (Object.keys(cart).length > 0 && cart[Object.keys(cart)[0]].cafeId !== currentOpenCafeId) {
+                if (!confirm("Order from a new cafe? Your current cart will be cleared.")) return;
+                cart = {};
+            }
             if (!cart[itemId]) cart[itemId] = { ...item, quantity: 0, cafeId: currentOpenCafeId, cafeName: cafe.name };
             cart[itemId].quantity += change;
             if (cart[itemId].quantity <= 0) delete cart[itemId];
-            
-            renderMenu(currentOpenCafeId, document.getElementById('menu-search-input').value);
+            renderMenu(currentOpenCafeId, elements.menuSearch.value);
             updateCartUI();
         }
 
         function updateCartUI() {
             const count = Object.values(cart).reduce((a, b) => a + b.quantity, 0);
-            const btn = document.getElementById('cart-button');
-            if (count > 0 && currentRole === 'student') {
-                document.getElementById('cart-button-text').textContent = `VIEW CART (${count})`;
-                btn.classList.remove('hidden');
-            } else {
-                btn.classList.add('hidden');
-            }
+            elements.cartButton.classList.toggle('hidden', count === 0 || currentRole !== 'student');
+            document.getElementById('cart-button-text').textContent = `View Cart (${count})`;
         }
 
-        document.getElementById('cart-button').addEventListener('click', () => {
-            const container = document.getElementById('cart-items-container');
-            container.innerHTML = '';
+        function renderCart() {
             let total = 0;
-            
-            Object.keys(cart).forEach(key => {
-                const item = cart[key];
+            elements.cartItems.innerHTML = Object.values(cart).map(item => {
                 total += item.price * item.quantity;
-                const el = document.createElement('div');
-                el.className = 'cart-item';
-                el.innerHTML = `
-                    <div><span class="font-bold">${item.name}</span> x${item.quantity}</div>
-                    <div>₹${item.price * item.quantity}</div>
-                `;
-                container.appendChild(el);
-            });
-            
-            document.getElementById('cart-total-price').textContent = `₹${total}`;
-            document.getElementById('cart-modal').classList.remove('hidden');
-        });
-        
-        document.getElementById('cart-close-btn').addEventListener('click', () => document.getElementById('cart-modal').classList.add('hidden'));
-        
-        document.getElementById('checkout-btn').addEventListener('click', () => {
-            document.getElementById('cart-modal').classList.add('hidden');
-            const total = Object.values(cart).reduce((a, b) => a + (b.price * b.quantity), 0) + 50; // +50 fee
-            document.getElementById('checkout-total-display').textContent = `₹${total}`;
-            document.getElementById('checkout-modal').classList.remove('hidden');
-        });
+                return `
+                <div class="cart-item">
+                    <div><p class="font-bold">${item.name} <span class="text-sm font-normal text-secondary">x${item.quantity}</span></p><p class="text-sm text-secondary">from ${item.cafeName}</p></div>
+                    <p class="font-bold">₹${item.price * item.quantity}</p>
+                </div>`;
+            }).join('');
+            elements.cartTotal.textContent = `₹${total.toFixed(2)}`;
+            elements.checkoutTotal.textContent = `₹${(total + 50).toFixed(2)}`;
+        }
 
-        document.getElementById('checkout-cancel-btn').addEventListener('click', () => document.getElementById('checkout-modal').classList.add('hidden'));
-
+        // --- Event Listeners ---
+        document.getElementById('google-signin-btn').addEventListener('click', () => signInWithPopup(auth, new GoogleAuthProvider()));
+        document.getElementById('select-student-btn').addEventListener('click', () => { currentRole = 'student'; localStorage.setItem('userRole', 'student'); setupViewForRole('student'); toggleModal(elements.roleModal, false); startApp(); });
+        document.getElementById('select-deliverer-btn').addEventListener('click', () => { currentRole = 'deliverer'; localStorage.setItem('userRole', 'deliverer'); setupViewForRole('deliverer'); toggleModal(elements.roleModal, false); startApp(); });
+        elements.profileTrigger.addEventListener('click', (e) => { e.stopPropagation(); elements.profileDropdown.classList.toggle('show'); });
+        document.addEventListener('click', () => elements.profileDropdown.classList.remove('show'));
+        document.getElementById('menu-logout-btn').addEventListener('click', () => signOut(auth));
+        elements.cafeGrid.addEventListener('click', (e) => {
+            const box = e.target.closest('.cafe-box');
+            if (box) { currentOpenCafeId = box.dataset.id; document.getElementById('menu-modal-title').textContent = CAFE_DATA[currentOpenCafeId].name; renderMenu(currentOpenCafeId); toggleModal(elements.menuModal, true); }
+        });
+        elements.menuItems.addEventListener('click', (e) => { const btn = e.target.closest('.update-qty'); if (btn) updateCart(btn.dataset.id, +btn.dataset.chg); });
+        elements.menuSearch.addEventListener('input', (e) => renderMenu(currentOpenCafeId, e.target.value));
+        document.getElementById('menu-close-btn').addEventListener('click', () => toggleModal(elements.menuModal, false));
+        elements.cartButton.addEventListener('click', () => { renderCart(); toggleModal(elements.cartModal, true); });
+        document.getElementById('cart-close-btn').addEventListener('click', () => toggleModal(elements.cartModal, false));
+        document.getElementById('checkout-btn').addEventListener('click', () => { toggleModal(elements.cartModal, false); toggleModal(elements.checkoutModal, true); });
+        document.getElementById('checkout-cancel-btn').addEventListener('click', () => toggleModal(elements.checkoutModal, false));
         document.getElementById('checkout-form').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            document.getElementById('loading-modal').classList.remove('hidden');
-            
-            const block = document.getElementById('block-select').value;
-            const room = document.getElementById('room-input').value;
-            const items = Object.values(cart);
-            const total = items.reduce((a,b) => a + (b.price * b.quantity), 0) + 50;
-
+            e.preventDefault(); toggleModal(elements.checkoutModal, false); toggleModal(elements.loadingModal, true);
+            const total = Object.values(cart).reduce((a, b) => a + b.price * b.quantity, 0) + 50;
             const request = {
-                items, itemPrice: total - 50, deliveryFee: 50, totalAmount: total,
-                pickupLocation: items[0].cafeName, dropoffLocation: `${block} - ${room}`,
-                status: 'open', requesterId: currentUser.uid, requesterName: userDetails.name,
-                requesterPhotoURL: userDetails.photoURL, createdAt: serverTimestamp(),
-                subStatus: null, estimatedTime: null
+                items: Object.values(cart), itemPrice: total - 50, deliveryFee: 50, totalAmount: total,
+                pickupLocation: Object.values(cart)[0].cafeName, dropoffLocation: `${document.getElementById('block-select').value} - ${document.getElementById('room-input').value}`,
+                status: 'open', requesterId: currentUser.uid, requesterName: userDetails.name, requesterPhotoURL: userDetails.photoURL, createdAt: serverTimestamp(), subStatus: null
             };
-
-            try {
-                await addDoc(collection(db, `/artifacts/${appId}/public/data/deliveries`), request);
-                cart = {}; updateCartUI();
-                document.getElementById('checkout-modal').classList.add('hidden');
-                document.getElementById('loading-modal').classList.add('hidden');
-            } catch (err) { alert("Error placing order."); document.getElementById('loading-modal').classList.add('hidden'); }
+            await addDoc(collection(db, `/artifacts/${appId}/public/data/deliveries`), request);
+            cart = {}; updateCartUI(); toggleModal(elements.loadingModal, false);
         });
 
-        // --- FIRESTORE LISTENER ---
-        function fetchAndDisplayRequests() {
-            if (!currentUser) return;
+        // --- App Start & Real-time Data ---
+        function startApp() {
+            elements.appContainer.classList.remove('hidden');
+            if (currentRole === 'student') renderCafes();
             if (unsubscribe) unsubscribe();
-            
-            const q = query(collection(db, `/artifacts/${appId}/public/data/deliveries`));
-            unsubscribe = onSnapshot(q, (snapshot) => {
-                const requests = [];
-                let deliveryCount = 0;
-                
-                snapshot.forEach(doc => {
-                    const data = { id: doc.id, ...doc.data() };
-                    requests.push(data);
-                    if (data.delivererId === currentUser.uid && data.status === 'completed') deliveryCount++;
-                });
-                
-                if (currentRole === 'deliverer') document.getElementById('delivery-stats').textContent = `DELIVERIES: ${deliveryCount}`;
-                
-                requests.sort((a,b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
-                
-                renderMyOrders(requests.filter(r => r.requesterId === currentUser.uid));
-                if (currentRole === 'deliverer') renderDeliveries(requests);
-                renderHistory(requests);
+            unsubscribe = onSnapshot(query(collection(db, `/artifacts/${appId}/public/data/deliveries`)), (snapshot) => {
+                const requests = snapshot.docs.map(d => ({ id: d.id, ...d.data() })).sort((a, b) => b.createdAt - a.createdAt);
+                if (currentRole === 'student') renderStudentOrders(requests.filter(r => r.requesterId === currentUser.uid));
+                else renderDelivererJobs(requests);
             });
         }
 
-        function renderMyOrders(orders) {
+        function renderStudentOrders(orders) {
             const active = orders.filter(o => o.status !== 'completed');
-            const container = document.getElementById('my-requests-list');
-            container.innerHTML = active.length ? '' : '<p>NO ACTIVE ORDERS</p>';
-            
-            active.forEach(o => {
-                const div = document.createElement('div');
-                div.className = 'card-panel';
-                div.innerHTML = `
-                    <div class="flex justify-between font-bold mb-2">
-                        <span>${o.pickupLocation} &rarr; ${o.dropoffLocation}</span>
-                        <span class="badge ${o.status === 'open' ? 'badge-open' : 'badge-progress'}">${o.status.toUpperCase()}</span>
-                    </div>
-                    <p class="text-sm">${o.items.map(i => `${i.quantity}x ${i.name}`).join(', ')}</p>
-                    <p class="font-bold mt-2">TOTAL: ₹${o.totalAmount}</p>
-                    ${o.status === 'open' ? `<button class="btn btn-sm btn-danger mt-2 cancel-btn" data-id="${o.id}">CANCEL</button>` : ''}
-                `;
-                container.appendChild(div);
-            });
-
-            // Active Order Bar Logic
+            document.getElementById('my-requests-list').innerHTML = active.length ? active.map(renderOrderCard).join('') : '<p class="text-secondary glass p-4">No active orders.</p>';
             const inProg = active.find(o => o.status === 'in-progress');
-            const bar = document.getElementById('active-order-bar');
-            if (inProg) {
-                document.getElementById('active-order-bar-status').textContent = (inProg.subStatus || 'PICKING UP').toUpperCase();
-                bar.classList.remove('hidden');
-            } else {
-                bar.classList.add('hidden');
+            elements.activeOrderBar.classList.toggle('hidden', !inProg);
+            if (inProg) { elements.activeOrderStatus.textContent = (inProg.subStatus || 'In Progress').replace('-', ' '); }
+        }
+
+        function renderDelivererJobs(requests) {
+            const myJob = requests.find(r => r.delivererId === currentUser.uid && r.status !== 'completed');
+            const available = requests.filter(r => r.status === 'open' && r.requesterId !== currentUser.uid);
+            document.getElementById('my-current-deliveries-list').innerHTML = myJob ? renderOrderCard(myJob, true) : '';
+            document.getElementById('single-delivery-message').classList.toggle('hidden', !!myJob);
+            document.getElementById('available-deliveries-container').classList.toggle('hidden', !!myJob);
+            if (!myJob) document.getElementById('all-requests-list-deliverer').innerHTML = available.length ? available.map(r => renderOrderCard(r)).join('') : '<p class="text-secondary glass p-4">No jobs available.</p>';
+        }
+
+        function renderOrderCard(req, isMyJob = false) {
+            const isStudent = currentRole === 'student';
+            const statusColors = { open: 'badge-open', 'in-progress': 'badge-progress', completed: 'badge-completed' };
+            let action = '';
+            if (isStudent && req.status === 'open') action = `<button class="btn btn-danger btn-sm mt-2" onclick="deleteDoc(doc(db, '/artifacts/${appId}/public/data/deliveries', '${req.id}'))">Cancel</button>`;
+            else if (!isStudent && req.status === 'open') action = `<button class="btn btn-accent btn-sm mt-2" onclick="updateDoc(doc(db, '/artifacts/${appId}/public/data/deliveries', '${req.id}'), {status:'in-progress', delivererId: currentUser.uid, delivererName: userDetails.name})">Accept (₹50)</button>`;
+            else if (isMyJob) {
+                const nextStatus = !req.subStatus ? 'reached-cafe' : req.subStatus === 'reached-cafe' ? 'picked-up' : 'completed';
+                const btnText = nextStatus === 'completed' ? 'Mark Delivered' : nextStatus.replace('-', ' ');
+                action = `<button class="btn btn-accent w-full mt-4" onclick="updateDoc(doc(db, '/artifacts/${appId}/public/data/deliveries', '${req.id}'), {${nextStatus === 'completed' ? "status:'completed'" : `subStatus:'${nextStatus}'`}})">${btnText}</button>`;
             }
-            
-            document.querySelectorAll('.cancel-btn').forEach(b => b.addEventListener('click', async (e) => {
-                await deleteDoc(doc(db, `/artifacts/${appId}/public/data/deliveries`, e.target.dataset.id));
-            }));
+            return `
+            <div class="card-panel glass">
+                <div class="flex justify-between mb-2"><span class="font-bold">${req.pickupLocation} &rarr; ${req.dropoffLocation}</span><span class="badge ${statusColors[req.status]}">${req.status}</span></div>
+                <p class="text-sm text-secondary">${req.items.map(i => `${i.quantity}x ${i.name}`).join(', ')}</p>
+                <div class="flex justify-between items-center mt-4"><span class="font-bold text-lg">₹${req.totalAmount}</span>${action}</div>
+            </div>`;
         }
-
-        function renderDeliveries(allRequests) {
-            const myActive = allRequests.find(r => r.delivererId === currentUser.uid && r.status !== 'completed');
-            const containerCurrent = document.getElementById('my-current-deliveries-list');
-            const containerAvail = document.getElementById('all-requests-list-deliverer');
-            
-            if (myActive) {
-                document.getElementById('single-delivery-message').classList.remove('hidden');
-                document.getElementById('available-deliveries-container').classList.add('hidden');
-                containerCurrent.innerHTML = '';
-                
-                const div = document.createElement('div');
-                div.className = 'card-panel';
-                let actionBtn = '';
-                
-                if (!myActive.subStatus) actionBtn = `<button class="btn btn-accent w-full status-btn" data-id="${myActive.id}" data-status="reached-cafe">I REACHED CAFE</button>`;
-                else if (myActive.subStatus === 'reached-cafe') actionBtn = `<button class="btn btn-accent w-full status-btn" data-id="${myActive.id}" data-status="picked-up">I PICKED UP FOOD</button>`;
-                else actionBtn = `<button class="btn btn-student w-full status-btn" data-id="${myActive.id}" data-status="completed">DELIVERED</button>`;
-
-                div.innerHTML = `
-                    <h3 class="font-bold text-xl mb-2">CURRENT JOB</h3>
-                    <p><strong>PICKUP:</strong> ${myActive.pickupLocation}</p>
-                    <p><strong>DROP:</strong> ${myActive.dropoffLocation}</p>
-                    <p class="mb-4"><strong>ITEMS:</strong> ${myActive.items.map(i=>i.name).join(', ')}</p>
-                    ${actionBtn}
-                `;
-                containerCurrent.appendChild(div);
-                
-                document.querySelector('.status-btn').addEventListener('click', async (e) => {
-                    const s = e.target.dataset.status;
-                    if (s === 'completed') await updateDoc(doc(db, `/artifacts/${appId}/public/data/deliveries`, e.target.dataset.id), { status: 'completed' });
-                    else await updateDoc(doc(db, `/artifacts/${appId}/public/data/deliveries`, e.target.dataset.id), { subStatus: s });
-                });
-
-            } else {
-                document.getElementById('single-delivery-message').classList.add('hidden');
-                document.getElementById('available-deliveries-container').classList.remove('hidden');
-                containerCurrent.innerHTML = '';
-                
-                const available = allRequests.filter(r => r.status === 'open' && r.requesterId !== currentUser.uid);
-                containerAvail.innerHTML = available.length ? '' : '<p>NO JOBS AVAILABLE.</p>';
-                
-                available.forEach(r => {
-                    const div = document.createElement('div');
-                    div.className = 'card-panel';
-                    div.innerHTML = `
-                        <div class="flex justify-between items-center">
-                            <div>
-                                <p class="font-bold">${r.pickupLocation} &rarr; ${r.dropoffLocation}</p>
-                                <p class="text-sm">EARN: ₹50</p>
-                            </div>
-                            <button class="btn btn-deliverer btn-sm accept-btn" data-id="${r.id}">ACCEPT</button>
-                        </div>
-                    `;
-                    containerAvail.appendChild(div);
-                });
-                
-                document.querySelectorAll('.accept-btn').forEach(b => b.addEventListener('click', async (e) => {
-                    await updateDoc(doc(db, `/artifacts/${appId}/public/data/deliveries`, e.target.dataset.id), {
-                        status: 'in-progress', delivererId: currentUser.uid, delivererName: userDetails.name
-                    });
-                }));
-            }
-        }
-
-        function renderHistory(allRequests) {
-            const container = document.getElementById('history-items-container');
-            container.innerHTML = '';
-            
-            const mine = currentRole === 'student' 
-                ? allRequests.filter(r => r.requesterId === currentUser.uid && r.status === 'completed')
-                : allRequests.filter(r => r.delivererId === currentUser.uid && r.status === 'completed');
-
-            if (!mine.length) container.innerHTML = '<p>NO HISTORY.</p>';
-            
-            mine.forEach(o => {
-                const div = document.createElement('div');
-                div.className = 'card-panel';
-                div.style.background = '#eee';
-                div.innerHTML = `
-                    <p class="font-bold">${o.pickupLocation} &rarr; ${o.dropoffLocation}</p>
-                    <p class="text-sm">${new Date(o.createdAt?.seconds * 1000).toLocaleDateString()}</p>
-                    <p class="font-bold">₹${o.totalAmount}</p>
-                    <span class="badge badge-completed">DONE</span>
-                `;
-                container.appendChild(div);
-            });
-        }
+        // Assign to window for inline onclick handlers
+        window.db = db; window.doc = doc; window.updateDoc = updateDoc; window.deleteDoc = deleteDoc; window.currentUser = currentUser; window.userDetails = userDetails;
     </script>
 </body>
 </html>
