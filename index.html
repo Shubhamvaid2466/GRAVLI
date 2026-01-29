@@ -5,7 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gravli - Campus Delivery</title>
      <link rel="icon" type="image/png" href="LOGO.png">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Playfair+Display:ital,wght@1,700&family=Shrikhand&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     
     <style>
         /* --- CSS Variables --- */
@@ -214,13 +217,23 @@
         
         /* 3. Header & Dropdown */
         header {
-            background: linear-gradient(to right, var(--header-bg-start), var(--header-bg-end));
+            /* Vibrant Gradient Background */
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #d946ef 100%);
             color: white;
-            box-shadow: var(--shadow-lg);
-            margin-bottom: 2rem;
-            padding: 1rem 1.5rem;
+            
+            /* Modern Spacing & Shape */
+            padding: 1.25rem 2rem;
+            margin-bottom: 2.5rem;
+            border-bottom-left-radius: 2rem;
+            border-bottom-right-radius: 2rem;
+            
+            /* Colored Glow Shadow */
+            box-shadow: 0 10px 25px -5px rgba(139, 92, 246, 0.4), 
+                        0 8px 10px -6px rgba(139, 92, 246, 0.2);
             position: relative;
+            z-index: 50;
         }
+
         .header-content {
             max-width: var(--container-max-width);
             margin: 0 auto;
@@ -230,42 +243,56 @@
             gap: 1rem;
             flex-wrap: wrap; 
         }
+
         .logo-area { 
+            /* Bubbly & Rounded */
+            font-family: 'Fredoka One', cursive; 
+            font-size: 2.5rem; 
+            font-weight: 400; 
+            letter-spacing: 0.05em;
+            color: white;
+            text-shadow: 2px 2px 0px rgba(0,0,0,0.15); /* Soft pop effect */
+            flex-grow: 1;
+            text-align: center;
             display: flex; 
             align-items: center; 
             justify-content: center;
-            gap: 0.75rem; 
-            font-size: 1.875rem; 
-            font-weight: 700; 
-            flex-grow: 1; 
-            text-align: center;
+            gap: 0.5rem; 
         }
-        
+
         .user-area { 
             display: flex; 
             align-items: center; 
             justify-content: center; 
             gap: 0.75rem; 
-            width: 200px; 
+            width: auto; 
+            min-width: 180px;
             cursor: pointer;
-            padding: 0.5rem 1rem;
+            padding: 0.6rem 1.25rem; 
+            
+            /* Glass Effect */
+            background-color: rgba(255, 255, 255, 0.15); 
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.4); 
+            
             border-radius: 50px; 
-            background-color: rgba(255, 255, 255, 0.2); 
-            border: 1px solid rgba(255, 255, 255, 0.25);
-            transition: all 0.2s;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             position: relative;
             z-index: 40;
-            backdrop-filter: blur(4px);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
         }
+
         .user-area:hover {
-            background-color: rgba(255, 255, 255, 0.3);
-            transform: translateY(-1px);
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            background-color: rgba(255, 255, 255, 0.25);
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            border-color: rgba(255, 255, 255, 0.6);
         }
 
         .dropdown-menu {
             position: absolute;
-            top: 120%; 
+            top: 130%; 
             left: 0;
             width: 100%; 
             background-color: var(--bg-secondary);
@@ -307,17 +334,19 @@
 
         .actions-area { display: flex; align-items: center; gap: 0.75rem; justify-content: flex-end; width: 200px; }
         
-        .avatar { height: 2.25rem; width: 2.25rem; border-radius: 50%; border: 2px solid white; object-fit: cover; }
-        .logo-text-sm { color: #c7d2fe; text-align: center; margin-top: 0.5rem; font-size: 0.875rem; }
+        .avatar { height: 2.5rem; width: 2.5rem; border-radius: 50%; border: 2px solid rgba(255,255,255,0.8); object-fit: cover; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        
+        .logo-text-sm { color: rgba(255, 255, 255, 0.9); text-align: center; margin-top: 0.75rem; font-size: 0.95rem; font-weight: 500; opacity: 0.9; }
         
         .delivery-stats {
-            background: rgba(255, 255, 255, 0.2);
+            background: rgba(0, 0, 0, 0.2);
             color: white;
             padding: 0.5rem 1rem;
             border-radius: var(--radius-full);
-            font-weight: 600;
+            font-weight: 700;
             font-size: 0.875rem;
             white-space: nowrap;
+            border: 1px solid rgba(255,255,255,0.1);
         }
 
         /* 4. Layout & Grid */
@@ -831,7 +860,7 @@
                 
                 <div class="flex justify-end gap-4">
                     <button type="button" id="checkout-cancel-btn" class="btn btn-secondary">Cancel</button>
-                    <button type="submit" class="btn btn-accent">Confirm Order</button>
+                    <button type="submit" class="btn btn-accent">Pay & Confirm</button>
                 </div>
             </form>
         </div>
@@ -1586,8 +1615,8 @@
         }
 
 
-        // --- Submit Logic with Random Order ID ---
-        async function submitOrder(e) {
+        // --- Submit Logic with Razorpay ---
+        function submitOrder(e) {
             e.preventDefault();
             const submitBtn = checkoutForm.querySelector('button[type="submit"]');
             checkoutErrorMessage.classList.add('hidden');
@@ -1619,6 +1648,7 @@
                 deliveryFee = 50.00;
             } 
 
+            // Disable button
             submitBtn.disabled = true;
             loadingModal.classList.remove('hidden');
 
@@ -1627,10 +1657,11 @@
             const firstItem = Object.values(cart)[0];
 
             // GENERATE RANDOM ORDER ID: # + 4 Digits
-            const randomId = Math.floor(1000 + Math.random() * 9000); // 1000 to 9999
+            const randomId = Math.floor(1000 + Math.random() * 9000); 
             const shortOrderId = `#${randomId}`;
 
-            const request = {
+            // Prepare Order Data
+            const orderData = {
                 shortId: shortOrderId, 
                 items: Object.values(cart).map(item => ({
                     name: item.name,
@@ -1638,7 +1669,7 @@
                     price: item.price
                 })),
                 itemPrice: itemTotal,
-                cafeId: firstItem.cafeId, // Important for Owner filtering
+                cafeId: firstItem.cafeId, 
                 pickupLocation: firstItem.cafeName,
                 dropoffLocation: dropoffValue,
                 deliveryFee: deliveryFee,
@@ -1656,26 +1687,71 @@
                 estimatedTime: null
             };
 
-            setTimeout(async () => {
-                try {
-                    const collectionPath = `/artifacts/${appId}/public/data/deliveries`;
-                    await addDoc(collection(db, collectionPath), request);
-                    
-                    loadingModal.classList.add('hidden');
-                    closeCheckoutModal();
-                    cart = {};
-                    updateCartUI();
-                    checkoutForm.reset();
-                    submitBtn.disabled = false;
+            // Trigger Payment
+            startRazorpayPayment(orderData);
+        }
 
-                } catch (error) {
-                    console.error("Error adding document: ", error);
-                    loadingModal.classList.add('hidden');
-                    checkoutErrorMessage.textContent = "Failed to post request. Please try again.";
-                    checkoutErrorMessage.classList.remove('hidden');
-                    submitBtn.disabled = false;
+        // --- Razorpay Integration Function ---
+        function startRazorpayPayment(orderData) {
+            const options = {
+                "key": "rzp_test_RiMRmuv0ZwU8i9", // <--- PASTE YOUR KEY HERE
+                "amount": Math.round(orderData.totalAmount * 100), // Amount is in paise
+                "currency": "INR",
+                "name": "Gravli Campus Delivery",
+                "description": "Food Order Payment",
+                "image": "LOGO.png",
+                "handler": function (response){
+                    // Payment Success!
+                    // Save Payment ID to order
+                    orderData.paymentId = response.razorpay_payment_id;
+                    orderData.paymentStatus = 'paid';
+                    
+                    // Now save to Firebase
+                    saveOrderToFirebase(orderData);
+                },
+                "prefill": {
+                    "name": orderData.requesterName,
+                    "email": currentUser.email || ""
+                },
+                "theme": {
+                    "color": "#8b5cf6"
+                },
+                "modal": {
+                    "ondismiss": function(){
+                        // Handle modal closed without payment
+                        loadingModal.classList.add('hidden');
+                        const submitBtn = checkoutForm.querySelector('button[type="submit"]');
+                        if(submitBtn) submitBtn.disabled = false;
+                        alert("Payment cancelled. Order was not placed.");
+                    }
                 }
-            }, 2500);
+            };
+            
+            const rzp1 = new Razorpay(options);
+            rzp1.open();
+        }
+
+        async function saveOrderToFirebase(request) {
+             try {
+                const collectionPath = `/artifacts/${appId}/public/data/deliveries`;
+                await addDoc(collection(db, collectionPath), request);
+                
+                loadingModal.classList.add('hidden');
+                closeCheckoutModal();
+                cart = {};
+                updateCartUI();
+                checkoutForm.reset();
+                const submitBtn = checkoutForm.querySelector('button[type="submit"]');
+                if(submitBtn) submitBtn.disabled = false;
+
+            } catch (error) {
+                console.error("Error adding document: ", error);
+                loadingModal.classList.add('hidden');
+                checkoutErrorMessage.textContent = "Failed to post request. Please contact support.";
+                checkoutErrorMessage.classList.remove('hidden');
+                const submitBtn = checkoutForm.querySelector('button[type="submit"]');
+                if(submitBtn) submitBtn.disabled = false;
+            }
         }
 
         async function logout() {
@@ -1786,7 +1862,7 @@
             // Deliverer Logic
             else if (currentRole === 'deliverer') {
                 const myCurrentDeliveries = requests.filter(r => r.delivererId === currentUser.uid && r.status !== 'completed');
-                const openDeliveries = requests.filter(r => r.status === 'open' && !r.isPickup); // No pickup orders for deliverers
+                const openDeliveries = requests.filter(r => r.status === 'open' && !r.isPickup); 
                 const hasActiveDelivery = myCurrentDeliveries.some(r => r.status === 'in-progress');
 
                 myCurrentDeliveriesList.innerHTML = myCurrentDeliveries.length ? '' : `<p class="text-secondary">You have no active deliveries.</p>`;
@@ -1805,7 +1881,6 @@
 
             // Owner Logic
             else if (currentRole === 'owner') {
-                // Filter: My Cafe AND (Open Pickup OR Accepted/Preparing/Ready by Owner)
                 const myCafeOrders = requests.filter(r => 
                     r.cafeId === managedCafeId && r.isPickup && 
                     ['open', 'accepted', 'preparing', 'ready'].includes(r.status)
@@ -1952,7 +2027,7 @@
                             </div>
                         </div>
                         ${requesterInfo}
-                        <p class="text-sm text-secondary"><strong>Total:</strong> ₹${totalAmount}</p>
+                        <p class="text-sm text-secondary"><strong>Total:</strong> ₹${totalAmount} <span class="badge badge-completed text-xs ml-2">Paid</span></p>
                         ${req.isPickup ? '<p class="text-sm font-bold text-accent">Self Pickup</p>' : ''}
                         
                         ${delivererInfo}
