@@ -193,6 +193,9 @@
         .btn-deliverer { background-color: var(--success-bg); color: white; width: 100%; padding: 1rem; font-size: 1.125rem; }
         .btn-deliverer:hover { background-color: var(--success-bg-hover); }
 
+        .btn-owner { background-color: var(--warning-bg); color: white; width: 100%; padding: 1rem; font-size: 1.125rem; }
+        .btn-owner:hover { background-color: #d97706; }
+
         .btn-accent { background-color: var(--accent-color); color: white; }
         .btn-accent:hover { background-color: var(--accent-hover); }
 
@@ -499,6 +502,20 @@
             border: 1px solid var(--border-color);
         }
         
+        /* PIN Display */
+        .pin-display {
+            font-family: monospace;
+            font-size: 1.5rem;
+            letter-spacing: 0.5rem;
+            font-weight: bold;
+            color: var(--success-bg);
+            background: #d1fae5;
+            padding: 0.5rem;
+            border-radius: var(--radius-md);
+            text-align: center;
+            margin-top: 0.5rem;
+        }
+        
         /* Search Bar */
         #menu-search-input {
             margin-bottom: 1rem;
@@ -513,9 +530,14 @@
         .badge-open { background-color: #d1fae5; color: #065f46; } 
         .badge-progress { background-color: #fef3c7; color: #92400e; } 
         .badge-completed { background-color: #dbeafe; color: #1e40af; } 
+        .badge-ready { background-color: #c7d2fe; color: #3730a3; }
+        .badge-rejected { background-color: #fee2e2; color: #991b1b; }
+
         .dark .badge-open { background-color: #064e3b; color: #6ee7b7; }
         .dark .badge-progress { background-color: #78350f; color: #fcd34d; }
         .dark .badge-completed { background-color: #1e3a8a; color: #93c5fd; }
+        .dark .badge-ready { background-color: #312e81; color: #a5b4fc; }
+        .dark .badge-rejected { background-color: #7f1d1d; color: #fca5a5; }
 
         /* 10. Footer */
         footer {
@@ -609,6 +631,23 @@
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
                     <span>Deliver Orders</span>
                 </button>
+                <button id="select-owner-btn" class="btn btn-owner">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" /></svg>
+                    <span>Manage Cafe</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="owner-login-modal" class="modal-backdrop hidden opacity-0">
+        <div class="modal-content max-w-sm scale-95" style="padding: 1.5rem;">
+            <h3 class="text-2xl font-bold mb-4">Cafe Owner Login</h3>
+            <p class="text-sm text-secondary mb-4">Enter your unique Owner ID to access your cafe.</p>
+            <input type="password" id="owner-id-input" class="form-input mb-4" placeholder="Owner ID">
+            <p id="owner-login-error" class="text-xs text-center mb-4 hidden" style="color: var(--danger-bg);">Invalid Owner ID</p>
+            <div class="flex justify-end gap-3">
+                <button id="owner-login-cancel" class="btn btn-secondary">Cancel</button>
+                <button id="owner-login-submit" class="btn btn-accent">Login</button>
             </div>
         </div>
     </div>
@@ -681,6 +720,12 @@
                     </div>
                 </div>
             </div>
+
+            <div id="owner-view" class="hidden">
+                <h2 id="owner-cafe-title" class="text-2xl font-bold mb-4">Cafe Management</h2>
+                <div id="owner-orders-list" class="request-list">
+                    </div>
+            </div>
         </main>
         
         <div id="loader" class="text-center py-10 hidden" style="padding: 2.5rem 0;">
@@ -688,7 +733,7 @@
                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                 <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
             </svg>
-            <p class="mt-2 text-secondary">Fetching delivery requests...</p>
+            <p class="mt-2 text-secondary">Fetching data...</p>
         </div>
     </div>
 
@@ -701,7 +746,7 @@
         <div class="active-order-content">
             <div>
                 <p class="text-sm text-secondary">Your order is In Progress!</p>
-                <p id="active-order-bar-status" class="font-bold" style="color: var(--accent-color);">Awaiting deliverer updates...</p>
+                <p id="active-order-bar-status" class="font-bold" style="color: var(--accent-color);">Awaiting updates...</p>
             </div>
             <span class="text-sm font-semibold text-secondary">View Details &rarr;</span>
         </div>
@@ -798,7 +843,7 @@
                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                 <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
             </svg>
-            <p class="mt-4 text-secondary font-semibold">Placing your order...</p>
+            <p class="mt-4 text-secondary font-semibold">Processing...</p>
         </div>
     </div>
 
@@ -877,6 +922,14 @@
         const db = getFirestore(app);
         const auth = getAuth(app);
         
+        // --- Mock Data: Owner IDs ---
+        // In a real app, this would be in the database
+        const OWNER_CREDENTIALS = {
+            "OWNER1": "HR1", // Corner Cafe
+            "OWNER2": "HR2", // HR Cafe
+            // ... Add more if needed
+        };
+
         // --- Specific Menu Data for Corner Cafe (HR1) ---
         const CORNER_CAFE_MENU = [
             { id: "cc-1", name: "Aloo Parantha", price: 40 },
@@ -988,7 +1041,8 @@
         let unsubscribe = null; 
         let cart = {};
         let currentOpenCafeId = null;
-        let currentRole = null; // 'student' or 'deliverer'
+        let currentRole = null; // 'student', 'deliverer', 'owner'
+        let managedCafeId = null; // Set when Owner logs in
 
         // --- UI Elements ---
         const loginModal = document.getElementById('login-modal');
@@ -996,6 +1050,7 @@
         const roleSelectionModal = document.getElementById('role-selection-modal');
         const selectStudentBtn = document.getElementById('select-student-btn');
         const selectDelivererBtn = document.getElementById('select-deliverer-btn');
+        const selectOwnerBtn = document.getElementById('select-owner-btn');
         const appContainer = document.getElementById('app');
         const mainHeader = document.getElementById('main-header');
         const themeSwitcher = document.getElementById('theme-switcher');
@@ -1003,6 +1058,7 @@
         const moonIcon = document.getElementById('moon-icon');
         const studentView = document.getElementById('student-view');
         const delivererView = document.getElementById('deliverer-view');
+        const ownerView = document.getElementById('owner-view');
         const loader = document.getElementById('loader');
         const userInfo = document.getElementById('userInfo');
         const userAvatar = document.getElementById('user-avatar');
@@ -1047,6 +1103,15 @@
         const activeOrderBarStatus = document.getElementById('active-order-bar-status');
         const deliveryStats = document.getElementById('delivery-stats');
         const menuSearchInput = document.getElementById('menu-search-input');
+
+        // Owner Login Elements
+        const ownerLoginModal = document.getElementById('owner-login-modal');
+        const ownerIdInput = document.getElementById('owner-id-input');
+        const ownerLoginError = document.getElementById('owner-login-error');
+        const ownerLoginSubmit = document.getElementById('owner-login-submit');
+        const ownerLoginCancel = document.getElementById('owner-login-cancel');
+        const ownerOrdersList = document.getElementById('owner-orders-list');
+        const ownerCafeTitle = document.getElementById('owner-cafe-title');
 
         // NEW UI Elements
         const methodDeliveryBtn = document.getElementById('method-delivery');
@@ -1096,17 +1161,38 @@
                 if (savedRole) {
                     currentRole = savedRole;
                     roleSelectionModal.classList.add('hidden');
+                    
                     if (currentRole === 'student') {
                         studentView.classList.remove('hidden');
                         delivererView.classList.add('hidden');
+                        ownerView.classList.add('hidden');
                         cartButton.classList.add('hidden'); 
                         deliveryStats.classList.add('hidden');
-                    } else {
+                    } else if (currentRole === 'deliverer') {
                         studentView.classList.add('hidden');
                         delivererView.classList.remove('hidden');
+                        ownerView.classList.add('hidden');
                         cartButton.classList.add('hidden'); 
                         deliveryStats.classList.remove('hidden');
+                    } else if (currentRole === 'owner') {
+                        // Check if we have the cafe ID stored
+                        const savedCafe = localStorage.getItem('managedCafeId');
+                        if(savedCafe) {
+                            managedCafeId = savedCafe;
+                            studentView.classList.add('hidden');
+                            delivererView.classList.add('hidden');
+                            ownerView.classList.remove('hidden');
+                            cartButton.classList.add('hidden');
+                            deliveryStats.classList.add('hidden');
+                            ownerCafeTitle.textContent = `${CAFE_DATA[managedCafeId].name} Orders`;
+                        } else {
+                            // If role is owner but no cafe ID, reset
+                            localStorage.removeItem('userRole');
+                            roleSelectionModal.classList.remove('hidden');
+                            return;
+                        }
                     }
+                    
                     setupUserHeader("Welcome");
                     startApp();
                 } else {
@@ -1117,7 +1203,9 @@
                 currentUser = null;
                 userDetails = null;
                 currentRole = null;
+                managedCafeId = null;
                 localStorage.removeItem('userRole');
+                localStorage.removeItem('managedCafeId');
                 loginModal.classList.remove('hidden');
                 roleSelectionModal.classList.add('hidden');
                 appContainer.classList.add('hidden');
@@ -1216,10 +1304,10 @@
         function startApp() {
             roleSelectionModal.classList.add('hidden');
             appContainer.classList.remove('hidden');
-            if (!studentView.classList.contains('hidden')) {
+            if (currentRole === 'student') {
                 renderCafes();
                 fetchAndDisplayRequests();
-            } else {
+            } else if (currentRole === 'deliverer' || currentRole === 'owner') {
                 fetchAndDisplayRequests();
             }
         }
@@ -1477,6 +1565,8 @@
             let relevantOrders = [];
             if (currentRole === 'deliverer') {
                 relevantOrders = allOrders.filter(req => req.delivererId === currentUser.uid && req.status === 'completed');
+            } else if (currentRole === 'owner') {
+                relevantOrders = allOrders.filter(req => req.cafeId === managedCafeId && req.status === 'completed');
             } else {
                 relevantOrders = allOrders.filter(req => req.requesterId === currentUser.uid && req.status === 'completed');
             }
@@ -1541,13 +1631,14 @@
             const shortOrderId = `#${randomId}`;
 
             const request = {
-                shortId: shortOrderId, // Save the visual ID
+                shortId: shortOrderId, 
                 items: Object.values(cart).map(item => ({
                     name: item.name,
                     quantity: item.quantity,
                     price: item.price
                 })),
                 itemPrice: itemTotal,
+                cafeId: firstItem.cafeId, // Important for Owner filtering
                 pickupLocation: firstItem.cafeName,
                 dropoffLocation: dropoffValue,
                 deliveryFee: deliveryFee,
@@ -1590,6 +1681,7 @@
         async function logout() {
             try {
                 localStorage.removeItem('userRole'); 
+                localStorage.removeItem('managedCafeId');
                 await signOut(auth);
             } catch (error) {
                 console.error("Logout Error:", error);
@@ -1622,6 +1714,8 @@
 
                    allHistoryOrders.push(req);
 
+                   // Filter logic for main view (clean up old open requests)
+                   // But if Owner accepted it, keep it.
                    if (req.status === 'open' && req.createdAt && (nowInSeconds - req.createdAt.seconds > maxAge)) {
                        if (req.requesterId === currentUser.uid) {
                            deleteDoc(doc.ref);
@@ -1650,7 +1744,10 @@
             switch(status) {
                 case 'open': return `<span class="badge badge-open">Open</span>`;
                 case 'in-progress': return `<span class="badge badge-progress">In Progress</span>`;
+                case 'preparing': return `<span class="badge badge-progress">Preparing</span>`;
+                case 'ready': return `<span class="badge badge-ready">Ready for Pickup</span>`;
                 case 'completed': return `<span class="badge badge-completed">Completed</span>`;
+                case 'rejected': return `<span class="badge badge-rejected">Rejected</span>`;
                 default: return `<span class="badge" style="background: #e5e7eb; color: #1f2937;">Unknown</span>`;
             }
         }
@@ -1661,56 +1758,76 @@
             const myCurrentDeliveriesList = document.getElementById('my-current-deliveries-list');
             const availableDeliveriesContainer = document.getElementById('available-deliveries-container');
             const singleDeliveryMessage = document.getElementById('single-delivery-message');
+            const ownerOrdersList = document.getElementById('owner-orders-list');
             
             myRequestsList.innerHTML = '';
-            allRequestsListDeliverer.innerHTML = '';
-            myCurrentDeliveriesList.innerHTML = '';
+            if (allRequestsListDeliverer) allRequestsListDeliverer.innerHTML = '';
+            if (myCurrentDeliveriesList) myCurrentDeliveriesList.innerHTML = '';
+            if (ownerOrdersList) ownerOrdersList.innerHTML = '';
             
-            const myReqs = requests.filter(r => r.requesterId === currentUser.uid);
-            const myCurrentDeliveries = requests.filter(r => r.delivererId === currentUser.uid);
-            
-            // --- UPDATED: Filter out Self Pickup orders for Deliverers ---
-            const openDeliveries = requests.filter(r => r.status === 'open' && !r.isPickup);
-            
-            const hasActiveDelivery = myCurrentDeliveries.some(r => r.status === 'in-progress');
-
-            const myActiveOrders = myReqs.filter(r => r.status === 'open' || r.status === 'in-progress');
-            const myInProgressOrder = myReqs.find(r => r.status === 'in-progress');
-            
-            myRequestsList.innerHTML = myActiveOrders.length ? '' : `<p class="text-secondary">You have no active orders.</p>`;
-            myActiveOrders.forEach(req => myRequestsList.appendChild(createRequestCard(req, 'student-own')));
-            
-            if (myInProgressOrder) {
-                activeOrderBarStatus.textContent = formatSubStatus(myInProgressOrder.subStatus);
-                activeOrderBar.classList.remove('hidden');
-                activeOrderBar.dataset.orderId = `order-${myInProgressOrder.id}`;
-            } else {
-                activeOrderBar.classList.add('hidden');
+            // Student Logic
+            if (currentRole === 'student') {
+                const myReqs = requests.filter(r => r.requesterId === currentUser.uid);
+                const myActiveOrders = myReqs.filter(r => ['open', 'in-progress', 'preparing', 'ready'].includes(r.status));
+                
+                myRequestsList.innerHTML = myActiveOrders.length ? '' : `<p class="text-secondary">You have no active orders.</p>`;
+                myActiveOrders.forEach(req => myRequestsList.appendChild(createRequestCard(req, 'student-own')));
+                
+                const myInProgressOrder = myReqs.find(r => ['in-progress', 'preparing', 'ready'].includes(r.status));
+                if (myInProgressOrder) {
+                    activeOrderBarStatus.textContent = formatSubStatus(myInProgressOrder.subStatus || myInProgressOrder.status);
+                    activeOrderBar.classList.remove('hidden');
+                    activeOrderBar.dataset.orderId = `order-${myInProgressOrder.id}`;
+                } else {
+                    activeOrderBar.classList.add('hidden');
+                }
             }
 
-            myCurrentDeliveriesList.innerHTML = myCurrentDeliveries.length ? '' : `<p class="text-secondary">You have no active or completed deliveries.</p>`;
-            myCurrentDeliveries.forEach(req => myCurrentDeliveriesList.appendChild(createRequestCard(req, 'deliverer-own')));
-            if (hasActiveDelivery) {
-                availableDeliveriesContainer.classList.add('hidden');
-                singleDeliveryMessage.classList.remove('hidden');
-            } else {
-                availableDeliveriesContainer.classList.remove('hidden');
-                singleDeliveryMessage.classList.add('hidden');
-                allRequestsListDeliverer.innerHTML = openDeliveries.length ? '' : `<p class="text-secondary">No available deliveries right now. Check back soon!</p>`;
-                openDeliveries.forEach(req => allRequestsListDeliverer.appendChild(createRequestCard(req, 'deliverer')));
+            // Deliverer Logic
+            else if (currentRole === 'deliverer') {
+                const myCurrentDeliveries = requests.filter(r => r.delivererId === currentUser.uid && r.status !== 'completed');
+                const openDeliveries = requests.filter(r => r.status === 'open' && !r.isPickup); // No pickup orders for deliverers
+                const hasActiveDelivery = myCurrentDeliveries.some(r => r.status === 'in-progress');
+
+                myCurrentDeliveriesList.innerHTML = myCurrentDeliveries.length ? '' : `<p class="text-secondary">You have no active deliveries.</p>`;
+                myCurrentDeliveries.forEach(req => myCurrentDeliveriesList.appendChild(createRequestCard(req, 'deliverer-own')));
+                
+                if (hasActiveDelivery) {
+                    availableDeliveriesContainer.classList.add('hidden');
+                    singleDeliveryMessage.classList.remove('hidden');
+                } else {
+                    availableDeliveriesContainer.classList.remove('hidden');
+                    singleDeliveryMessage.classList.add('hidden');
+                    allRequestsListDeliverer.innerHTML = openDeliveries.length ? '' : `<p class="text-secondary">No available deliveries right now.</p>`;
+                    openDeliveries.forEach(req => allRequestsListDeliverer.appendChild(createRequestCard(req, 'deliverer')));
+                }
+            }
+
+            // Owner Logic
+            else if (currentRole === 'owner') {
+                // Filter: My Cafe AND (Open Pickup OR Accepted/Preparing/Ready by Owner)
+                const myCafeOrders = requests.filter(r => 
+                    r.cafeId === managedCafeId && r.isPickup && 
+                    ['open', 'accepted', 'preparing', 'ready'].includes(r.status)
+                );
+
+                ownerOrdersList.innerHTML = myCafeOrders.length ? '' : `<p class="text-secondary">No pickup orders pending.</p>`;
+                myCafeOrders.forEach(req => ownerOrdersList.appendChild(createRequestCard(req, 'owner')));
             }
         }
         
         function formatSubStatus(status) {
-            if (!status) return 'Awaiting deliverer updates...';
+            if (!status) return 'Awaiting updates...';
             switch(status) {
                 case 'reached-cafe': return 'Reached the cafe';
                 case 'picked-up': return 'Order picked up';
+                case 'preparing': return 'Preparing your food';
+                case 'ready': return 'Ready for Pickup!';
                 default: return 'In progress';
             }
         }
 
-        // --- Updated Card Creation with Short Order ID ---
+        // --- Updated Card Creation ---
         function createRequestCard(req, viewType) {
             const card = document.createElement('div');
             card.className = 'card-panel';
@@ -1722,7 +1839,7 @@
             const isMyOwnRequestView = viewType === 'student-own';
             const isMyDelivery = req.delivererId === currentUser.uid;
 
-            // Display Order ID - prefer shortId, fallback to sliced doc ID
+            // Display Order ID
             const displayId = req.shortId ? req.shortId : `#${req.id.slice(0, 4).toUpperCase()}`;
             const orderIdDisplay = `<span class="order-id-display">ID: ${displayId}</span>`;
 
@@ -1736,14 +1853,12 @@
             }
             
             const totalAmount = req.totalAmount ? req.totalAmount.toFixed(2) : (req.itemPrice + req.deliveryFee).toFixed(2);
-            const itemPriceDisplay = req.itemPrice ? req.itemPrice.toFixed(2) : 'N/A';
             
             let timerElement = '';
             if (req.status === 'open' && req.createdAt?.seconds) {
                 const nowInSeconds = Date.now() / 1000;
                 const ageInSeconds = nowInSeconds - req.createdAt.seconds;
-                const maxAge = 900;
-                const remainingSeconds = maxAge - ageInSeconds;
+                const remainingSeconds = 900 - ageInSeconds;
                 if (remainingSeconds > 0) {
                     const minutes = Math.floor(remainingSeconds / 60);
                     const seconds = Math.floor(remainingSeconds % 60);
@@ -1752,7 +1867,7 @@
             }
             
             let requesterInfo = '';
-            if (!isMyOwnRequestView && viewType !== 'history-view') {
+            if (viewType === 'deliverer' || viewType === 'owner') {
                 const requesterPhoto = req.requesterPhotoURL ? `<img src="${req.requesterPhotoURL}" class="avatar" style="margin-right: 0.5rem;" alt="Requester">` : `<div class="avatar" style="background: #e5e7eb; display: flex; align-items: center; justify-content: center; font-weight: bold; margin-right: 0.5rem; color: #4b5563;">?</div>`;
                 requesterInfo = `
                     <div class="flex items-center text-sm text-secondary mt-2">
@@ -1763,66 +1878,63 @@
             }
             
             let delivererInfo = '';
-            if (req.delivererName) {
+            if (req.delivererName && viewType !== 'owner') {
                 delivererInfo = `<p class="text-sm text-muted mt-2"><strong>Deliverer:</strong> ${req.delivererName}</p>`;
             }
 
-            let statusTracker = '';
-            if (req.status === 'in-progress' && (isMyOwnRequestView || isMyDelivery)) {
-                 statusTracker = `
-                    <div class="mt-4 pt-4 border-t border-custom space-y-2" style="border-top: 1px solid var(--border-color); padding-top: 1rem;">
-                        <p class="text-sm text-secondary"><strong>Deliverer ETA:</strong> <span class="font-semibold" style="color: var(--accent-color);">${req.estimatedTime ? req.estimatedTime + ' mins' : 'Not set'}</span></p>
-                        <p class="text-sm text-secondary"><strong>Live Status:</strong> <span class="font-semibold" style="color: var(--accent-color);">${formatSubStatus(req.subStatus)}</span></p>
+            // PIN Display for Student
+            let pinDisplay = '';
+            if (viewType === 'student-own' && req.status === 'ready' && req.pin) {
+                pinDisplay = `
+                    <div class="mt-4 text-center">
+                        <p class="text-sm font-bold text-secondary">Show this PIN to Cafe Owner:</p>
+                        <div class="pin-display">${req.pin}</div>
                     </div>
-                 `;
+                `;
             }
 
             let actionButtonOrPanel = '';
-            if (isMyDelivery && req.status === 'in-progress') {
-                
+
+            // --- Logic for Owner ---
+            if (viewType === 'owner') {
+                if (req.status === 'open') {
+                    actionButtonOrPanel = `
+                        <div class="flex gap-2 mt-2">
+                            <button data-id="${req.id}" class="owner-reject-btn btn btn-danger btn-sm flex-1">Reject</button>
+                            <button data-id="${req.id}" class="owner-accept-btn btn btn-deliverer btn-sm flex-1">Accept</button>
+                        </div>
+                    `;
+                } else if (req.status === 'preparing') {
+                    actionButtonOrPanel = `<button data-id="${req.id}" class="owner-ready-btn btn btn-accent w-full mt-2">Mark Ready (Generate PIN)</button>`;
+                } else if (req.status === 'ready') {
+                    actionButtonOrPanel = `<button data-id="${req.id}" data-pin="${req.pin}" class="owner-verify-btn btn btn-success w-full mt-2" style="background:var(--success-bg);color:white;">Verify PIN & Complete</button>`;
+                }
+            }
+            // --- Logic for Deliverer ---
+            else if (viewType === 'deliverer-own' && req.status === 'in-progress') {
+                // Existing Deliverer Logic
                 let etaSection = '';
                 if (!req.estimatedTime) {
-                    const etaInput = `<input type="number" id="eta-${req.id}" min="1" max="40" class="form-input text-sm" placeholder="1-40 mins" style="padding: 0.25rem 0.5rem; width: 100%;">`;
-                    const updateEtaBtn = `<button data-id="${req.id}" class="update-eta-btn btn btn-accent btn-sm" style="white-space: nowrap;">Set ETA</button>`;
-                    etaSection = `
-                        <div class="flex flex-col md:flex-row md:items-center gap-2 mb-2">
-                            ${etaInput}
-                            ${updateEtaBtn}
+                    etaSection = `<div class="flex flex-col md:flex-row md:items-center gap-2 mb-2">
+                            <input type="number" id="eta-${req.id}" min="1" max="40" class="form-input text-sm" placeholder="1-40 mins" style="padding: 0.25rem 0.5rem; width: 100%;">
+                            <button data-id="${req.id}" class="update-eta-btn btn btn-accent btn-sm" style="white-space: nowrap;">Set ETA</button>
                         </div>`;
                 } else {
                     etaSection = `<div class="text-sm text-green-600 font-bold mb-2">ETA Set: ${req.estimatedTime} mins</div>`;
                 }
 
                 let nextActionBtn = '';
-                if (req.subStatus === null) {
-                    nextActionBtn = `<button data-id="${req.id}" class="reached-cafe-btn btn btn-accent w-full mt-2">Reached Cafe</button>`;
-                } else if (req.subStatus === 'reached-cafe') {
-                    nextActionBtn = `<button data-id="${req.id}" class="picked-up-btn btn btn-accent w-full mt-2">Picked Up Order</button>`;
-                } else if (req.subStatus === 'picked-up') {
-                    nextActionBtn = `<button data-id="${req.id}" class="delivered-btn w-full mt-2" style="background-color: var(--info-bg); color: white; padding: 0.5rem; border-radius: var(--radius-md); font-weight: 700;">Delivered</button>`;
-                }
-                actionButtonOrPanel = `
-                    <div class="space-y-3 mt-3">
-                        ${etaSection}
-                        <div>
-                            ${nextActionBtn}
-                        </div>
-                    </div>
-                `;
-            } 
+                if (req.subStatus === null) nextActionBtn = `<button data-id="${req.id}" class="reached-cafe-btn btn btn-accent w-full mt-2">Reached Cafe</button>`;
+                else if (req.subStatus === 'reached-cafe') nextActionBtn = `<button data-id="${req.id}" class="picked-up-btn btn btn-accent w-full mt-2">Picked Up Order</button>`;
+                else if (req.subStatus === 'picked-up') nextActionBtn = `<button data-id="${req.id}" class="delivered-btn w-full mt-2" style="background-color: var(--info-bg); color: white; padding: 0.5rem; border-radius: var(--radius-md); font-weight: 700;">Delivered</button>`;
+                
+                actionButtonOrPanel = `<div class="space-y-3 mt-3">${etaSection}<div>${nextActionBtn}</div></div>`;
+            }
             else if (viewType === 'deliverer' && req.status === 'open') {
-                if (req.requesterId === currentUser.uid) {
-                    actionButtonOrPanel = `<p class="text-sm text-muted text-center italic mt-2">This is your own request.</p>`;
-                } else {
-                    const earnings = req.deliveryFee ? req.deliveryFee : 50;
-                    actionButtonOrPanel = `
-                        <div class="flex flex-col items-end gap-2">
-                            <p class="text-sm font-bold" style="color: var(--success-bg);">You'll get: ₹${earnings.toFixed(2)}</p>
-                            <button data-id="${req.id}" class="accept-btn btn btn-deliverer btn-sm w-full md:w-auto">Accept Job</button>
-                        </div>
-                    `;
-                }
+                const earnings = req.deliveryFee ? req.deliveryFee : 50;
+                actionButtonOrPanel = `<div class="flex flex-col items-end gap-2"><p class="text-sm font-bold" style="color: var(--success-bg);">You'll get: ₹${earnings.toFixed(2)}</p><button data-id="${req.id}" class="accept-btn btn btn-deliverer btn-sm w-full md:w-auto">Accept Job</button></div>`;
             } 
+            // --- Logic for Student ---
             else if (isMyOwnRequestView && req.status === 'open') {
                 actionButtonOrPanel = `<button data-id="${req.id}" class="cancel-request-btn btn btn-danger btn-sm w-full mt-3 md:mt-0">Cancel</button>`;
             }
@@ -1840,17 +1952,15 @@
                             </div>
                         </div>
                         ${requesterInfo}
-                        <p class="text-sm text-secondary"><strong>Item Total:</strong> ₹${itemPriceDisplay}</p>
-                        <p class="text-sm text-secondary"><strong>From:</strong> ${req.pickupLocation}</p>
-                        <p class="text-sm text-secondary"><strong>To:</strong> ${req.dropoffLocation}</p>
+                        <p class="text-sm text-secondary"><strong>Total:</strong> ₹${totalAmount}</p>
+                        ${req.isPickup ? '<p class="text-sm font-bold text-accent">Self Pickup</p>' : ''}
+                        
                         ${delivererInfo}
                         <p class="text-xs text-muted mt-2">Posted ${timeAgo}</p>
                         ${timerElement}
-                        ${statusTracker}
+                        ${pinDisplay}
                     </div>
                     <div class="mt-2 md:mt-0 md:text-right md:pl-4 flex-shrink-0">
-                        <p class="text-sm text-secondary mb-1">Total Amount</p>
-                        <p class="text-2xl font-bold" style="color: var(--success-bg);">₹${totalAmount}</p>
                         <div class="mt-2">
                             ${actionButtonOrPanel}
                         </div>
@@ -1878,29 +1988,53 @@
 
             const docRef = doc(db, `/artifacts/${appId}/public/data/deliveries`, requestId);
             try {
+                // Deliverer Actions
                 if (target.classList.contains('accept-btn')) {
                     await updateDoc(docRef, { status: 'in-progress', delivererId: currentUser.uid, delivererName: userDetails.name });
                 } else if (target.classList.contains('update-eta-btn')) {
                     const etaInput = document.getElementById(`eta-${requestId}`);
                     if (etaInput) {
                         const val = parseInt(etaInput.value);
-                        if (val >= 1 && val <= 40) {
-                            await updateDoc(docRef, { estimatedTime: val.toString() });
-                        } else {
-                            alert("Please enter a time between 1 and 40 minutes.");
-                        }
+                        if (val >= 1 && val <= 40) await updateDoc(docRef, { estimatedTime: val.toString() });
+                        else alert("Please enter a time between 1 and 40 minutes.");
                     }
                 } else if (target.classList.contains('reached-cafe-btn')) {
                     await updateDoc(docRef, { subStatus: 'reached-cafe' });
                 } else if (target.classList.contains('picked-up-btn')) {
                     await updateDoc(docRef, { subStatus: 'picked-up' });
                 } else if (target.classList.contains('delivered-btn')) {
-                        await updateDoc(docRef, { status: 'completed' });
-                } else if (target.classList.contains('cancel-request-btn')) {
+                    await updateDoc(docRef, { status: 'completed' });
+                } 
+                
+                // Student Actions
+                else if (target.classList.contains('cancel-request-btn')) {
                     if (confirm("Are you sure you want to cancel this order?")) {
                         await deleteDoc(docRef);
                     }
+                } 
+                
+                // Owner Actions
+                else if (target.classList.contains('owner-accept-btn')) {
+                    await updateDoc(docRef, { status: 'preparing' });
+                } else if (target.classList.contains('owner-reject-btn')) {
+                    if (confirm("Reject this order?")) {
+                        await updateDoc(docRef, { status: 'rejected' });
+                    }
+                } else if (target.classList.contains('owner-ready-btn')) {
+                    // Generate 4 digit PIN
+                    const pin = Math.floor(1000 + Math.random() * 9000).toString();
+                    await updateDoc(docRef, { status: 'ready', pin: pin });
+                } else if (target.classList.contains('owner-verify-btn')) {
+                    const correctPin = target.dataset.pin;
+                    const inputPin = prompt("Please enter the student's PIN:");
+                    if (inputPin === correctPin) {
+                        await updateDoc(docRef, { status: 'completed' });
+                        alert("Order Completed!");
+                    } else {
+                        alert("Incorrect PIN.");
+                    }
                 }
+
             } catch (error) {
                 console.error("Error updating document:", error);
             }
@@ -1915,6 +2049,7 @@
             roleSelectionModal.classList.add('hidden');
             studentView.classList.remove('hidden');
             delivererView.classList.add('hidden');
+            ownerView.classList.add('hidden');
             deliveryStats.classList.add('hidden');
             startApp();
             updateCartUI();
@@ -1926,9 +2061,51 @@
             roleSelectionModal.classList.add('hidden');
             studentView.classList.add('hidden');
             delivererView.classList.remove('hidden');
+            ownerView.classList.add('hidden');
             deliveryStats.classList.remove('hidden');
             cartButton.classList.add('hidden');
             startApp();
+        });
+
+        selectOwnerBtn.addEventListener('click', () => {
+            roleSelectionModal.classList.add('hidden');
+            ownerLoginModal.classList.remove('hidden');
+            setTimeout(() => ownerLoginModal.classList.remove('opacity-0'), 10);
+        });
+
+        // Owner Login Logic
+        ownerLoginCancel.addEventListener('click', () => {
+            ownerLoginModal.classList.add('opacity-0');
+            setTimeout(() => {
+                ownerLoginModal.classList.add('hidden');
+                roleSelectionModal.classList.remove('hidden');
+                ownerIdInput.value = '';
+                ownerLoginError.classList.add('hidden');
+            }, 300);
+        });
+
+        ownerLoginSubmit.addEventListener('click', () => {
+            const inputId = ownerIdInput.value.trim();
+            if (OWNER_CREDENTIALS[inputId]) {
+                managedCafeId = OWNER_CREDENTIALS[inputId];
+                currentRole = 'owner';
+                localStorage.setItem('userRole', 'owner');
+                localStorage.setItem('managedCafeId', managedCafeId);
+                
+                ownerLoginModal.classList.add('opacity-0');
+                setTimeout(() => ownerLoginModal.classList.add('hidden'), 300);
+                
+                studentView.classList.add('hidden');
+                delivererView.classList.add('hidden');
+                ownerView.classList.remove('hidden');
+                cartButton.classList.add('hidden');
+                deliveryStats.classList.add('hidden');
+                
+                ownerCafeTitle.textContent = `${CAFE_DATA[managedCafeId].name} Orders`;
+                startApp();
+            } else {
+                ownerLoginError.classList.remove('hidden');
+            }
         });
         
         cafeGridContainer.addEventListener('click', (e) => {
@@ -1959,14 +2136,8 @@
         menuCloseBtn.addEventListener('click', closeMenuModal);
         menuModal.addEventListener('click', (e) => e.target === menuModal && closeMenuModal());
         
-        // Handle "View Cart" from Main Page
         cartButton.addEventListener('click', openCartModal);
-        
-        // Handle "View Cart" from inside Menu
-        menuViewCartBtn.addEventListener('click', () => {
-            closeMenuModal();
-            openCartModal();
-        });
+        menuViewCartBtn.addEventListener('click', () => { closeMenuModal(); openCartModal(); });
 
         cartCloseBtn.addEventListener('click', closeCartModal);
         cartModal.addEventListener('click', (e) => e.target === cartModal && closeCartModal());
