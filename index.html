@@ -1668,7 +1668,10 @@
             
             const myReqs = requests.filter(r => r.requesterId === currentUser.uid);
             const myCurrentDeliveries = requests.filter(r => r.delivererId === currentUser.uid);
+            
+            // --- UPDATED: Filter out Self Pickup orders for Deliverers ---
             const openDeliveries = requests.filter(r => r.status === 'open' && !r.isPickup);
+            
             const hasActiveDelivery = myCurrentDeliveries.some(r => r.status === 'in-progress');
 
             const myActiveOrders = myReqs.filter(r => r.status === 'open' || r.status === 'in-progress');
@@ -1894,7 +1897,9 @@
                 } else if (target.classList.contains('delivered-btn')) {
                         await updateDoc(docRef, { status: 'completed' });
                 } else if (target.classList.contains('cancel-request-btn')) {
-                    await deleteDoc(docRef);
+                    if (confirm("Are you sure you want to cancel this order?")) {
+                        await deleteDoc(docRef);
+                    }
                 }
             } catch (error) {
                 console.error("Error updating document:", error);
