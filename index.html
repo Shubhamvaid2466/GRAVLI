@@ -238,40 +238,38 @@
             text-align: center;
         }
         
-        /* UPDATED: User Area to be Highlighted and Arrow Free */
         .user-area { 
             display: flex; 
             align-items: center; 
-            justify-content: center; /* Center content now that arrow is gone */
+            justify-content: center; 
             gap: 0.75rem; 
             width: 200px; 
             cursor: pointer;
-            padding: 0.5rem 1rem; /* Added horizontal padding */
-            border-radius: 50px; /* Pill shape for highlight effect */
-            background-color: rgba(255, 255, 255, 0.2); /* Semi-transparent background */
-            border: 1px solid rgba(255, 255, 255, 0.25); /* Subtle border highlight */
+            padding: 0.5rem 1rem;
+            border-radius: 50px; 
+            background-color: rgba(255, 255, 255, 0.2); 
+            border: 1px solid rgba(255, 255, 255, 0.25);
             transition: all 0.2s;
             position: relative;
             z-index: 40;
             backdrop-filter: blur(4px);
         }
         .user-area:hover {
-            background-color: rgba(255, 255, 255, 0.3); /* Brighter on hover */
+            background-color: rgba(255, 255, 255, 0.3);
             transform: translateY(-1px);
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
         }
 
-        /* NEW: Dropdown Menu Styles */
         .dropdown-menu {
             position: absolute;
-            top: 120%; /* Pushed down slightly */
+            top: 120%; 
             left: 0;
-            width: 100%; /* Match parent width */
+            width: 100%; 
             background-color: var(--bg-secondary);
             border: 1px solid var(--border-color);
             border-radius: var(--radius-md);
             box-shadow: var(--shadow-xl);
-            display: none; /* Hidden by default */
+            display: none; 
             flex-direction: column;
             overflow: hidden;
             z-index: 100;
@@ -438,7 +436,7 @@
             padding: 0 1rem;
         }
         
-        /* 8. Forms */
+        /* 8. Forms & Toggles */
         .form-group { margin-bottom: 1rem; }
         .form-label { display: block; color: var(--text-secondary); font-weight: 600; margin-bottom: 0.5rem; }
         .form-select, .form-input {
@@ -460,6 +458,45 @@
             border-radius: var(--radius-md);
             text-align: center;
             margin-bottom: 1.5rem;
+        }
+
+        /* --- NEW: Toggle Switch Styles --- */
+        .toggle-container {
+            display: flex;
+            background-color: var(--border-color);
+            padding: 0.25rem;
+            border-radius: var(--radius-md);
+            margin-bottom: 1.5rem;
+        }
+
+        .toggle-btn {
+            flex: 1;
+            padding: 0.5rem;
+            text-align: center;
+            border-radius: var(--radius-md);
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            transition: all 0.2s ease;
+        }
+
+        .toggle-btn.active {
+            background-color: var(--bg-secondary);
+            color: var(--accent-color);
+            box-shadow: var(--shadow-sm);
+        }
+
+        /* --- NEW: Order ID Styling --- */
+        .order-id-display {
+            background-color: var(--bg-primary);
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            display: inline-block;
+            margin-bottom: 0.5rem;
+            border: 1px solid var(--border-color);
         }
         
         /* Search Bar */
@@ -703,32 +740,44 @@
     <div id="checkout-modal" class="modal-backdrop hidden opacity-0">
         <div id="checkout-modal-content" class="modal-content max-w-md scale-95" style="padding: 1.5rem;">
             <h3 class="text-2xl font-bold mb-4">Confirm Order</h3>
+            
             <form id="checkout-form">
-                <label class="form-label mb-2">Drop-off Location</label>
-                <div class="flex gap-4 mb-4">
-                    <div class="form-group flex-1" style="margin-bottom: 0;">
-                        <select id="block-select" class="form-select" required>
-                            <option value="" disabled selected>Block</option>
-                            <option value="B1">B1</option>
-                            <option value="B2">B2</option>
-                            <option value="B3">B3</option>
-                            <option value="B4">B4</option>
-                            <option value="G1">G1</option>
-                            <option value="G2">G2</option>
-                            <option value="Main Library">Main Library</option>
-                            <option value="Admin Block">Admin Block</option>
-                        </select>
-                    </div>
-                    <div class="form-group flex-1" style="margin-bottom: 0;">
-                        <input id="room-input" type="text" inputmode="numeric" pattern="\d{3}" maxlength="3" class="form-input" placeholder="e.g., 102" required>
+                <label class="form-label">Delivery Method</label>
+                <div class="toggle-container">
+                    <button type="button" id="method-delivery" class="toggle-btn active">Delivery (₹50)</button>
+                    <button type="button" id="method-pickup" class="toggle-btn">Self Pickup (Free)</button>
+                </div>
+
+                <div id="address-section">
+                    <label class="form-label mb-2">Drop-off Location</label>
+                    <div class="flex gap-4 mb-4">
+                        <div class="form-group flex-1" style="margin-bottom: 0;">
+                            <select id="block-select" class="form-select">
+                                <option value="" disabled selected>Block</option>
+                                <option value="B1">B1</option>
+                                <option value="B2">B2</option>
+                                <option value="B3">B3</option>
+                                <option value="B4">B4</option>
+                                <option value="G1">G1</option>
+                                <option value="G2">G2</option>
+                                <option value="Main Library">Main Library</option>
+                                <option value="Admin Block">Admin Block</option>
+                            </select>
+                        </div>
+                        <div class="form-group flex-1" style="margin-bottom: 0;">
+                            <input id="room-input" type="text" inputmode="numeric" pattern="\d{3}" maxlength="3" class="form-input" placeholder="e.g., 102">
+                        </div>
                     </div>
                 </div>
                 
                 <div class="total-display">
-                    <p class="text-secondary font-semibold">Total Amount (Item + Fee)</p>
+                    <p class="text-secondary font-semibold">Total Amount</p>
                     <p id="checkout-total-display" class="text-primary text-2xl font-bold">₹0.00</p>
+                    <p id="fee-breakdown" class="text-xs text-secondary mt-1">Includes ₹50 Delivery Fee</p>
                 </div>
+
                 <p id="checkout-error-message" class="text-sm mb-4 text-center hidden" style="color: var(--danger-bg);"></p>
+                
                 <div class="flex justify-end gap-4">
                     <button type="button" id="checkout-cancel-btn" class="btn btn-secondary">Cancel</button>
                     <button type="submit" class="btn btn-accent">Confirm Order</button>
@@ -791,7 +840,7 @@
             GoogleAuthProvider, 
             signInWithPopup, 
             signOut,
-            updateProfile // IMPORTED updateProfile
+            updateProfile 
         } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { 
             getFirestore, 
@@ -952,7 +1001,6 @@
         const userInfo = document.getElementById('userInfo');
         const userAvatar = document.getElementById('user-avatar');
         
-        // Removed old buttons, now using Dropdown logic
         const profileTrigger = document.getElementById('profile-trigger');
         const profileDropdown = document.getElementById('profile-dropdown');
         const menuProfileBtn = document.getElementById('menu-profile-btn');
@@ -993,6 +1041,15 @@
         const activeOrderBarStatus = document.getElementById('active-order-bar-status');
         const deliveryStats = document.getElementById('delivery-stats');
         const menuSearchInput = document.getElementById('menu-search-input');
+
+        // --- NEW: Elements for Toggle Logic ---
+        const methodDeliveryBtn = document.getElementById('method-delivery');
+        const methodPickupBtn = document.getElementById('method-pickup');
+        const addressSection = document.getElementById('address-section');
+        const feeBreakdown = document.getElementById('fee-breakdown');
+        const blockSelect = document.getElementById('block-select');
+        const roomInput = document.getElementById('room-input');
+        let isPickupMode = false; // State to track mode
 
         // --- Theme Logic ---
         function applyTheme(theme) {
@@ -1323,12 +1380,40 @@
             setTimeout(() => menuModal.classList.add('hidden'), 300);
         }
 
+        // --- NEW: Toggle Logic Functions ---
+        function setDeliveryMode(isPickup) {
+            isPickupMode = isPickup;
+            
+            // UI Styling
+            if (isPickup) {
+                methodPickupBtn.classList.add('active');
+                methodDeliveryBtn.classList.remove('active');
+                addressSection.classList.add('hidden'); // Hide address inputs
+                feeBreakdown.textContent = "Free Self Pickup";
+            } else {
+                methodDeliveryBtn.classList.add('active');
+                methodPickupBtn.classList.remove('active');
+                addressSection.classList.remove('hidden'); // Show address inputs
+                feeBreakdown.textContent = "Includes ₹50 Delivery Fee";
+            }
+
+            // Recalculate Price
+            updateCheckoutTotal();
+        }
+
+        function updateCheckoutTotal() {
+            const itemTotal = Object.values(cart).reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            const fee = isPickupMode ? 0 : 50;
+            const finalTotal = itemTotal + fee;
+            checkoutTotalDisplay.textContent = `₹${finalTotal.toFixed(2)}`;
+        }
+
+        // --- NEW: Updated Modal Open Logic ---
         function openCheckoutModal() {
             closeCartModal();
-            const itemTotal = Object.values(cart).reduce((sum, item) => sum + (item.price * item.quantity), 0);
-            const deliveryFee = 50.00;
-            const finalTotal = itemTotal + deliveryFee;
-            checkoutTotalDisplay.textContent = `₹${finalTotal.toFixed(2)}`;
+            // Default to Delivery mode when opening or reset to preference
+            setDeliveryMode(false); 
+            
             checkoutErrorMessage.classList.add('hidden');
 
             checkoutModal.classList.remove('hidden');
@@ -1386,38 +1471,44 @@
         }
 
 
+        // --- NEW: Updated Submit Logic ---
         async function submitOrder(e) {
             e.preventDefault();
             const submitBtn = checkoutForm.querySelector('button[type="submit"]');
             checkoutErrorMessage.classList.add('hidden');
 
-            const blockVal = document.getElementById('block-select').value;
-            const roomInput = document.getElementById('room-input');
-            const roomVal = roomInput.value.trim();
-            
-            // Validation for Block
-            if (!blockVal) {
-                checkoutErrorMessage.textContent = "Please select a block.";
-                checkoutErrorMessage.classList.remove('hidden');
-                return;
-            }
+            let dropoffValue = "Self Pickup";
+            let deliveryFee = 0;
 
-            // Validation for Room Number (must be exactly 3 digits)
-            const roomNumberPattern = /^\d{3}$/;
-            if (!roomNumberPattern.test(roomVal)) {
-                checkoutErrorMessage.textContent = "Please enter a valid 3-digit room number (e.g., 102).";
-                checkoutErrorMessage.classList.remove('hidden');
-                roomInput.focus();
-                return;
-            }
+            // --- Validation Logic ---
+            if (!isPickupMode) {
+                // Delivery Mode: Validate Block and Room
+                const blockVal = blockSelect.value;
+                const roomVal = roomInput.value.trim();
 
-            const dropoffValue = `${blockVal} - Room ${roomVal}`;
+                if (!blockVal) {
+                    checkoutErrorMessage.textContent = "Please select a block for delivery.";
+                    checkoutErrorMessage.classList.remove('hidden');
+                    return;
+                }
+
+                const roomNumberPattern = /^\d{3}$/;
+                if (!roomNumberPattern.test(roomVal)) {
+                    checkoutErrorMessage.textContent = "Please enter a valid 3-digit room number.";
+                    checkoutErrorMessage.classList.remove('hidden');
+                    roomInput.focus();
+                    return;
+                }
+                
+                dropoffValue = `${blockVal} - Room ${roomVal}`;
+                deliveryFee = 50.00;
+            } 
+            // If Pickup Mode: We skip the address checks and keep dropoffValue as "Self Pickup"
 
             submitBtn.disabled = true;
             loadingModal.classList.remove('hidden');
 
             const itemTotal = Object.values(cart).reduce((sum, item) => sum + (item.price * item.quantity), 0);
-            const deliveryFee = 50.00;
             const finalTotal = itemTotal + deliveryFee;
             const firstItem = Object.values(cart)[0];
 
@@ -1432,6 +1523,7 @@
                 dropoffLocation: dropoffValue,
                 deliveryFee: deliveryFee,
                 totalAmount: finalTotal,
+                isPickup: isPickupMode, // Flag for future logic or filtering
                 status: 'open',
                 requesterId: currentUser.uid,
                 requesterName: userDetails.name,
@@ -1563,8 +1655,6 @@
             myRequestsList.innerHTML = myActiveOrders.length ? '' : `<p class="text-secondary">You have no active orders.</p>`;
             myActiveOrders.forEach(req => myRequestsList.appendChild(createRequestCard(req, 'student-own')));
             
-            // Note: History is rendered inside the snapshot listener now to catch updates
-            
             if (myInProgressOrder) {
                 activeOrderBarStatus.textContent = formatSubStatus(myInProgressOrder.subStatus);
                 activeOrderBar.classList.remove('hidden');
@@ -1595,6 +1685,7 @@
             }
         }
 
+        // --- NEW: Updated Card Creation with Order ID ---
         function createRequestCard(req, viewType) {
             const card = document.createElement('div');
             card.className = 'card-panel';
@@ -1605,6 +1696,9 @@
             const timeAgo = req.createdAt ? getTimeAgo(req.createdAt.seconds) : 'just now';
             const isMyOwnRequestView = viewType === 'student-own';
             const isMyDelivery = req.delivererId === currentUser.uid;
+
+            // Display Order ID
+            const orderIdDisplay = `<span class="order-id-display">ID: ${req.id.slice(0, 8).toUpperCase()}</span>`;
 
             let itemContent;
             if (req.items && Array.isArray(req.items)) {
@@ -1696,6 +1790,8 @@
                     actionButtonOrPanel = `<p class="text-sm text-muted text-center italic mt-2">This is your own request.</p>`;
                 } else {
                     const earnings = req.deliveryFee ? req.deliveryFee : 50;
+                    // If delivery fee is 0 (Self Pickup), a deliverer technically shouldn't see it, 
+                    // but if they do, show 0.
                     actionButtonOrPanel = `
                         <div class="flex flex-col items-end gap-2">
                             <p class="text-sm font-bold" style="color: var(--success-bg);">You'll get: ₹${earnings.toFixed(2)}</p>
@@ -1711,6 +1807,7 @@
             card.innerHTML = `
                 <div class="flex flex-col md:flex-row md:justify-between gap-3">
                     <div class="flex-grow">
+                        ${orderIdDisplay}
                         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-2 gap-1">
                             <div class="space-y-1">
                                 ${itemContent}
@@ -1831,6 +1928,10 @@
             }
         });
 
+        // --- NEW: Toggle Event Listeners ---
+        methodDeliveryBtn.addEventListener('click', () => setDeliveryMode(false));
+        methodPickupBtn.addEventListener('click', () => setDeliveryMode(true));
+
         menuCloseBtn.addEventListener('click', closeMenuModal);
         menuModal.addEventListener('click', (e) => e.target === menuModal && closeMenuModal());
         cartButton.addEventListener('click', openCartModal);
@@ -1855,8 +1956,6 @@
         checkoutForm.addEventListener('submit', submitOrder);
         
         document.getElementById('main-content').addEventListener('click', handleAction);
-        
-        // orderHistoryBtn and logoutBtn listeners moved to dropdown section
         
         historyCloseBtn.addEventListener('click', closeHistoryModal);
         historyModal.addEventListener('click', (e) => e.target === historyModal && closeHistoryModal());
