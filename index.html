@@ -460,7 +460,7 @@
             margin-bottom: 1.5rem;
         }
 
-        /* --- NEW: Toggle Switch Styles --- */
+        /* Toggle Switch Styles */
         .toggle-container {
             display: flex;
             background-color: var(--border-color);
@@ -486,7 +486,7 @@
             box-shadow: var(--shadow-sm);
         }
 
-        /* --- NEW: Order ID Styling --- */
+        /* Order ID Styling */
         .order-id-display {
             background-color: var(--bg-primary);
             padding: 0.25rem 0.5rem;
@@ -715,6 +715,12 @@
             </div>
             <input type="text" id="menu-search-input" class="form-input" placeholder="Search items..." autocomplete="off">
             <div id="menu-items-container" class="space-y-3 scrollable-y">
+            </div>
+            <div id="menu-cart-footer" class="hidden pt-4 mt-4" style="border-top: 1px solid var(--border-color);">
+                 <button id="menu-view-cart-btn" class="btn btn-accent w-full flex justify-between items-center">
+                    <span id="menu-cart-count">0 Items</span>
+                    <span>View Cart <span id="menu-cart-total" class="font-bold">₹0.00</span></span>
+                 </button>
             </div>
         </div>
     </div>
@@ -1042,13 +1048,20 @@
         const deliveryStats = document.getElementById('delivery-stats');
         const menuSearchInput = document.getElementById('menu-search-input');
 
-        // --- NEW: Elements for Toggle Logic ---
+        // NEW UI Elements
         const methodDeliveryBtn = document.getElementById('method-delivery');
         const methodPickupBtn = document.getElementById('method-pickup');
         const addressSection = document.getElementById('address-section');
         const feeBreakdown = document.getElementById('fee-breakdown');
         const blockSelect = document.getElementById('block-select');
         const roomInput = document.getElementById('room-input');
+        
+        // In-Menu Cart Elements
+        const menuCartFooter = document.getElementById('menu-cart-footer');
+        const menuViewCartBtn = document.getElementById('menu-view-cart-btn');
+        const menuCartCount = document.getElementById('menu-cart-count');
+        const menuCartTotal = document.getElementById('menu-cart-total');
+
         let isPickupMode = false; // State to track mode
 
         // --- Theme Logic ---
@@ -1253,28 +1266,30 @@
 
             if(filteredItems.length === 0) {
                  menuItemsContainer.innerHTML = `<p class="text-secondary text-center">No items found.</p>`;
-                 return;
+            } else {
+                filteredItems.forEach(item => {
+                    const itemInCart = cart[item.id];
+                    const quantity = itemInCart ? itemInCart.quantity : 0;
+
+                    const itemElement = document.createElement('div');
+                    itemElement.className = 'menu-item';
+                    itemElement.innerHTML = `
+                        <div>
+                            <p class="font-semibold text-primary">${item.name}</p>
+                            <p class="text-sm text-secondary">₹${item.price.toFixed(2)}</p>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <button data-item-id="${item.id}" data-change="-1" class="update-quantity-btn btn-round-qty btn-secondary ${quantity === 0 ? 'opacity-50' : ''}">-</button>
+                            <span id="quantity-${item.id}" class="font-bold w-6 text-center">${quantity}</span>
+                            <button data-item-id="${item.id}" data-change="1" class="update-quantity-btn btn-round-qty btn-accent">+</button>
+                        </div>
+                    `;
+                    menuItemsContainer.appendChild(itemElement);
+                });
             }
             
-            filteredItems.forEach(item => {
-                const itemInCart = cart[item.id];
-                const quantity = itemInCart ? itemInCart.quantity : 0;
-
-                const itemElement = document.createElement('div');
-                itemElement.className = 'menu-item';
-                itemElement.innerHTML = `
-                    <div>
-                        <p class="font-semibold text-primary">${item.name}</p>
-                        <p class="text-sm text-secondary">₹${item.price.toFixed(2)}</p>
-                    </div>
-                    <div class="flex items-center gap-2">
-                        <button data-item-id="${item.id}" data-change="-1" class="update-quantity-btn btn-round-qty btn-secondary ${quantity === 0 ? 'opacity-50' : ''}">-</button>
-                        <span id="quantity-${item.id}" class="font-bold w-6 text-center">${quantity}</span>
-                        <button data-item-id="${item.id}" data-change="1" class="update-quantity-btn btn-round-qty btn-accent">+</button>
-                    </div>
-                `;
-                menuItemsContainer.appendChild(itemElement);
-            });
+            // Also update the in-menu cart footer whenever we render/re-render
+            updateCartUI();
         }
 
         function updateCart(itemId, change) {
@@ -1311,19 +1326,31 @@
             
             // Re-render menu to update counts (maintaining current search if any)
             renderMenu(currentOpenCafeId, menuSearchInput.value);
-            updateCartUI();
+            // updateCartUI is called inside renderMenu
         }
 
         function updateCartUI() {
-            const itemCount = Object.values(cart).reduce((sum, item) => sum + item.quantity, 0);
+            const items = Object.values(cart);
+            const itemCount = items.reduce((sum, item) => sum + item.quantity, 0);
+            const itemTotal = items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
             
             const isStudentView = !studentView.classList.contains('hidden');
 
+            // Floating Button on Main Page
             if (itemCount > 0 && isStudentView) {
                 cartButtonText.textContent = `View Cart (${itemCount})`;
                 cartButton.classList.remove('hidden');
             } else {
                 cartButton.classList.add('hidden');
+            }
+            
+            // In-Menu Footer Logic
+            if (itemCount > 0 && !menuModal.classList.contains('hidden')) {
+                menuCartCount.textContent = `${itemCount} Item${itemCount !== 1 ? 's' : ''}`;
+                menuCartTotal.textContent = `₹${itemTotal.toFixed(2)}`;
+                menuCartFooter.classList.remove('hidden');
+            } else {
+                menuCartFooter.classList.add('hidden');
             }
         }
 
@@ -1380,7 +1407,7 @@
             setTimeout(() => menuModal.classList.add('hidden'), 300);
         }
 
-        // --- NEW: Toggle Logic Functions ---
+        // --- Toggle Logic Functions ---
         function setDeliveryMode(isPickup) {
             isPickupMode = isPickup;
             
@@ -1408,10 +1435,10 @@
             checkoutTotalDisplay.textContent = `₹${finalTotal.toFixed(2)}`;
         }
 
-        // --- NEW: Updated Modal Open Logic ---
+        // --- Updated Modal Open Logic ---
         function openCheckoutModal() {
             closeCartModal();
-            // Default to Delivery mode when opening or reset to preference
+            // Default to Delivery mode when opening
             setDeliveryMode(false); 
             
             checkoutErrorMessage.classList.add('hidden');
@@ -1449,10 +1476,8 @@
             // Filter logic for History based on Role
             let relevantOrders = [];
             if (currentRole === 'deliverer') {
-                // Show orders I DELIVERED
                 relevantOrders = allOrders.filter(req => req.delivererId === currentUser.uid && req.status === 'completed');
             } else {
-                // Show orders I REQUESTED
                 relevantOrders = allOrders.filter(req => req.requesterId === currentUser.uid && req.status === 'completed');
             }
 
@@ -1471,7 +1496,7 @@
         }
 
 
-        // --- NEW: Updated Submit Logic ---
+        // --- Submit Logic with Random Order ID ---
         async function submitOrder(e) {
             e.preventDefault();
             const submitBtn = checkoutForm.querySelector('button[type="submit"]');
@@ -1503,7 +1528,6 @@
                 dropoffValue = `${blockVal} - Room ${roomVal}`;
                 deliveryFee = 50.00;
             } 
-            // If Pickup Mode: We skip the address checks and keep dropoffValue as "Self Pickup"
 
             submitBtn.disabled = true;
             loadingModal.classList.remove('hidden');
@@ -1512,7 +1536,12 @@
             const finalTotal = itemTotal + deliveryFee;
             const firstItem = Object.values(cart)[0];
 
+            // GENERATE RANDOM ORDER ID: # + 4 Digits
+            const randomId = Math.floor(1000 + Math.random() * 9000); // 1000 to 9999
+            const shortOrderId = `#${randomId}`;
+
             const request = {
+                shortId: shortOrderId, // Save the visual ID
                 items: Object.values(cart).map(item => ({
                     name: item.name,
                     quantity: item.quantity,
@@ -1523,7 +1552,7 @@
                 dropoffLocation: dropoffValue,
                 deliveryFee: deliveryFee,
                 totalAmount: finalTotal,
-                isPickup: isPickupMode, // Flag for future logic or filtering
+                isPickup: isPickupMode,
                 status: 'open',
                 requesterId: currentUser.uid,
                 requesterName: userDetails.name,
@@ -1560,14 +1589,14 @@
 
         async function logout() {
             try {
-                localStorage.removeItem('userRole'); // Clear role on logout
+                localStorage.removeItem('userRole'); 
                 await signOut(auth);
             } catch (error) {
                 console.error("Logout Error:", error);
             }
         }
 
-        // --- Firestore Logic (Fetching) ---
+        // --- Firestore Logic ---
         function fetchAndDisplayRequests() {
            if (!currentUser) return;
            if(unsubscribe) unsubscribe();
@@ -1580,22 +1609,19 @@
                const nowInSeconds = Date.now() / 1000;
                const maxAge = 900;
                let activeRequests = [];
-               let allHistoryOrders = []; // To pass to history modal logic
+               let allHistoryOrders = []; 
 
                let totalDeliveriesCount = 0;
 
                querySnapshot.forEach((doc) => {
                    const req = { id: doc.id, ...doc.data() };
                    
-                   // Count completed deliveries by this user
                    if (req.delivererId === currentUser.uid && req.status === 'completed') {
                        totalDeliveriesCount++;
                    }
 
-                   // Collect all for history purpose
                    allHistoryOrders.push(req);
 
-                   // Filter logic for main view (clean up old open requests)
                    if (req.status === 'open' && req.createdAt && (nowInSeconds - req.createdAt.seconds > maxAge)) {
                        if (req.requesterId === currentUser.uid) {
                            deleteDoc(doc.ref);
@@ -1605,16 +1631,13 @@
                    }
                });
                
-               // Update Delivery Counter
                if (currentRole === 'deliverer') {
                    deliveryStats.textContent = `Deliveries: ${totalDeliveriesCount}`;
                }
 
-               // Sort by latest for view
                activeRequests.sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
                displayRequests(activeRequests);
                
-               // Pass filtered list to history render (it will filter internally based on role)
                renderOrderHistory(allHistoryOrders);
 
            }, (error) => {
@@ -1645,11 +1668,10 @@
             
             const myReqs = requests.filter(r => r.requesterId === currentUser.uid);
             const myCurrentDeliveries = requests.filter(r => r.delivererId === currentUser.uid);
-            const openDeliveries = requests.filter(r => r.status === 'open');
+            const openDeliveries = requests.filter(r => r.status === 'open' && !r.isPickup);
             const hasActiveDelivery = myCurrentDeliveries.some(r => r.status === 'in-progress');
 
             const myActiveOrders = myReqs.filter(r => r.status === 'open' || r.status === 'in-progress');
-            const myCompletedOrders = myReqs.filter(r => r.status === 'completed');
             const myInProgressOrder = myReqs.find(r => r.status === 'in-progress');
             
             myRequestsList.innerHTML = myActiveOrders.length ? '' : `<p class="text-secondary">You have no active orders.</p>`;
@@ -1685,7 +1707,7 @@
             }
         }
 
-        // --- NEW: Updated Card Creation with Order ID ---
+        // --- Updated Card Creation with Short Order ID ---
         function createRequestCard(req, viewType) {
             const card = document.createElement('div');
             card.className = 'card-panel';
@@ -1697,8 +1719,9 @@
             const isMyOwnRequestView = viewType === 'student-own';
             const isMyDelivery = req.delivererId === currentUser.uid;
 
-            // Display Order ID
-            const orderIdDisplay = `<span class="order-id-display">ID: ${req.id.slice(0, 8).toUpperCase()}</span>`;
+            // Display Order ID - prefer shortId, fallback to sliced doc ID
+            const displayId = req.shortId ? req.shortId : `#${req.id.slice(0, 4).toUpperCase()}`;
+            const orderIdDisplay = `<span class="order-id-display">ID: ${displayId}</span>`;
 
             let itemContent;
             if (req.items && Array.isArray(req.items)) {
@@ -1754,7 +1777,6 @@
             let actionButtonOrPanel = '';
             if (isMyDelivery && req.status === 'in-progress') {
                 
-                // ETA Logic: Show input only if not set
                 let etaSection = '';
                 if (!req.estimatedTime) {
                     const etaInput = `<input type="number" id="eta-${req.id}" min="1" max="40" class="form-input text-sm" placeholder="1-40 mins" style="padding: 0.25rem 0.5rem; width: 100%;">`;
@@ -1790,8 +1812,6 @@
                     actionButtonOrPanel = `<p class="text-sm text-muted text-center italic mt-2">This is your own request.</p>`;
                 } else {
                     const earnings = req.deliveryFee ? req.deliveryFee : 50;
-                    // If delivery fee is 0 (Self Pickup), a deliverer technically shouldn't see it, 
-                    // but if they do, show 0.
                     actionButtonOrPanel = `
                         <div class="flex flex-col items-end gap-2">
                             <p class="text-sm font-bold" style="color: var(--success-bg);">You'll get: ₹${earnings.toFixed(2)}</p>
@@ -1921,20 +1941,28 @@
             }
         });
         
-        // Menu Search Listener
         menuSearchInput.addEventListener('input', (e) => {
             if (currentOpenCafeId) {
                 renderMenu(currentOpenCafeId, e.target.value);
             }
         });
 
-        // --- NEW: Toggle Event Listeners ---
+        // Toggle Event Listeners
         methodDeliveryBtn.addEventListener('click', () => setDeliveryMode(false));
         methodPickupBtn.addEventListener('click', () => setDeliveryMode(true));
 
         menuCloseBtn.addEventListener('click', closeMenuModal);
         menuModal.addEventListener('click', (e) => e.target === menuModal && closeMenuModal());
+        
+        // Handle "View Cart" from Main Page
         cartButton.addEventListener('click', openCartModal);
+        
+        // Handle "View Cart" from inside Menu
+        menuViewCartBtn.addEventListener('click', () => {
+            closeMenuModal();
+            openCartModal();
+        });
+
         cartCloseBtn.addEventListener('click', closeCartModal);
         cartModal.addEventListener('click', (e) => e.target === cartModal && closeCartModal());
 
