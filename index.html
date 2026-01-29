@@ -8,7 +8,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     
     <style>
-        /* --- ORIGINAL CSS VARIABLES --- */
+        /* --- CSS Variables (ORIGINAL THEME) --- */
         :root {
             /* Colors */
             --bg-primary: #f3f4f6;
@@ -177,7 +177,7 @@
             gap: 0.75rem; font-size: 1.875rem; font-weight: 700; flex-grow: 1; text-align: center;
         }
         
-        /* User Area */
+        /* User Area - Clean Style */
         .user-area { 
             display: flex; align-items: center; justify-content: center;
             gap: 0.75rem; width: 200px; cursor: pointer; padding: 0.5rem 1rem; 
@@ -268,7 +268,7 @@
             display: flex; justify-content: space-between; align-items: center; padding: 0 1rem;
         }
         
-        /* 8. Forms & Toggles (Added for Pickup Logic) */
+        /* 8. Forms & Toggles (Added for Pickup Logic - Styled to match Original) */
         .form-group { margin-bottom: 1rem; }
         .form-label { display: block; color: var(--text-secondary); font-weight: 600; margin-bottom: 0.5rem; }
         .form-select, .form-input {
@@ -282,7 +282,7 @@
             border-radius: var(--radius-md); text-align: center; margin-bottom: 1.5rem;
         }
         
-        /* New Order Type Switch */
+        /* Toggle Switch - Matching Theme */
         .order-type-switch {
             display: flex; background-color: var(--bg-primary); padding: 0.25rem;
             border-radius: var(--radius-md); margin-bottom: 1rem;
@@ -304,7 +304,7 @@
         .badge-completed { background-color: #dbeafe; color: #1e40af; }
         .dark .badge-open { background-color: #064e3b; color: #6ee7b7; }
         
-        /* OTP Display */
+        /* OTP Display Box */
         .otp-box {
             display: inline-block; background-color: var(--bg-primary); 
             padding: 0.25rem 0.75rem; border-radius: var(--radius-md);
@@ -538,7 +538,7 @@
     
     <div id="history-modal" class="modal-backdrop hidden opacity-0">
         <div id="history-modal-content" class="modal-content max-w-2xl scale-95" style="padding: 1.5rem;">
-            <div class="flex justify-between items-center mb-4"><h3 class="text-2xl font-bold">History</h3><button id="history-close-btn" class="btn-icon">X</button></div>
+            <div class="flex justify-between items-center mb-4"><h3 class="text-2xl font-bold">History</h3><button id="history-close-btn" class="btn-icon" style="color: var(--text-secondary);">&times;</button></div>
             <div id="history-items-container" class="scrollable-y flex flex-col gap-4"></div>
         </div>
     </div>
@@ -598,7 +598,7 @@
             menuModal: document.getElementById('menu-modal'), menuItems: document.getElementById('menu-items-container'),
             cartModal: document.getElementById('cart-modal'), cartItems: document.getElementById('cart-items-container'), cartTotal: document.getElementById('cart-total-price'),
             checkoutModal: document.getElementById('checkout-modal'), checkoutTotal: document.getElementById('checkout-total-display'),
-            loader: document.getElementById('loader'), cafeSelector: document.getElementById('cafe-selector')
+            loader: document.getElementById('loading-modal'), cafeSelector: document.getElementById('cafe-selector')
         };
 
         // --- AUTH ---
@@ -788,11 +788,11 @@
                 const isPickup = r.orderType === 'CAFE_PICKUP';
                 let extra = '';
                 if(isPickup && r.status === 'ready_for_pickup') extra = `<div class="otp-box">OTP: ${r.pickupCode}</div>`;
-                if(!isPickup && r.status === 'open') extra = `<button class="btn btn-danger btn-sm mt-2" onclick="deleteDoc(doc(db,'/artifacts/${appId}/public/data/deliveries','${r.id}'))">Cancel</button>`;
+                if(!isPickup && r.status === 'open') extra = `<button class="btn-sm btn-danger mt-2" onclick="deleteDoc(doc(db,'/artifacts/${appId}/public/data/deliveries','${r.id}'))">Cancel</button>`;
                 
                 return `
                 <div class="card-panel">
-                    <div class="flex justify-between mb-2"><span class="badge ${isPickup?'badge-open':'badge-progress'}">${isPickup?'PICKUP':'DELIVERY'}</span><span class="font-bold text-sm">${r.status.replace(/_/g,' ').toUpperCase()}</span></div>
+                    <div class="flex justify-between mb-2"><span class="badge ${isPickup?'badge-open':'badge-progress'}">${isPickup?'PICKUP':'DELIVERY'}</span><span class="font-bold text-sm" style="color:var(--text-secondary)">${r.status.replace(/_/g,' ').toUpperCase()}</span></div>
                     <div>${r.pickupLocation} ${!isPickup ? '➔ '+r.dropoffLocation : ''}</div>
                     <div class="text-sm mt-1 text-secondary">${r.items.map(i=>`${i.quantity}x ${i.name}`).join(', ')}</div>
                     <div class="mt-2 font-bold">₹${r.totalAmount}</div>
@@ -834,7 +834,7 @@
             if(!isMine) btn = `<button class="btn btn-accent w-full mt-2" onclick="acceptJob('${r.id}')">Accept (Earn ₹50)</button>`;
             else {
                 const next = !r.subStatus ? 'reached-cafe' : r.subStatus === 'reached-cafe' ? 'picked-up' : 'completed';
-                btn = `<button class="btn btn-success w-full mt-2" onclick="updateJob('${r.id}','${next}')">${next.replace('-',' ').toUpperCase()}</button>`;
+                btn = `<button class="btn btn-student w-full mt-2" onclick="updateJob('${r.id}','${next}')">${next.replace('-',' ').toUpperCase()}</button>`;
             }
             return `<div class="card-panel"><div class="flex justify-between font-bold"><span>${r.pickupLocation}</span> ➔ <span>${r.dropoffLocation}</span></div><div class="font-bold mt-2">Earn ₹${r.deliveryFee}</div>${btn}</div>`;
         }
@@ -863,6 +863,8 @@
         document.getElementById('menu-close-btn').onclick = () => toggle(els.menuModal, false);
         document.getElementById('cart-close-btn').onclick = () => toggle(els.cartModal, false);
         document.getElementById('menu-search-input').oninput = (e) => renderMenu(e.target.value);
+        
+        // Profile Dropdown
         document.getElementById('profile-trigger').onclick = (e) => { e.stopPropagation(); document.getElementById('profile-dropdown').classList.toggle('show'); };
         document.onclick = () => document.getElementById('profile-dropdown').classList.remove('show');
         document.getElementById('menu-logout-btn').onclick = () => signOut(auth);
