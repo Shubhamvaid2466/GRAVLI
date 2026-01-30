@@ -828,6 +828,13 @@
                     <button type="button" id="method-pickup" class="toggle-btn">Self Pickup (Free)</button>
                 </div>
 
+                <div id="file-upload-section" class="hidden mb-4 p-3 border border-dashed border-gray-400 rounded bg-gray-50" style="background-color: var(--bg-primary);">
+                     <label class="form-label">Upload Document (Max 500KB)</label>
+                     <p class="text-xs text-secondary mb-2">Supported: PDF, DOC, IMG</p>
+                     <input type="file" id="file-input" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" class="w-full text-sm">
+                     <p id="file-error" class="text-xs hidden mt-1" style="color: var(--danger-bg);"></p>
+                </div>
+
                 <div id="address-section">
                     <label class="form-label mb-2">Drop-off Location</label>
                     <div class="flex gap-4 mb-4">
@@ -956,6 +963,7 @@
         const OWNER_CREDENTIALS = {
             "OWNER1": "HR1", // Corner Cafe
             "OWNER2": "HR2", // HR Cafe
+            "OWNER8": "HR8", // Stationery
             // ... Add more if needed
         };
 
@@ -1239,7 +1247,7 @@
                 ] 
             },
             "HR4": { 
-                name: "Fresh Juice Bar", 
+                name: "Juice Bar", 
                 items: [
                     // Juice
                     { id: "jb-1", name: "Mix Juice (Small)", price: 50 },
@@ -1716,7 +1724,16 @@
                     { id: "hnc-105", name: "Friendship Bucket", price: 319 }
                 ] 
             },
-            "HR8": { name: "HR8", items: generateMenuItems("HR8", 15) },
+            "HR8": { 
+                name: "Campus Stationery", 
+                items: [
+                    { id: "st-1", name: "B&W Print (Per Page)", price: 5 },
+                    { id: "st-2", name: "Color Print (Per Page)", price: 15 },
+                    { id: "st-3", name: "Spiral Binding", price: 40 },
+                    { id: "st-4", name: "Lamination", price: 30 },
+                    { id: "st-5", name: "A3 Print", price: 20 }
+                ] 
+            },
             "HR9": { name: "HR9", items: generateMenuItems("HR9", 15) },
             "HR10": { name: "HR10", items: generateMenuItems("HR10", 15) },
             "HR11": { name: "HR11", items: generateMenuItems("HR11", 15) },
@@ -1791,6 +1808,9 @@
         const activeOrderBarStatus = document.getElementById('active-order-bar-status');
         const deliveryStats = document.getElementById('delivery-stats');
         const menuSearchInput = document.getElementById('menu-search-input');
+        const fileUploadSection = document.getElementById('file-upload-section');
+        const fileInput = document.getElementById('file-input');
+        const fileError = document.getElementById('file-error');
 
         // Owner Login Elements
         const ownerLoginModal = document.getElementById('owner-login-modal');
@@ -2219,6 +2239,17 @@
             
             checkoutErrorMessage.classList.add('hidden');
 
+            // --- STATIONERY LOGIC START ---
+            // Check if user is ordering from Stationery (HR8)
+            const firstItem = Object.values(cart)[0];
+            if(firstItem && firstItem.cafeId === 'HR8') {
+                fileUploadSection.classList.remove('hidden');
+                fileInput.value = ''; // Reset input
+            } else {
+                fileUploadSection.classList.add('hidden');
+            }
+            // --- STATIONERY LOGIC END ---
+
             checkoutModal.classList.remove('hidden');
             setTimeout(() => {
                 checkoutModal.classList.remove('opacity-0');
@@ -2279,9 +2310,11 @@
             e.preventDefault();
             const submitBtn = checkoutForm.querySelector('button[type="submit"]');
             checkoutErrorMessage.classList.add('hidden');
+            fileError.classList.add('hidden');
 
             let dropoffValue = "Self Pickup";
             let deliveryFee = 0;
+            let documentData = null;
 
             // --- Validation Logic ---
             if (!isPickupMode) {
@@ -2307,13 +2340,48 @@
                 deliveryFee = 50.00;
             } 
 
+            // --- STATIONERY FILE LOGIC ---
+            const firstItem = Object.values(cart)[0];
+            if(firstItem && firstItem.cafeId === 'HR8') {
+                if(fileInput.files.length === 0) {
+                    fileError.textContent = "Please upload a document to print.";
+                    fileError.classList.remove('hidden');
+                    return;
+                }
+                const file = fileInput.files[0];
+                if(file.size > 500 * 1024) { // 500KB limit
+                    fileError.textContent = "File too large. Max size is 500KB.";
+                    fileError.classList.remove('hidden');
+                    return;
+                }
+                
+                // Read File
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = function () {
+                     documentData = reader.result;
+                     // Proceed to payment after file read
+                     proceedToPayment(submitBtn, firstItem, dropoffValue, deliveryFee, documentData);
+                };
+                reader.onerror = function (error) {
+                    console.log('Error: ', error);
+                    fileError.textContent = "Error reading file.";
+                    fileError.classList.remove('hidden');
+                };
+                return; // Stop here, wait for reader
+            }
+
+            // Normal Order (No File)
+            proceedToPayment(submitBtn, firstItem, dropoffValue, deliveryFee, null);
+        }
+
+        function proceedToPayment(submitBtn, firstItem, dropoffValue, deliveryFee, docData) {
             // Disable button
             submitBtn.disabled = true;
             loadingModal.classList.remove('hidden');
 
             const itemTotal = Object.values(cart).reduce((sum, item) => sum + (item.price * item.quantity), 0);
             const finalTotal = itemTotal + deliveryFee;
-            const firstItem = Object.values(cart)[0];
 
             // GENERATE RANDOM ORDER ID: # + 4 Digits
             const randomId = Math.floor(1000 + Math.random() * 9000); 
@@ -2343,7 +2411,8 @@
                 delivererName: null,
                 createdAt: serverTimestamp(),
                 subStatus: null, 
-                estimatedTime: null
+                estimatedTime: null,
+                documentUrl: docData // Add document data if exists
             };
 
             // Trigger Payment
@@ -2631,15 +2700,22 @@
 
             // --- Logic for Owner ---
             if (viewType === 'owner') {
+                // ADDED: Document Download for Owner
+                let docDownloadBtn = '';
+                if(req.documentUrl) {
+                    docDownloadBtn = `<a href="${req.documentUrl}" download="Order_Doc.pdf" class="btn btn-sm btn-secondary w-full mb-2" style="background-color: var(--info-bg); color: white; display: flex; justify-content: center; text-decoration: none;">Download Document</a>`;
+                }
+
                 if (req.status === 'open') {
                     actionButtonOrPanel = `
+                        ${docDownloadBtn}
                         <div class="flex gap-2 mt-2">
                             <button data-id="${req.id}" class="owner-reject-btn btn btn-danger btn-sm flex-1">Reject</button>
                             <button data-id="${req.id}" class="owner-accept-btn btn btn-deliverer btn-sm flex-1">Accept</button>
                         </div>
                     `;
                 } else if (req.status === 'preparing') {
-                    actionButtonOrPanel = `<button data-id="${req.id}" class="owner-ready-btn btn btn-accent w-full mt-2">Mark Ready (Generate PIN)</button>`;
+                    actionButtonOrPanel = `${docDownloadBtn}<button data-id="${req.id}" class="owner-ready-btn btn btn-accent w-full mt-2">Mark Ready (Generate PIN)</button>`;
                 } else if (req.status === 'ready') {
                     actionButtonOrPanel = `<button data-id="${req.id}" data-pin="${req.pin}" class="owner-verify-btn btn btn-success w-full mt-2" style="background:var(--success-bg);color:white;">Verify PIN & Complete</button>`;
                 }
@@ -2912,4 +2988,3 @@
     </script>
 </body>
 </html>
-
