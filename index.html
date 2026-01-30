@@ -7,6 +7,10 @@
      <link rel="icon" type="image/png" href="LOGO.png">
     
     <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.min.js"></script>
+    <script>
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.worker.min.js';
+    </script>
     
     <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Playfair+Display:ital,wght@1,700&family=Shrikhand&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     
@@ -632,6 +636,55 @@
             50% { background-color: rgba(139, 92, 246, 0.2); }
             100% { background-color: var(--bg-secondary); }
         }
+        
+        /* Custom Stationery UI Styles */
+        .stationery-container {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            text-align: left;
+        }
+        .stationery-info {
+            background: #eef2ff;
+            border: 1px solid #c7d2fe;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            color: #3730a3;
+            font-size: 0.9rem;
+        }
+        .dark .stationery-info {
+            background: #312e81;
+            border-color: #4338ca;
+            color: #e0e7ff;
+        }
+        .stationery-file-area {
+            border: 2px dashed var(--border-color);
+            padding: 1.5rem;
+            text-align: center;
+            border-radius: 0.5rem;
+            background: var(--bg-primary);
+        }
+        .stationery-options {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        .radio-label {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+            padding: 0.75rem;
+            border: 1px solid var(--border-color);
+            border-radius: 0.5rem;
+            flex: 1;
+            font-weight: 500;
+        }
+        .radio-label:has(input:checked) {
+            border-color: var(--accent-color);
+            background-color: rgba(139, 92, 246, 0.1);
+            color: var(--accent-color);
+        }
     </style>
 </head>
 <body>
@@ -828,13 +881,6 @@
                     <button type="button" id="method-pickup" class="toggle-btn">Self Pickup (Free)</button>
                 </div>
 
-                <div id="file-upload-section" class="hidden mb-4 p-3 border border-dashed border-gray-400 rounded bg-gray-50" style="background-color: var(--bg-primary);">
-                     <label class="form-label">Upload Document (Max 500KB)</label>
-                     <p class="text-xs text-secondary mb-2">Supported: PDF, DOC, IMG</p>
-                     <input type="file" id="file-input" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" class="w-full text-sm">
-                     <p id="file-error" class="text-xs hidden mt-1" style="color: var(--danger-bg);"></p>
-                </div>
-
                 <div id="address-section">
                     <label class="form-label mb-2">Drop-off Location</label>
                     <div class="flex gap-4 mb-4">
@@ -963,7 +1009,7 @@
         const OWNER_CREDENTIALS = {
             "OWNER1": "HR1", // Corner Cafe
             "OWNER2": "HR2", // HR Cafe
-            "OWNER8": "HR8", // Stationery
+            "OWNER8": "HR8", // Campus Stationery
             // ... Add more if needed
         };
 
@@ -1727,8 +1773,8 @@
             "HR8": { 
                 name: "Campus Stationery", 
                 items: [
-                    { id: "st-1", name: "B&W Print (Per Page)", price: 5 },
-                    { id: "st-2", name: "Color Print (Per Page)", price: 15 },
+                    { id: "st-1", name: "B&W Print (Per Page)", price: 3 },
+                    { id: "st-2", name: "Color Print (Per Page)", price: 10 },
                     { id: "st-3", name: "Spiral Binding", price: 40 },
                     { id: "st-4", name: "Lamination", price: 30 },
                     { id: "st-5", name: "A3 Print", price: 20 }
@@ -1748,6 +1794,10 @@
         let currentOpenCafeId = null;
         let currentRole = null; // 'student', 'deliverer', 'owner'
         let managedCafeId = null; // Set when Owner logs in
+        let uploadedPdfDoc = null; // To store the PDF object for counting
+        let calculatedPrice = 0;
+        let calculatedPages = 0;
+        let selectedPrintType = 'bw'; // 'bw' or 'color'
 
         // --- UI Elements ---
         const loginModal = document.getElementById('login-modal');
@@ -2056,6 +2106,139 @@
         function renderMenu(cafeId, filterText = "") {
             const cafe = CAFE_DATA[cafeId];
             menuItemsContainer.innerHTML = '';
+
+            // --- SPECIAL UI FOR STATIONERY (HR8) ---
+            if (cafeId === 'HR8') {
+                // Info Section
+                const infoSection = document.createElement('div');
+                infoSection.className = 'stationery-container';
+                infoSection.innerHTML = `
+                    <div class="stationery-info">
+                        <p><strong>• Price starting at ₹3/per page</strong></p>
+                        <p><strong>• Paper quality : 70 GSM</strong></p>
+                        <p><strong>• Single side prints</strong></p>
+                    </div>
+                    
+                    <div class="stationery-file-area">
+                        <label class="form-label" style="text-align: center; margin-bottom: 1rem;">Upload Document to Print</label>
+                        <input type="file" id="stat-file-input" accept=".pdf,.jpg,.jpeg,.png" class="w-full text-sm mb-2">
+                        <p id="stat-scan-status" class="text-sm font-semibold text-accent hidden">Scanning pages...</p>
+                        <p id="stat-page-count" class="text-lg font-bold text-primary mt-2 hidden">Total Pages: <span id="page-val">0</span></p>
+                    </div>
+
+                    <div id="stat-pref-area" class="hidden">
+                        <label class="form-label">Select Print Type</label>
+                        <div class="stationery-options">
+                            <label class="radio-label">
+                                <input type="radio" name="printType" value="bw" checked> 
+                                B&W (₹3/pg)
+                            </label>
+                            <label class="radio-label">
+                                <input type="radio" name="printType" value="color"> 
+                                Color (₹10/pg)
+                            </label>
+                        </div>
+                        
+                        <div class="total-display mt-4">
+                             <p class="text-secondary font-semibold">Total Price</p>
+                             <p id="stat-total-price" class="text-primary text-2xl font-bold">₹0.00</p>
+                        </div>
+                        
+                        <button id="stat-add-to-order" class="btn btn-accent w-full mt-2">Add to Order</button>
+                    </div>
+                `;
+                menuItemsContainer.appendChild(infoSection);
+
+                // Add Event Listeners for Stationery
+                const fileInputStat = document.getElementById('stat-file-input');
+                const scanStatus = document.getElementById('stat-scan-status');
+                const pageCountDisplay = document.getElementById('stat-page-count');
+                const pageValSpan = document.getElementById('page-val');
+                const prefArea = document.getElementById('stat-pref-area');
+                const printTypeRadios = document.getElementsByName('printType');
+                const totalPriceDisplay = document.getElementById('stat-total-price');
+                const addToOrderBtn = document.getElementById('stat-add-to-order');
+
+                fileInputStat.addEventListener('change', async (e) => {
+                    const file = e.target.files[0];
+                    if (!file) return;
+
+                    scanStatus.classList.remove('hidden');
+                    prefArea.classList.add('hidden');
+                    pageCountDisplay.classList.add('hidden');
+
+                    if (file.type === 'application/pdf') {
+                        try {
+                            const arrayBuffer = await file.arrayBuffer();
+                            const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+                            calculatedPages = pdf.numPages;
+                        } catch (err) {
+                            console.error(err);
+                            alert("Error scanning PDF.");
+                            calculatedPages = 0;
+                        }
+                    } else {
+                        // Image implies 1 page
+                        calculatedPages = 1; 
+                    }
+
+                    scanStatus.classList.add('hidden');
+                    pageValSpan.textContent = calculatedPages;
+                    pageCountDisplay.classList.remove('hidden');
+                    prefArea.classList.remove('hidden');
+                    updateStationeryPrice();
+                });
+
+                function updateStationeryPrice() {
+                    selectedPrintType = document.querySelector('input[name="printType"]:checked').value;
+                    const rate = selectedPrintType === 'bw' ? 3 : 10;
+                    calculatedPrice = calculatedPages * rate;
+                    totalPriceDisplay.textContent = `₹${calculatedPrice.toFixed(2)}`;
+                }
+
+                printTypeRadios.forEach(radio => {
+                    radio.addEventListener('change', updateStationeryPrice);
+                });
+
+                addToOrderBtn.addEventListener('click', () => {
+                    const file = fileInputStat.files[0];
+                    if(!file) return;
+
+                    // Read file for storage
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                         const fileData = e.target.result;
+                         
+                         // Create Custom Item for Cart
+                         const itemId = `stat-${Date.now()}`;
+                         const itemName = `Print: ${file.name} (${selectedPrintType.toUpperCase()})`;
+                         
+                         // Special case: Add to cart directly
+                         // Clear previous cart from other shops
+                         const firstItem = Object.values(cart)[0];
+                         if (firstItem && firstItem.cafeId !== 'HR8') {
+                            if (!confirm("Clear cart?")) return;
+                            cart = {};
+                         }
+
+                         cart[itemId] = {
+                             name: itemName,
+                             price: calculatedPrice,
+                             quantity: 1, // Treat whole doc as 1 item with total price
+                             cafeId: 'HR8',
+                             cafeName: 'Campus Stationery',
+                             documentUrl: fileData // Store file data here
+                         };
+                         
+                         updateCartUI();
+                         closeMenuModal();
+                         openCartModal();
+                    };
+                    reader.readAsDataURL(file);
+                });
+
+                return; // Stop standard rendering
+            }
             
             const lowerFilter = filterText.toLowerCase();
             const filteredItems = cafe.items.filter(item => item.name.toLowerCase().includes(lowerFilter));
@@ -2239,17 +2422,6 @@
             
             checkoutErrorMessage.classList.add('hidden');
 
-            // --- STATIONERY LOGIC START ---
-            // Check if user is ordering from Stationery (HR8)
-            const firstItem = Object.values(cart)[0];
-            if(firstItem && firstItem.cafeId === 'HR8') {
-                fileUploadSection.classList.remove('hidden');
-                fileInput.value = ''; // Reset input
-            } else {
-                fileUploadSection.classList.add('hidden');
-            }
-            // --- STATIONERY LOGIC END ---
-
             checkoutModal.classList.remove('hidden');
             setTimeout(() => {
                 checkoutModal.classList.remove('opacity-0');
@@ -2310,7 +2482,7 @@
             e.preventDefault();
             const submitBtn = checkoutForm.querySelector('button[type="submit"]');
             checkoutErrorMessage.classList.add('hidden');
-            fileError.classList.add('hidden');
+            // fileError.classList.add('hidden'); // Removed generic file error
 
             let dropoffValue = "Self Pickup";
             let deliveryFee = 0;
@@ -2340,42 +2512,18 @@
                 deliveryFee = 50.00;
             } 
 
-            // --- STATIONERY FILE LOGIC ---
             const firstItem = Object.values(cart)[0];
+
+            // If it's a stationery order, the doc data is already inside the item in cart
             if(firstItem && firstItem.cafeId === 'HR8') {
-                if(fileInput.files.length === 0) {
-                    fileError.textContent = "Please upload a document to print.";
-                    fileError.classList.remove('hidden');
-                    return;
-                }
-                const file = fileInput.files[0];
-                if(file.size > 500 * 1024) { // 500KB limit
-                    fileError.textContent = "File too large. Max size is 500KB.";
-                    fileError.classList.remove('hidden');
-                    return;
-                }
-                
-                // Read File
-                const reader = new FileReader();
-                reader.readAsDataURL(file);
-                reader.onload = function () {
-                     documentData = reader.result;
-                     // Proceed to payment after file read
-                     proceedToPayment(submitBtn, firstItem, dropoffValue, deliveryFee, documentData);
-                };
-                reader.onerror = function (error) {
-                    console.log('Error: ', error);
-                    fileError.textContent = "Error reading file.";
-                    fileError.classList.remove('hidden');
-                };
-                return; // Stop here, wait for reader
+                 // Nothing extra needed, it's inside cart item
             }
 
-            // Normal Order (No File)
-            proceedToPayment(submitBtn, firstItem, dropoffValue, deliveryFee, null);
+            // Normal Order (No File or File in Cart Item)
+            proceedToPayment(submitBtn, firstItem, dropoffValue, deliveryFee);
         }
 
-        function proceedToPayment(submitBtn, firstItem, dropoffValue, deliveryFee, docData) {
+        function proceedToPayment(submitBtn, firstItem, dropoffValue, deliveryFee) {
             // Disable button
             submitBtn.disabled = true;
             loadingModal.classList.remove('hidden');
@@ -2412,7 +2560,7 @@
                 createdAt: serverTimestamp(),
                 subStatus: null, 
                 estimatedTime: null,
-                documentUrl: docData // Add document data if exists
+                documentUrl: firstItem.documentUrl || null // Add document data if exists in cart item
             };
 
             // Trigger Payment
