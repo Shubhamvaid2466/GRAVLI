@@ -1175,6 +1175,51 @@
             { id: "hr-118", name: "Chilli Noodles", price: 90 }
         ];
 
+        // --- NEW THICK LETTO (Formerly HR3) MENU ---
+        const THICK_LETTO_MENU = [
+            // Exotic Fruits Thick Shakes
+            { id: "tl-1", name: "Strawberry Thick Shake", price: 55 },
+            { id: "tl-2", name: "Butter Nuts Thick Shake", price: 55 },
+            { id: "tl-3", name: "Black Shrubs Thick Shake", price: 55 },
+            { id: "tl-4", name: "Green Apple Thick Shake", price: 55 },
+            { id: "tl-5", name: "Mango Munch Thick Shake", price: 55 },
+            { id: "tl-6", name: "Forest Fruit Thick Shake", price: 65 },
+            { id: "tl-7", name: "Ricco Berries Thick Shake", price: 65 },
+            { id: "tl-8", name: "Blueberry Mello Thick Shake", price: 65 },
+            // Chocolate Thick Shakes
+            { id: "tl-9", name: "Choco Nuts Thick Shake", price: 65 },
+            { id: "tl-10", name: "Belgium Chocolate Thick Shake", price: 65 },
+            { id: "tl-11", name: "Choco Kitkat Thick Shake", price: 75 },
+            { id: "tl-12", name: "Oreo Ultimate Thick Shake", price: 75 },
+            { id: "tl-13", name: "Choco Chips Thick Shake", price: 75 },
+            { id: "tl-14", name: "Brownie Blast Thick Shake", price: 75 },
+            { id: "tl-15", name: "Choco Almonds Thick Shake", price: 75 },
+            // Cold Coffees
+            { id: "tl-16", name: "Dark Roast Cold Coffee", price: 65 },
+            { id: "tl-17", name: "Lady Kawa Cold Coffee", price: 65 },
+            { id: "tl-18", name: "Hazelnut Cold Coffee", price: 65 },
+            { id: "tl-19", name: "Irish Mocha Cold Coffee", price: 65 },
+            { id: "tl-20", name: "Coffee Almonds Cold Coffee", price: 65 },
+            { id: "tl-21", name: "French Vanilla Cold Coffee", price: 65 },
+            { id: "tl-22", name: "Caramel Cream Cold Coffee", price: 65 },
+            // Coffee Cake Shakes
+            { id: "tl-23", name: "Irish Cake Shake", price: 75 },
+            { id: "tl-24", name: "Coconut Brownie Shake", price: 75 },
+            { id: "tl-25", name: "Toffee Fudge Shake", price: 75 },
+            { id: "tl-26", name: "Mango Mousse Shake", price: 75 },
+            // Classic Thick Shakes
+            { id: "tl-27", name: "Rasmalai Thick Shake", price: 65 },
+            { id: "tl-28", name: "Pan Shot Thick Shake", price: 65 },
+            { id: "tl-29", name: "Red Velvet Thick Shake", price: 65 },
+            // Cheesecake Thick Shakes
+            { id: "tl-30", name: "Original Cheesecake Shake", price: 65 },
+            { id: "tl-31", name: "Strawberry Cheesecake Shake", price: 65 },
+            { id: "tl-32", name: "Mango Cheesecake Shake", price: 65 },
+            { id: "tl-33", name: "Chocolate Cheesecake Shake", price: 75 },
+            { id: "tl-34", name: "Blueberry Cheesecake Shake", price: 75 },
+            { id: "tl-35", name: "Red Velvet Cheesecake Shake", price: 75 }
+        ];
+
         // --- Helper function to generate generic menu items ---
         function generateMenuItems(cafeId, count = 15) {
             const items = [];
@@ -1192,7 +1237,7 @@
         const CAFE_DATA = {
             "HR1": { name: "Corner Cafe", items: CORNER_CAFE_MENU },
             "HR2": { name: "HR Cafe", items: HR_CAFE_MENU },
-            "HR3": { name: "HR3", items: generateMenuItems("HR3", 15) },
+            "HR3": { name: "Thick Letto", items: THICK_LETTO_MENU },
             "HR4": { name: "HR4", items: generateMenuItems("HR4", 15) },
             "HR5": { name: "HR5", items: generateMenuItems("HR5", 15) },
             "HR6": { name: "HR6", items: generateMenuItems("HR6", 15) },
@@ -2131,265 +2176,4 @@
                 let etaSection = '';
                 if (!req.estimatedTime) {
                     etaSection = `<div class="flex flex-col md:flex-row md:items-center gap-2 mb-2">
-                            <input type="number" id="eta-${req.id}" min="1" max="40" class="form-input text-sm" placeholder="1-40 mins" style="padding: 0.25rem 0.5rem; width: 100%;">
-                            <button data-id="${req.id}" class="update-eta-btn btn btn-accent btn-sm" style="white-space: nowrap;">Set ETA</button>
-                        </div>`;
-                } else {
-                    etaSection = `<div class="text-sm text-green-600 font-bold mb-2">ETA Set: ${req.estimatedTime} mins</div>`;
-                }
-
-                let nextActionBtn = '';
-                if (req.subStatus === null) nextActionBtn = `<button data-id="${req.id}" class="reached-cafe-btn btn btn-accent w-full mt-2">Reached Cafe</button>`;
-                else if (req.subStatus === 'reached-cafe') nextActionBtn = `<button data-id="${req.id}" class="picked-up-btn btn btn-accent w-full mt-2">Picked Up Order</button>`;
-                else if (req.subStatus === 'picked-up') nextActionBtn = `<button data-id="${req.id}" class="delivered-btn w-full mt-2" style="background-color: var(--info-bg); color: white; padding: 0.5rem; border-radius: var(--radius-md); font-weight: 700;">Delivered</button>`;
-                
-                actionButtonOrPanel = `<div class="space-y-3 mt-3">${etaSection}<div>${nextActionBtn}</div></div>`;
-            }
-            else if (viewType === 'deliverer' && req.status === 'open') {
-                const earnings = req.deliveryFee ? req.deliveryFee : 50;
-                actionButtonOrPanel = `<div class="flex flex-col items-end gap-2"><p class="text-sm font-bold" style="color: var(--success-bg);">You'll get: ₹${earnings.toFixed(2)}</p><button data-id="${req.id}" class="accept-btn btn btn-deliverer btn-sm w-full md:w-auto">Accept Job</button></div>`;
-            } 
-            // --- Logic for Student ---
-            else if (isMyOwnRequestView && req.status === 'open') {
-                actionButtonOrPanel = `<button data-id="${req.id}" class="cancel-request-btn btn btn-danger btn-sm w-full mt-3 md:mt-0">Cancel</button>`;
-            }
-
-            card.innerHTML = `
-                <div class="flex flex-col md:flex-row md:justify-between gap-3">
-                    <div class="flex-grow">
-                        ${orderIdDisplay}
-                        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-2 gap-1">
-                            <div class="space-y-1">
-                                ${itemContent}
-                            </div>
-                            <div class="mt-1 sm:mt-0">
-                                ${getStatusBadge(req.status)}
-                            </div>
-                        </div>
-                        ${requesterInfo}
-                        <p class="text-sm text-secondary"><strong>Total:</strong> ₹${totalAmount} <span class="badge badge-completed text-xs ml-2">Paid</span></p>
-                        ${req.isPickup ? '<p class="text-sm font-bold text-accent">Self Pickup</p>' : ''}
-                        
-                        ${delivererInfo}
-                        <p class="text-xs text-muted mt-2">Posted ${timeAgo}</p>
-                        ${timerElement}
-                        ${pinDisplay}
-                    </div>
-                    <div class="mt-2 md:mt-0 md:text-right md:pl-4 flex-shrink-0">
-                        <div class="mt-2">
-                            ${actionButtonOrPanel}
-                        </div>
-                    </div>
-                </div>
-            `;
-            return card;
-        }
-        
-        function getTimeAgo(seconds) {
-            const now = Date.now() / 1000;
-            const diff = now - seconds;
-            if (diff < 60) return 'a few seconds ago';
-            if (diff < 3600) return `${Math.floor(diff / 60)} minutes ago`;
-            if (diff < 86400) return `${Math.floor(diff / 3600)} hours ago`;
-            return `${Math.floor(diff / 86400)} days ago`;
-        }
-        
-        async function handleAction(e) {
-            if (!currentUser || !userDetails) return;
-            const target = e.target.closest('button');
-            if (!target) return;
-            const requestId = target.dataset.id;
-            if (!requestId) return;
-
-            const docRef = doc(db, `/artifacts/${appId}/public/data/deliveries`, requestId);
-            try {
-                // Deliverer Actions
-                if (target.classList.contains('accept-btn')) {
-                    await updateDoc(docRef, { status: 'in-progress', delivererId: currentUser.uid, delivererName: userDetails.name });
-                } else if (target.classList.contains('update-eta-btn')) {
-                    const etaInput = document.getElementById(`eta-${requestId}`);
-                    if (etaInput) {
-                        const val = parseInt(etaInput.value);
-                        if (val >= 1 && val <= 40) await updateDoc(docRef, { estimatedTime: val.toString() });
-                        else alert("Please enter a time between 1 and 40 minutes.");
-                    }
-                } else if (target.classList.contains('reached-cafe-btn')) {
-                    await updateDoc(docRef, { subStatus: 'reached-cafe' });
-                } else if (target.classList.contains('picked-up-btn')) {
-                    await updateDoc(docRef, { subStatus: 'picked-up' });
-                } else if (target.classList.contains('delivered-btn')) {
-                    await updateDoc(docRef, { status: 'completed' });
-                } 
-                
-                // Student Actions
-                else if (target.classList.contains('cancel-request-btn')) {
-                    if (confirm("Are you sure you want to cancel this order?")) {
-                        await deleteDoc(docRef);
-                    }
-                } 
-                
-                // Owner Actions
-                else if (target.classList.contains('owner-accept-btn')) {
-                    await updateDoc(docRef, { status: 'preparing' });
-                } else if (target.classList.contains('owner-reject-btn')) {
-                    if (confirm("Reject this order?")) {
-                        await updateDoc(docRef, { status: 'rejected' });
-                    }
-                } else if (target.classList.contains('owner-ready-btn')) {
-                    // Generate 4 digit PIN
-                    const pin = Math.floor(1000 + Math.random() * 9000).toString();
-                    await updateDoc(docRef, { status: 'ready', pin: pin });
-                } else if (target.classList.contains('owner-verify-btn')) {
-                    const correctPin = target.dataset.pin;
-                    const inputPin = prompt("Please enter the student's PIN:");
-                    if (inputPin === correctPin) {
-                        await updateDoc(docRef, { status: 'completed' });
-                        alert("Order Completed!");
-                    } else {
-                        alert("Incorrect PIN.");
-                    }
-                }
-
-            } catch (error) {
-                console.error("Error updating document:", error);
-            }
-        }
-        
-        // --- Event Listeners ---
-        googleSignInBtn.addEventListener('click', signInWithGoogle);
-        
-        selectStudentBtn.addEventListener('click', () => {
-            currentRole = 'student';
-            localStorage.setItem('userRole', 'student');
-            roleSelectionModal.classList.add('hidden');
-            studentView.classList.remove('hidden');
-            delivererView.classList.add('hidden');
-            ownerView.classList.add('hidden');
-            deliveryStats.classList.add('hidden');
-            startApp();
-            updateCartUI();
-        });
-        
-        selectDelivererBtn.addEventListener('click', () => {
-            currentRole = 'deliverer';
-            localStorage.setItem('userRole', 'deliverer');
-            roleSelectionModal.classList.add('hidden');
-            studentView.classList.add('hidden');
-            delivererView.classList.remove('hidden');
-            ownerView.classList.add('hidden');
-            deliveryStats.classList.remove('hidden');
-            cartButton.classList.add('hidden');
-            startApp();
-        });
-
-        selectOwnerBtn.addEventListener('click', () => {
-            roleSelectionModal.classList.add('hidden');
-            ownerLoginModal.classList.remove('hidden');
-            setTimeout(() => ownerLoginModal.classList.remove('opacity-0'), 10);
-        });
-
-        // Owner Login Logic
-        ownerLoginCancel.addEventListener('click', () => {
-            ownerLoginModal.classList.add('opacity-0');
-            setTimeout(() => {
-                ownerLoginModal.classList.add('hidden');
-                roleSelectionModal.classList.remove('hidden');
-                ownerIdInput.value = '';
-                ownerLoginError.classList.add('hidden');
-            }, 300);
-        });
-
-        ownerLoginSubmit.addEventListener('click', () => {
-            const inputId = ownerIdInput.value.trim();
-            if (OWNER_CREDENTIALS[inputId]) {
-                managedCafeId = OWNER_CREDENTIALS[inputId];
-                currentRole = 'owner';
-                localStorage.setItem('userRole', 'owner');
-                localStorage.setItem('managedCafeId', managedCafeId);
-                
-                ownerLoginModal.classList.add('opacity-0');
-                setTimeout(() => ownerLoginModal.classList.add('hidden'), 300);
-                
-                studentView.classList.add('hidden');
-                delivererView.classList.add('hidden');
-                ownerView.classList.remove('hidden');
-                cartButton.classList.add('hidden');
-                deliveryStats.classList.add('hidden');
-                
-                ownerCafeTitle.textContent = `${CAFE_DATA[managedCafeId].name} Orders`;
-                startApp();
-            } else {
-                ownerLoginError.classList.remove('hidden');
-            }
-        });
-        
-        cafeGridContainer.addEventListener('click', (e) => {
-            const cafeBox = e.target.closest('.cafe-box');
-            if (cafeBox) {
-                openMenuModal(cafeBox.dataset.cafeId);
-            }
-        });
-        menuItemsContainer.addEventListener('click', (e) => {
-            const button = e.target.closest('.update-quantity-btn');
-            if (button) {
-                const itemId = button.dataset.itemId;
-                const change = parseInt(button.dataset.change);
-                updateCart(itemId, change);
-            }
-        });
-        
-        menuSearchInput.addEventListener('input', (e) => {
-            if (currentOpenCafeId) {
-                renderMenu(currentOpenCafeId, e.target.value);
-            }
-        });
-
-        // Toggle Event Listeners
-        methodDeliveryBtn.addEventListener('click', () => setDeliveryMode(false));
-        methodPickupBtn.addEventListener('click', () => setDeliveryMode(true));
-
-        menuCloseBtn.addEventListener('click', closeMenuModal);
-        menuModal.addEventListener('click', (e) => e.target === menuModal && closeMenuModal());
-        
-        cartButton.addEventListener('click', openCartModal);
-        menuViewCartBtn.addEventListener('click', () => { closeMenuModal(); openCartModal(); });
-
-        cartCloseBtn.addEventListener('click', closeCartModal);
-        cartModal.addEventListener('click', (e) => e.target === cartModal && closeCartModal());
-
-        cartItemsContainer.addEventListener('click', (e) => {
-            const removeButton = e.target.closest('.remove-from-cart-btn');
-            if (removeButton) {
-                const itemId = removeButton.dataset.itemId;
-                if (cart[itemId]) {
-                    delete cart[itemId];
-                    updateCartUI();
-                    openCartModal();
-                }
-            }
-        });
-
-        checkoutBtn.addEventListener('click', openCheckoutModal);
-        checkoutCancelBtn.addEventListener('click', closeCheckoutModal);
-        checkoutModal.addEventListener('click', (e) => e.target === checkoutModal && closeCheckoutModal());
-        checkoutForm.addEventListener('submit', submitOrder);
-        
-        document.getElementById('main-content').addEventListener('click', handleAction);
-        
-        historyCloseBtn.addEventListener('click', closeHistoryModal);
-        historyModal.addEventListener('click', (e) => e.target === historyModal && closeHistoryModal());
-
-        activeOrderBar.addEventListener('click', () => {
-            const orderId = activeOrderBar.dataset.orderId;
-            const orderElement = document.getElementById(orderId);
-            if (orderElement) {
-                orderElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                orderElement.classList.add('highlight-pulse');
-                setTimeout(() => {
-                    orderElement.classList.remove('highlight-pulse');
-                }, 2000);
-            }
-        });
-    </script>
-</body>
-</html>
+                            <input type="number" id="eta-${req.id}" min="1" max="40" class="form-input text-sm" placeholder="1-40 mins"
