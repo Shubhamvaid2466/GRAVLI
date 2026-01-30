@@ -556,9 +556,9 @@
 
         /* 9. Badges */
         .badge { padding: 0.125rem 0.625rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 500; }
-        .badge-open { background-color: #d1fae5; color: #065f46; } 
-        .badge-progress { background-color: #fef3c7; color: #92400e; } 
-        .badge-completed { background-color: #dbeafe; color: #1e40af; } 
+        .badge-open { background-color: #d1fae5; color: #065f46; } 
+        .badge-progress { background-color: #fef3c7; color: #92400e; } 
+        .badge-completed { background-color: #dbeafe; color: #1e40af; } 
         .badge-ready { background-color: #c7d2fe; color: #3730a3; }
         .badge-rejected { background-color: #fee2e2; color: #991b1b; }
 
@@ -1583,7 +1583,139 @@
                     { id: "uf-57", name: "Malai Chaap Roll", price: 80 }
                 ] 
             },
-            "HR7": { name: "HR7", items: generateMenuItems("HR7", 15) },
+            "HR7": { 
+                name: "Hot and Cold", 
+                items: [
+                    // Veg Burgers
+                    { id: "hnc-1", name: "Classical Burger", price: 50 },
+                    { id: "hnc-2", name: "Juicy Burger", price: 60 },
+                    { id: "hnc-3", name: "Cheese Crunch Burger", price: 70 },
+                    { id: "hnc-4", name: "Crispy Paneer Burger", price: 80 },
+                    { id: "hnc-5", name: "Mexican Burger", price: 90 },
+                    { id: "hnc-6", name: "Tandoori Paneer Burger", price: 90 },
+                    { id: "hnc-7", name: "Veg Mega Burger", price: 100 },
+                    // Non-Veg Burgers
+                    { id: "hnc-8", name: "Grilled Chicken Burger", price: 90 },
+                    { id: "hnc-9", name: "Chicken Rocking Burger", price: 100 },
+                    { id: "hnc-10", name: "Cheese Empire Burger", price: 110 },
+                    { id: "hnc-11", name: "Jumbo Chicken Burger", price: 130 },
+                    // Fries
+                    { id: "hnc-12", name: "French Fries", price: 70 },
+                    { id: "hnc-13", name: "Peri Peri Fries", price: 80 },
+                    { id: "hnc-14", name: "Mexican Fries", price: 90 },
+                    { id: "hnc-15", name: "Cheese Fries", price: 100 },
+                    { id: "hnc-16", name: "Honey Chilli Potato", price: 100 },
+                    // Singles
+                    { id: "hnc-17", name: "Cheese Patty", price: 40 },
+                    { id: "hnc-18", name: "Spring Roll", price: 70 },
+                    { id: "hnc-19", name: "Paneer Pops", price: 100 },
+                    { id: "hnc-20", name: "Cheese Nachos", price: 90 },
+                    { id: "hnc-21", name: "Cheese Corn Roll", price: 120 },
+                    { id: "hnc-22", name: "Sweet Corn", price: 50 },
+                    { id: "hnc-23", name: "Chicken Nuggets", price: 110 },
+                    { id: "hnc-24", name: "Chicken Seekh Kabab", price: 120 },
+                    // Momos
+                    { id: "hnc-25", name: "Fried Momos", price: 70 },
+                    { id: "hnc-26", name: "Steam Momos", price: 70 },
+                    { id: "hnc-27", name: "Kurkure Momos", price: 80 },
+                    { id: "hnc-28", name: "Paneer Momos", price: 100 },
+                    { id: "hnc-29", name: "Chicken Momos", price: 110 },
+                    // Bullets
+                    { id: "hnc-30", name: "Veg Bullet", price: 60 },
+                    { id: "hnc-31", name: "Cheese Bullet", price: 80 },
+                    { id: "hnc-32", name: "Peri Peri Bullets", price: 90 },
+                    { id: "hnc-33", name: "Mexican Bullet", price: 90 },
+                    { id: "hnc-34", name: "Garlic Cheese Bullet", price: 90 },
+                    // Desserts
+                    { id: "hnc-35", name: "Donut", price: 40 },
+                    { id: "hnc-36", name: "Brownie with Ice Cream", price: 90 },
+                    { id: "hnc-37", name: "Pastry", price: 80 },
+                    // Bucket List
+                    { id: "hnc-38", name: "Chicken Wings", price: 150 },
+                    { id: "hnc-39", name: "Gym Box", price: 180 },
+                    { id: "hnc-40", name: "Chicken Snack Pack", price: 180 },
+                    { id: "hnc-41", name: "Chicken Strips (8 pcs)", price: 190 },
+                    { id: "hnc-42", name: "Chicken Popcorn (15 pcs)", price: 210 },
+                    // Veg Combo
+                    { id: "hnc-43", name: "Burger + Fries + Coke", price: 109 },
+                    { id: "hnc-44", name: "Wrap + Fries + Coke", price: 129 },
+                    // Non-Veg Combo
+                    { id: "hnc-45", name: "2 Chicken Burger + Coke", price: 219 },
+                    { id: "hnc-46", name: "Chicken Burger + Fries + Coke", price: 129 },
+                    { id: "hnc-47", name: "Chicken Wrap + Fries + Coke", price: 149 },
+                    // Special Offer
+                    { id: "hnc-48", name: "2 Chicken Legs + Fries + Coke", price: 179 },
+                    // Sandwich
+                    { id: "hnc-49", name: "Club Sandwich", price: 40 },
+                    { id: "hnc-50", name: "Veggie Grill Sandwich", price: 70 },
+                    { id: "hnc-51", name: "Tandoori Sandwich", price: 80 },
+                    { id: "hnc-52", name: "Paneer Tikka Sandwich", price: 100 },
+                    { id: "hnc-53", name: "Chicken Grill Sandwich", price: 100 },
+                    // Wraps
+                    { id: "hnc-54", name: "Veggie Wrap", price: 70 },
+                    { id: "hnc-55", name: "Crispy Paneer Wrap", price: 80 },
+                    { id: "hnc-56", name: "Cheese Potato Wrap", price: 90 },
+                    { id: "hnc-57", name: "Chicken Pesto Wrap", price: 100 },
+                    { id: "hnc-58", name: "Chicken Crunch Supreme", price: 120 },
+                    { id: "hnc-59", name: "Chicken Loaded Grill", price: 130 },
+                    // Pasta
+                    { id: "hnc-60", name: "Red Pasta", price: 90 },
+                    { id: "hnc-61", name: "White Pasta", price: 90 },
+                    { id: "hnc-62", name: "Mix Sauce Pasta", price: 110 },
+                    { id: "hnc-63", name: "Cheese Baked Pasta", price: 120 },
+                    // Maggi
+                    { id: "hnc-64", name: "Plain Maggi", price: 40 },
+                    { id: "hnc-65", name: "Vegetable Maggi", price: 50 },
+                    { id: "hnc-66", name: "Double Masala Maggi", price: 50 },
+                    { id: "hnc-67", name: "Tandoori Maggi", price: 70 },
+                    { id: "hnc-68", name: "Cheese Butter Maggi", price: 80 },
+                    { id: "hnc-69", name: "Chicken Maggi", price: 120 },
+                    // Garlic Bread
+                    { id: "hnc-70", name: "Plain Garlic Bread", price: 70 },
+                    { id: "hnc-71", name: "Cheese Garlic Bread", price: 90 },
+                    { id: "hnc-72", name: "Tandoori Garlic Bread", price: 120 },
+                    // Tortilla
+                    { id: "hnc-73", name: "Veg Tortilla", price: 80 },
+                    { id: "hnc-74", name: "Paneer Tortilla", price: 90 },
+                    { id: "hnc-75", name: "Chicken Tortilla", price: 120 },
+                    // Shakes
+                    { id: "hnc-76", name: "Strawberry Shake", price: 70 },
+                    { id: "hnc-77", name: "Black Currant Shake", price: 70 },
+                    { id: "hnc-78", name: "Chocolate Shake", price: 70 },
+                    { id: "hnc-79", name: "Oreo Shake", price: 70 },
+                    { id: "hnc-80", name: "Butter Scotch Shake", price: 70 },
+                    { id: "hnc-81", name: "Blueberry Shake", price: 70 },
+                    { id: "hnc-82", name: "Brownie Shake", price: 70 },
+                    { id: "hnc-83", name: "Oreo Brownie Shake", price: 90 },
+                    { id: "hnc-84", name: "Vanilla Shake", price: 70 },
+                    // Cold Coffee
+                    { id: "hnc-85", name: "Cold Coffee", price: 70 },
+                    { id: "hnc-86", name: "Choco Cold Coffee", price: 80 },
+                    { id: "hnc-87", name: "Hazelnut Cold Coffee", price: 90 },
+                    { id: "hnc-88", name: "Cold Coffee with Ice Cream", price: 100 },
+                    // Hot Beverage
+                    { id: "hnc-89", name: "Hot Coffee", price: 40 },
+                    { id: "hnc-90", name: "Hazelnut Coffee", price: 50 },
+                    { id: "hnc-91", name: "Hot Chocolate", price: 50 },
+                    { id: "hnc-92", name: "Tea", price: 20 },
+                    // Beverages
+                    { id: "hnc-93", name: "Strawberry Mary", price: 70 },
+                    { id: "hnc-94", name: "Mango Mule Mojito", price: 70 },
+                    { id: "hnc-95", name: "Strawberry Ice Crusher", price: 70 },
+                    { id: "hnc-96", name: "Kiwi Ice Crusher", price: 70 },
+                    { id: "hnc-97", name: "Mango Ice Crusher", price: 70 },
+                    { id: "hnc-98", name: "Blueberry Ice Crusher", price: 70 },
+                    // Mocktails
+                    { id: "hnc-99", name: "Fresh Lemon Soda", price: 60 },
+                    { id: "hnc-100", name: "Mint Mojito", price: 65 },
+                    { id: "hnc-101", name: "Blue Hawaiian", price: 65 },
+                    { id: "hnc-102", name: "Green Cooler", price: 65 },
+                    { id: "hnc-103", name: "Watermelon Spritzer", price: 65 },
+                    { id: "hnc-104", name: "Black Currant", price: 65 },
+                    // Friendship Bucket
+                    { id: "hnc-105", name: "Friendship Bucket", price: 319 }
+                ] 
+            },
             "HR8": { name: "HR8", items: generateMenuItems("HR8", 15) },
             "HR9": { name: "HR9", items: generateMenuItems("HR9", 15) },
             "HR10": { name: "HR10", items: generateMenuItems("HR10", 15) },
