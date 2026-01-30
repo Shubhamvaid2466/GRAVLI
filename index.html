@@ -6,7 +6,6 @@
     <title>Gravli - Campus Delivery</title>
      <link rel="icon" type="image/png" href="LOGO.png">
     
-    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.min.js"></script>
     <script>
         pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.worker.min.js';
@@ -2244,7 +2243,7 @@
                 if(selectedFiles.length === 0) {
                      prefArea.classList.add('hidden');
                 } else {
-                     updateStationeryUI(); // Restore if returning from browse
+                    updateStationeryUI(); // Restore if returning from browse
                 }
 
                 // Handle File Selection
@@ -2586,9 +2585,6 @@
             
             checkoutErrorMessage.classList.add('hidden');
             
-            // Note: File upload is now handled inside Menu, not checkout.
-            // Old checkout file logic removed.
-
             checkoutModal.classList.remove('hidden');
             setTimeout(() => {
                 checkoutModal.classList.remove('opacity-0');
@@ -2644,7 +2640,7 @@
         }
 
 
-        // --- Submit Logic with Razorpay ---
+        // --- Submit Logic (Razorpay removed) ---
         function submitOrder(e) {
             e.preventDefault();
             const submitBtn = checkoutForm.querySelector('button[type="submit"]');
@@ -2679,11 +2675,11 @@
 
             const firstItem = Object.values(cart)[0];
 
-            // Normal Order (Files already processed in cart)
-            proceedToPayment(submitBtn, firstItem, dropoffValue, deliveryFee);
+            // Proceed directly to save order to Firebase
+            proceedToSaveOrder(submitBtn, firstItem, dropoffValue, deliveryFee);
         }
 
-        function proceedToPayment(submitBtn, firstItem, dropoffValue, deliveryFee) {
+        function proceedToSaveOrder(submitBtn, firstItem, dropoffValue, deliveryFee) {
             // Disable button
             submitBtn.disabled = true;
             loadingModal.classList.remove('hidden');
@@ -2723,48 +2719,8 @@
                 documents: firstItem.documents || [] // Pass documents array if exists
             };
 
-            // Trigger Payment
-            startRazorpayPayment(orderData);
-        }
-
-        // --- Razorpay Integration Function ---
-        function startRazorpayPayment(orderData) {
-            const options = {
-                "key": "rzp_test_RiMRmuv0ZwU8i9", // <--- PASTE YOUR KEY HERE
-                "amount": Math.round(orderData.totalAmount * 100), // Amount is in paise
-                "currency": "INR",
-                "name": "Gravli Campus Delivery",
-                "description": "Food Order Payment",
-                "image": "LOGO.png",
-                "handler": function (response){
-                    // Payment Success!
-                    // Save Payment ID to order
-                    orderData.paymentId = response.razorpay_payment_id;
-                    orderData.paymentStatus = 'paid';
-                    
-                    // Now save to Firebase
-                    saveOrderToFirebase(orderData);
-                },
-                "prefill": {
-                    "name": orderData.requesterName,
-                    "email": currentUser.email || ""
-                },
-                "theme": {
-                    "color": "#8b5cf6"
-                },
-                "modal": {
-                    "ondismiss": function(){
-                        // Handle modal closed without payment
-                        loadingModal.classList.add('hidden');
-                        const submitBtn = checkoutForm.querySelector('button[type="submit"]');
-                        if(submitBtn) submitBtn.disabled = false;
-                        alert("Payment cancelled. Order was not placed.");
-                    }
-                }
-            };
-            
-            const rzp1 = new Razorpay(options);
-            rzp1.open();
+            // Directly save to Firebase
+            saveOrderToFirebase(orderData);
         }
 
         async function saveOrderToFirebase(request) {
@@ -3009,7 +2965,6 @@
 
             // --- Logic for Owner ---
             if (viewType === 'owner') {
-                // ADDED: Multi-Document Download for Owner
                 let docDownloadBtns = '';
                 
                 // Legacy support for single file
@@ -3040,7 +2995,6 @@
             }
             // --- Logic for Deliverer ---
             else if (viewType === 'deliverer-own' && req.status === 'in-progress') {
-                // Existing Deliverer Logic
                 let etaSection = '';
                 if (!req.estimatedTime) {
                     etaSection = `<div class="flex flex-col md:flex-row md:items-center gap-2 mb-2">
@@ -3149,7 +3103,6 @@
                         await updateDoc(docRef, { status: 'rejected' });
                     }
                 } else if (target.classList.contains('owner-ready-btn')) {
-                    // Generate 4 digit PIN
                     const pin = Math.floor(1000 + Math.random() * 9000).toString();
                     await updateDoc(docRef, { status: 'ready', pin: pin });
                 } else if (target.classList.contains('owner-verify-btn')) {
