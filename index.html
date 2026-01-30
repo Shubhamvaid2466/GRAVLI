@@ -556,9 +556,9 @@
 
         /* 9. Badges */
         .badge { padding: 0.125rem 0.625rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 500; }
-        .badge-open { background-color: #d1fae5; color: #065f46; } 
-        .badge-progress { background-color: #fef3c7; color: #92400e; } 
-        .badge-completed { background-color: #dbeafe; color: #1e40af; } 
+        .badge-open { background-color: #d1fae5; color: #065f46; } 
+        .badge-progress { background-color: #fef3c7; color: #92400e; } 
+        .badge-completed { background-color: #dbeafe; color: #1e40af; } 
         .badge-ready { background-color: #c7d2fe; color: #3730a3; }
         .badge-rejected { background-color: #fee2e2; color: #991b1b; }
 
@@ -1514,7 +1514,75 @@
                     { id: "tk-118", name: "Dragon Fruit Tea", price: 120 }
                 ] 
             },
-            "HR6": { name: "HR6", items: generateMenuItems("HR6", 15) },
+            "HR6": { 
+                name: "Unique Foods", 
+                items: [
+                    // Breakfast
+                    { id: "uf-1", name: "Aloo Paratha", price: 40 },
+                    { id: "uf-2", name: "Mix Paratha", price: 50 },
+                    { id: "uf-3", name: "Gobhi Paratha", price: 40 },
+                    { id: "uf-4", name: "Mulli Paratha", price: 40 },
+                    { id: "uf-5", name: "Paneer Paratha", price: 60 },
+                    // Beverages
+                    { id: "uf-6", name: "Tea", price: 15 },
+                    { id: "uf-7", name: "Hot Coffee", price: 30 },
+                    { id: "uf-8", name: "Cold Drinks (MRP - Pay Actual)", price: 0 },
+                    { id: "uf-9", name: "Water Bottle (MRP - Pay Actual)", price: 0 },
+                    { id: "uf-10", name: "Packaged Lassi (MRP - Pay Actual)", price: 0 },
+                    { id: "uf-11", name: "Fruit Beer (MRP - Pay Actual)", price: 0 },
+                    // Combo
+                    { id: "uf-12", name: "Rajma Rice (Half)", price: 60 },
+                    { id: "uf-13", name: "Rajma Rice (Full)", price: 80 },
+                    { id: "uf-14", name: "Kadhi Rice (Half)", price: 60 },
+                    { id: "uf-15", name: "Kadhi Rice (Full)", price: 80 },
+                    { id: "uf-16", name: "Chana Rice (Half)", price: 60 },
+                    { id: "uf-17", name: "Chana Rice (Full)", price: 80 },
+                    { id: "uf-18", name: "Paneer Rice (Half)", price: 70 },
+                    { id: "uf-19", name: "Paneer Rice (Full)", price: 100 },
+                    { id: "uf-20", name: "Chana Bhatura", price: 70 },
+                    { id: "uf-21", name: "Chana Kulcha", price: 70 },
+                    // Shakes
+                    { id: "uf-22", name: "Vanilla Shake", price: 60 },
+                    { id: "uf-23", name: "Strawberry Shake", price: 60 },
+                    { id: "uf-24", name: "Butter Scotch Shake", price: 70 },
+                    { id: "uf-25", name: "Oreo Shake", price: 80 },
+                    { id: "uf-26", name: "Kit Kat Shake", price: 80 },
+                    { id: "uf-27", name: "Chocolate Shake", price: 80 },
+                    // Lassi
+                    { id: "uf-28", name: "Sweet Lassi", price: 60 },
+                    { id: "uf-29", name: "Namkeen Lassi", price: 50 },
+                    // Thali
+                    { id: "uf-30", name: "Thali", price: 100 },
+                    { id: "uf-31", name: "Special Thali", price: 140 },
+                    // Snacks
+                    { id: "uf-32", name: "Spring Roll", price: 60 },
+                    { id: "uf-33", name: "Veg Manchurian", price: 80 },
+                    { id: "uf-34", name: "Cheese Chilli", price: 120 },
+                    { id: "uf-35", name: "Red Sauce Pasta", price: 100 },
+                    { id: "uf-36", name: "White Sauce Pasta", price: 110 },
+                    { id: "uf-37", name: "Mix Sauce Pasta", price: 110 },
+                    { id: "uf-38", name: "Grilled Sandwich", price: 80 },
+                    { id: "uf-39", name: "Veg Burger", price: 50 },
+                    { id: "uf-40", name: "Veg Momos", price: 60 },
+                    { id: "uf-41", name: "Paneer Momos", price: 80 },
+                    { id: "uf-42", name: "Honey Chilli Potato", price: 80 },
+                    { id: "uf-43", name: "Honey Chilli Cauliflower", price: 100 },
+                    { id: "uf-44", name: "Veg Noodles", price: 80 },
+                    { id: "uf-45", name: "Paneer Noodles", price: 100 },
+                    { id: "uf-46", name: "Veg Patties", price: 20 },
+                    { id: "uf-47", name: "Paneer Patty", price: 40 },
+                    { id: "uf-48", name: "Veg Fried Rice", price: 80 },
+                    { id: "uf-49", name: "French Fries", price: 60 },
+                    { id: "uf-50", name: "Masala Fries", price: 70 },
+                    { id: "uf-51", name: "Paneer Fried Rice", price: 100 },
+                    { id: "uf-52", name: "Veg Roll", price: 50 },
+                    { id: "uf-53", name: "Paneer Roll", price: 70 },
+                    { id: "uf-54", name: "Manchurian Roll", price: 80 },
+                    { id: "uf-55", name: "Chaap Roll", price: 70 },
+                    { id: "uf-56", name: "Paneer Malai Tikka Roll", price: 100 },
+                    { id: "uf-57", name: "Malai Chaap Roll", price: 80 }
+                ] 
+            },
             "HR7": { name: "HR7", items: generateMenuItems("HR7", 15) },
             "HR8": { name: "HR8", items: generateMenuItems("HR8", 15) },
             "HR9": { name: "HR9", items: generateMenuItems("HR9", 15) },
