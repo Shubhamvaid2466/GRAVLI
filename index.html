@@ -10,6 +10,8 @@
     <script>
         pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.worker.min.js';
     </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     
     <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Playfair+Display:ital,wght@1,700&family=Shrikhand&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     
@@ -1055,6 +1057,10 @@
             serverTimestamp,
             deleteDoc,
         } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        
+        // Supabase Import (via CDN global var, but accessing via window or re-importing usually preferred in modules. 
+        // Since we loaded via script tag in head, 'supabase' global is available, but the createClient function is:
+        const { createClient } = window.supabase;
 
         // --- Firebase Configuration ---
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-campus-delivery';
@@ -1072,9 +1078,20 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
         const auth = getAuth(app);
+
+        // --- Initialize Supabase with Firebase Auth Bridge ---
+        // REPLACE THESE WITH YOUR ACTUAL SUPABASE URL AND ANON KEY
+        const SUPABASE_URL = 'https://wdssoioqpazcjzdsbnam.supabase.co'; 
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indkc3NvaW9xcGF6Y2p6ZHNibmFtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk4MzE1MzIsImV4cCI6MjA4NTQwNzUzMn0.NpTX0KPq5z0WzWk8TSirlGv0QGj9UPwBZHtZOyDIXX4';
+
+        const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+            accessToken: async () => {
+                // Fetch the token from Firebase Auth
+                return (await auth.currentUser?.getIdToken()) ?? null;
+            },
+        });
         
         // --- Mock Data: Owner IDs ---
-        // In a real app, this would be in the database
         const OWNER_CREDENTIALS = {
             "OWNER1": "HR1", // Corner Cafe
             "OWNER2": "HR2", // HR Cafe
@@ -2196,7 +2213,7 @@
                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
                         </svg>
                         <div class="upload-text">Click to Upload Files</div>
-                        <div class="upload-hint">PDF, JPG, PNG (Max 500KB each)</div>
+                        <div class="upload-hint">PDF, JPG, PNG (Max 50MB each)</div>
                     </label>
                     <p id="stat-scan-status" class="text-sm font-semibold text-accent text-center mt-2 hidden">Scanning pages...</p>
 
@@ -2253,10 +2270,13 @@
 
                     scanStatus.classList.remove('hidden');
                     
+                    const MAX_SIZE_MB = 50;
+                    const MAX_SIZE_BYTES = MAX_SIZE_MB * 1024 * 1024;
+
                     for (const file of newFiles) {
-                         // Simple size check
-                        if(file.size > 500 * 1024) {
-                            alert(`File ${file.name} is too large (Max 500KB). Skipped.`);
+                         // Size Check 50MB
+                        if(file.size > MAX_SIZE_BYTES) {
+                            alert(`File ${file.name} is too large (Max ${MAX_SIZE_MB}MB). Skipped.`);
                             continue;
                         }
 
@@ -2344,7 +2364,7 @@
                     });
                 });
 
-                // Add To Order
+                // Add To Order (Supabase Upload Logic)
                 addToOrderBtn.addEventListener('click', async () => {
                     if (selectedFiles.length === 0) return;
                     
@@ -2355,49 +2375,49 @@
                         cart = {};
                     }
 
-                    // Process Files to Base64 (One Cart Item contains all docs)
-                    // Note: In a real app, upload to storage and get URL. Here we pack into Document.
-                    loadingModal.classList.remove('hidden'); // Show generic loader
+                    loadingModal.classList.remove('hidden'); 
                     
                     const processedDocs = [];
                     
-                    for (const item of selectedFiles) {
-                         const reader = new FileReader();
-                         const promise = new Promise((resolve, reject) => {
-                             reader.onload = (e) => resolve(e.target.result);
-                             reader.onerror = reject;
-                         });
-                         reader.readAsDataURL(item.file);
-                         const base64Data = await promise;
-                         
-                         processedDocs.push({
-                             name: item.file.name,
-                             data: base64Data,
-                             pages: item.pages
-                         });
+                    try {
+                        for (const item of selectedFiles) {
+                             const publicUrl = await uploadToSupabase(item.file);
+                             
+                             if (publicUrl) {
+                                 processedDocs.push({
+                                     name: item.file.name,
+                                     url: publicUrl, // Storing URL instead of Base64
+                                     pages: item.pages
+                                 });
+                             }
+                        }
+
+                        // Add single "Print Job" item to cart
+                        const itemId = `print-job-${Date.now()}`;
+                        const totalPages = selectedFiles.reduce((sum, item) => sum + item.pages, 0);
+                        const rate = selectedPrintType === 'bw' ? 3 : 10;
+                        const totalPrice = totalPages * rate;
+
+                        cart[itemId] = {
+                            name: `Print Job (${selectedFiles.length} Files, ${selectedPrintType.toUpperCase()})`,
+                            price: totalPrice,
+                            quantity: 1, 
+                            cafeId: 'HR8',
+                            cafeName: 'Campus Stationery',
+                            documents: processedDocs // Array of file data (names + links)
+                        };
+
+                        selectedFiles = []; // Reset
+                        updateCartUI();
+                        closeMenuModal();
+                        openCartModal();
+                        
+                    } catch (err) {
+                        console.error(err);
+                        alert("Failed to upload files to Supabase. Please try again.");
+                    } finally {
+                        loadingModal.classList.add('hidden');
                     }
-
-                    loadingModal.classList.add('hidden');
-
-                    // Add single "Print Job" item to cart
-                    const itemId = `print-job-${Date.now()}`;
-                    const totalPages = selectedFiles.reduce((sum, item) => sum + item.pages, 0);
-                    const rate = selectedPrintType === 'bw' ? 3 : 10;
-                    const totalPrice = totalPages * rate;
-
-                    cart[itemId] = {
-                        name: `Print Job (${selectedFiles.length} Files, ${selectedPrintType.toUpperCase()})`,
-                        price: totalPrice,
-                        quantity: 1, 
-                        cafeId: 'HR8',
-                        cafeName: 'Campus Stationery',
-                        documents: processedDocs // Array of file data
-                    };
-
-                    selectedFiles = []; // Reset
-                    updateCartUI();
-                    closeMenuModal();
-                    openCartModal();
                 });
 
                 return; // Stop standard rendering
@@ -2432,6 +2452,35 @@
             
             // Also update the in-menu cart footer whenever we render/re-render
             updateCartUI();
+        }
+
+        // --- Supabase Upload Helper Function ---
+        async function uploadToSupabase(file) {
+            const auth = getAuth();
+            if (!auth.currentUser) {
+                alert("Please login to upload files.");
+                return null;
+            }
+
+            // Create a unique path for the user's file
+            const filePath = `stationery_orders/${auth.currentUser.uid}/${Date.now()}_${file.name}`;
+            
+            // 1. Upload the file
+            const { data, error } = await supabase.storage
+                .from('stationery') // Ensure this bucket exists in your Supabase project
+                .upload(filePath, file);
+
+            if (error) {
+                console.error("Supabase Upload Error:", error.message);
+                return null;
+            }
+
+            // 2. Get the direct link to store in your Firebase Firestore order
+            const { data: publicUrlData } = supabase.storage
+                .from('stationery')
+                .getPublicUrl(filePath);
+
+            return publicUrlData.publicUrl;
         }
 
         function updateCart(itemId, change) {
@@ -2723,178 +2772,6 @@
             saveOrderToFirebase(orderData);
         }
 
-        async function saveOrderToFirebase(request) {
-             try {
-                const collectionPath = `/artifacts/${appId}/public/data/deliveries`;
-                await addDoc(collection(db, collectionPath), request);
-                
-                loadingModal.classList.add('hidden');
-                closeCheckoutModal();
-                cart = {};
-                selectedFiles = []; // Clear files
-                updateCartUI();
-                checkoutForm.reset();
-                const submitBtn = checkoutForm.querySelector('button[type="submit"]');
-                if(submitBtn) submitBtn.disabled = false;
-
-            } catch (error) {
-                console.error("Error adding document: ", error);
-                loadingModal.classList.add('hidden');
-                checkoutErrorMessage.textContent = "Failed to post request. Please contact support.";
-                checkoutErrorMessage.classList.remove('hidden');
-                const submitBtn = checkoutForm.querySelector('button[type="submit"]');
-                if(submitBtn) submitBtn.disabled = false;
-            }
-        }
-
-        async function logout() {
-            try {
-                localStorage.removeItem('userRole'); 
-                localStorage.removeItem('managedCafeId');
-                await signOut(auth);
-            } catch (error) {
-                console.error("Logout Error:", error);
-            }
-        }
-
-        // --- Firestore Logic ---
-        function fetchAndDisplayRequests() {
-           if (!currentUser) return;
-           if(unsubscribe) unsubscribe();
-           loader.classList.remove('hidden');
-           const collectionPath = `/artifacts/${appId}/public/data/deliveries`;
-           const q = query(collection(db, collectionPath));
-           
-           unsubscribe = onSnapshot(q, (querySnapshot) => {
-               loader.classList.add('hidden');
-               const nowInSeconds = Date.now() / 1000;
-               const maxAge = 900;
-               let activeRequests = [];
-               let allHistoryOrders = []; 
-
-               let totalDeliveriesCount = 0;
-
-               querySnapshot.forEach((doc) => {
-                   const req = { id: doc.id, ...doc.data() };
-                   
-                   if (req.delivererId === currentUser.uid && req.status === 'completed') {
-                       totalDeliveriesCount++;
-                   }
-
-                   allHistoryOrders.push(req);
-
-                   // Filter logic for main view (clean up old open requests)
-                   // But if Owner accepted it, keep it.
-                   if (req.status === 'open' && req.createdAt && (nowInSeconds - req.createdAt.seconds > maxAge)) {
-                       if (req.requesterId === currentUser.uid) {
-                           deleteDoc(doc.ref);
-                       }
-                   } else {
-                       activeRequests.push(req);
-                   }
-               });
-               
-               if (currentRole === 'deliverer') {
-                   deliveryStats.textContent = `Deliveries: ${totalDeliveriesCount}`;
-               }
-
-               activeRequests.sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
-               displayRequests(activeRequests);
-               
-               renderOrderHistory(allHistoryOrders);
-
-           }, (error) => {
-               console.error("Error fetching requests: ", error);
-               loader.classList.add('hidden');
-           });
-        }
-        
-        function getStatusBadge(status) {
-            switch(status) {
-                case 'open': return `<span class="badge badge-open">Open</span>`;
-                case 'in-progress': return `<span class="badge badge-progress">In Progress</span>`;
-                case 'preparing': return `<span class="badge badge-progress">Preparing</span>`;
-                case 'ready': return `<span class="badge badge-ready">Ready for Pickup</span>`;
-                case 'completed': return `<span class="badge badge-completed">Completed</span>`;
-                case 'rejected': return `<span class="badge badge-rejected">Rejected</span>`;
-                default: return `<span class="badge" style="background: #e5e7eb; color: #1f2937;">Unknown</span>`;
-            }
-        }
-
-        function displayRequests(requests) {
-            const myRequestsList = document.getElementById('my-requests-list');
-            const allRequestsListDeliverer = document.getElementById('all-requests-list-deliverer');
-            const myCurrentDeliveriesList = document.getElementById('my-current-deliveries-list');
-            const availableDeliveriesContainer = document.getElementById('available-deliveries-container');
-            const singleDeliveryMessage = document.getElementById('single-delivery-message');
-            const ownerOrdersList = document.getElementById('owner-orders-list');
-            
-            myRequestsList.innerHTML = '';
-            if (allRequestsListDeliverer) allRequestsListDeliverer.innerHTML = '';
-            if (myCurrentDeliveriesList) myCurrentDeliveriesList.innerHTML = '';
-            if (ownerOrdersList) ownerOrdersList.innerHTML = '';
-            
-            // Student Logic
-            if (currentRole === 'student') {
-                const myReqs = requests.filter(r => r.requesterId === currentUser.uid);
-                const myActiveOrders = myReqs.filter(r => ['open', 'in-progress', 'preparing', 'ready'].includes(r.status));
-                
-                myRequestsList.innerHTML = myActiveOrders.length ? '' : `<p class="text-secondary">You have no active orders.</p>`;
-                myActiveOrders.forEach(req => myRequestsList.appendChild(createRequestCard(req, 'student-own')));
-                
-                const myInProgressOrder = myReqs.find(r => ['in-progress', 'preparing', 'ready'].includes(r.status));
-                if (myInProgressOrder) {
-                    activeOrderBarStatus.textContent = formatSubStatus(myInProgressOrder.subStatus || myInProgressOrder.status);
-                    activeOrderBar.classList.remove('hidden');
-                    activeOrderBar.dataset.orderId = `order-${myInProgressOrder.id}`;
-                } else {
-                    activeOrderBar.classList.add('hidden');
-                }
-            }
-
-            // Deliverer Logic
-            else if (currentRole === 'deliverer') {
-                const myCurrentDeliveries = requests.filter(r => r.delivererId === currentUser.uid && r.status !== 'completed');
-                const openDeliveries = requests.filter(r => r.status === 'open' && !r.isPickup); 
-                const hasActiveDelivery = myCurrentDeliveries.some(r => r.status === 'in-progress');
-
-                myCurrentDeliveriesList.innerHTML = myCurrentDeliveries.length ? '' : `<p class="text-secondary">You have no active deliveries.</p>`;
-                myCurrentDeliveries.forEach(req => myCurrentDeliveriesList.appendChild(createRequestCard(req, 'deliverer-own')));
-                
-                if (hasActiveDelivery) {
-                    availableDeliveriesContainer.classList.add('hidden');
-                    singleDeliveryMessage.classList.remove('hidden');
-                } else {
-                    availableDeliveriesContainer.classList.remove('hidden');
-                    singleDeliveryMessage.classList.add('hidden');
-                    allRequestsListDeliverer.innerHTML = openDeliveries.length ? '' : `<p class="text-secondary">No available deliveries right now.</p>`;
-                    openDeliveries.forEach(req => allRequestsListDeliverer.appendChild(createRequestCard(req, 'deliverer')));
-                }
-            }
-
-            // Owner Logic
-            else if (currentRole === 'owner') {
-                const myCafeOrders = requests.filter(r => 
-                    r.cafeId === managedCafeId && r.isPickup && 
-                    ['open', 'accepted', 'preparing', 'ready'].includes(r.status)
-                );
-
-                ownerOrdersList.innerHTML = myCafeOrders.length ? '' : `<p class="text-secondary">No pickup orders pending.</p>`;
-                myCafeOrders.forEach(req => ownerOrdersList.appendChild(createRequestCard(req, 'owner')));
-            }
-        }
-        
-        function formatSubStatus(status) {
-            if (!status) return 'Awaiting updates...';
-            switch(status) {
-                case 'reached-cafe': return 'Reached the cafe';
-                case 'picked-up': return 'Order picked up';
-                case 'preparing': return 'Preparing your food';
-                case 'ready': return 'Ready for Pickup!';
-                default: return 'In progress';
-            }
-        }
-
         // --- Updated Card Creation ---
         function createRequestCard(req, viewType) {
             const card = document.createElement('div');
@@ -2972,10 +2849,10 @@
                      docDownloadBtns += `<a href="${req.documentUrl}" download="Order_Doc.pdf" class="btn btn-sm btn-secondary w-full mb-2" style="background-color: var(--info-bg); color: white; display: flex; justify-content: center; text-decoration: none;">Download Document</a>`;
                 }
                 
-                // New multiple file support
+                // New multiple file support (SUPABASE LINKS)
                 if (req.documents && Array.isArray(req.documents)) {
                     req.documents.forEach((doc, index) => {
-                         docDownloadBtns += `<a href="${doc.data}" download="${doc.name}" class="btn btn-sm btn-secondary w-full mb-2" style="background-color: var(--info-bg); color: white; display: flex; justify-content: center; text-decoration: none;">Download ${doc.name} (${doc.pages} pgs)</a>`;
+                         docDownloadBtns += `<a href="${doc.url}" target="_blank" class="btn btn-sm btn-secondary w-full mb-2" style="background-color: var(--info-bg); color: white; display: flex; justify-content: center; text-decoration: none;">Open ${doc.name} (${doc.pages} pgs)</a>`;
                     });
                 }
 
