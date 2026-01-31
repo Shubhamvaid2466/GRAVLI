@@ -6,11 +6,12 @@
     <title>Gravli - Campus Delivery</title>
      <link rel="icon" type="image/png" href="LOGO.png">
     
-    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.min.js"></script>
     <script>
         pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.worker.min.js';
     </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     
     <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Playfair+Display:ital,wght@1,700&family=Shrikhand&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     
@@ -825,7 +826,7 @@
                 </div>
             </div>
             
-            <div class="logo-area">
+            <div class="logo-area"> 
                 <span>Gravli</span>
             </div>
 
@@ -995,7 +996,7 @@
                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                 <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
             </svg>
-            <p class="mt-4 text-secondary font-semibold">Processing...</p>
+            <p id="loading-text" class="mt-4 text-secondary font-semibold">Processing...</p>
         </div>
     </div>
 
@@ -1056,6 +1057,9 @@
             serverTimestamp,
             deleteDoc,
         } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        
+        // Supabase Import
+        const { createClient } = window.supabase;
 
         // --- Firebase Configuration ---
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-campus-delivery';
@@ -1073,9 +1077,15 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
         const auth = getAuth(app);
+
+        // --- Initialize Supabase ---
+        const SUPABASE_URL = 'https://wdssoioqpazcjzdsbnam.supabase.co'; 
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indkc3NvaW9xcGF6Y2p6ZHNibmFtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk4MzE1MzIsImV4cCI6MjA4NTQwNzUzMn0.NpTX0KPq5z0WzWk8TSirlGv0QGj9UPwBZHtZOyDIXX4';
+
+        // FIX: Removed the custom access token logic. It's causing the conflict.
+        const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
         
         // --- Mock Data: Owner IDs ---
-        // In a real app, this would be in the database
         const OWNER_CREDENTIALS = {
             "OWNER1": "HR1", // Corner Cafe
             "OWNER2": "HR2", // HR Cafe
@@ -1323,7 +1333,7 @@
             "HR3": { 
                 name: "Thick Letto", 
                 items: [
-                     // Exotic Fruits
+                      // Exotic Fruits
                     { id: "tl-1", name: "Strawberry Thick Shake", price: 55 },
                     { id: "tl-2", name: "Butter Nuts Thick Shake", price: 55 },
                     { id: "tl-3", name: "Black Shrubs Thick Shake", price: 55 },
@@ -2197,7 +2207,7 @@
                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
                         </svg>
                         <div class="upload-text">Click to Upload Files</div>
-                        <div class="upload-hint">PDF, JPG, PNG (Max 500KB each)</div>
+                        <div class="upload-hint">PDF, JPG, PNG (Max 15MB each)</div>
                     </label>
                     <p id="stat-scan-status" class="text-sm font-semibold text-accent text-center mt-2 hidden">Scanning pages...</p>
 
@@ -2244,7 +2254,7 @@
                 if(selectedFiles.length === 0) {
                      prefArea.classList.add('hidden');
                 } else {
-                     updateStationeryUI(); // Restore if returning from browse
+                    updateStationeryUI(); // Restore if returning from browse
                 }
 
                 // Handle File Selection
@@ -2254,10 +2264,13 @@
 
                     scanStatus.classList.remove('hidden');
                     
+                    const MAX_SIZE_MB = 15;
+                    const MAX_SIZE_BYTES = MAX_SIZE_MB * 1024 * 1024;
+
                     for (const file of newFiles) {
-                         // Simple size check
-                        if(file.size > 500 * 1024) {
-                            alert(`File ${file.name} is too large (Max 500KB). Skipped.`);
+                         // Size Check 15MB
+                        if(file.size > MAX_SIZE_BYTES) {
+                            alert(`File ${file.name} is too large (Max ${MAX_SIZE_MB}MB). Skipped.`);
                             continue;
                         }
 
@@ -2345,7 +2358,7 @@
                     });
                 });
 
-                // Add To Order
+                // Add To Order (Supabase Upload Logic) - PARALLEL UPLOADS OPTIMIZED
                 addToOrderBtn.addEventListener('click', async () => {
                     if (selectedFiles.length === 0) return;
                     
@@ -2355,50 +2368,65 @@
                         if (!confirm("Your cart contains items from another shop. Clear it to add stationery?")) return;
                         cart = {};
                     }
+                    
+                    // Change Loading Text
+                    const loadingText = document.getElementById('loading-text');
+                    if (loadingText) loadingText.textContent = "Please wait, your files are uploading...";
+                    
+                    loadingModal.classList.remove('hidden'); 
+                    
+                    try {
+                        // 1. Create an array of upload promises (This starts all uploads immediately)
+                        const uploadPromises = selectedFiles.map(async (item) => {
+                             const publicUrl = await uploadToSupabase(item.file);
+                             if (publicUrl) {
+                                 return {
+                                     name: item.file.name,
+                                     url: publicUrl,
+                                     pages: item.pages
+                                 };
+                             }
+                             return null;
+                        });
 
-                    // Process Files to Base64 (One Cart Item contains all docs)
-                    // Note: In a real app, upload to storage and get URL. Here we pack into Document.
-                    loadingModal.classList.remove('hidden'); // Show generic loader
-                    
-                    const processedDocs = [];
-                    
-                    for (const item of selectedFiles) {
-                         const reader = new FileReader();
-                         const promise = new Promise((resolve, reject) => {
-                             reader.onload = (e) => resolve(e.target.result);
-                             reader.onerror = reject;
-                         });
-                         reader.readAsDataURL(item.file);
-                         const base64Data = await promise;
-                         
-                         processedDocs.push({
-                             name: item.file.name,
-                             data: base64Data,
-                             pages: item.pages
-                         });
+                        // 2. Wait for ALL uploads to finish concurrently
+                        const results = await Promise.all(uploadPromises);
+                        
+                        // 3. Filter out any failed uploads (nulls)
+                        const processedDocs = results.filter(doc => doc !== null);
+
+                        if (processedDocs.length === 0) {
+                            throw new Error("No files were successfully uploaded.");
+                        }
+
+                        // Add single "Print Job" item to cart
+                        const itemId = `print-job-${Date.now()}`;
+                        const totalPages = selectedFiles.reduce((sum, item) => sum + item.pages, 0);
+                        const rate = selectedPrintType === 'bw' ? 3 : 10;
+                        const totalPrice = totalPages * rate;
+
+                        cart[itemId] = {
+                            name: `Print Job (${selectedFiles.length} Files, ${selectedPrintType.toUpperCase()})`,
+                            price: totalPrice,
+                            quantity: 1, 
+                            cafeId: 'HR8',
+                            cafeName: 'Campus Stationery',
+                            documents: processedDocs // Array of file data (names + links)
+                        };
+
+                        selectedFiles = []; // Reset
+                        updateCartUI();
+                        closeMenuModal();
+                        openCartModal();
+                        
+                    } catch (err) {
+                        console.error(err);
+                        alert("Failed to upload files. Check console for details.");
+                    } finally {
+                        loadingModal.classList.add('hidden');
+                        // Reset text for other uses
+                        if(loadingText) loadingText.textContent = "Processing...";
                     }
-
-                    loadingModal.classList.add('hidden');
-
-                    // Add single "Print Job" item to cart
-                    const itemId = `print-job-${Date.now()}`;
-                    const totalPages = selectedFiles.reduce((sum, item) => sum + item.pages, 0);
-                    const rate = selectedPrintType === 'bw' ? 3 : 10;
-                    const totalPrice = totalPages * rate;
-
-                    cart[itemId] = {
-                        name: `Print Job (${selectedFiles.length} Files, ${selectedPrintType.toUpperCase()})`,
-                        price: totalPrice,
-                        quantity: 1, 
-                        cafeId: 'HR8',
-                        cafeName: 'Campus Stationery',
-                        documents: processedDocs // Array of file data
-                    };
-
-                    selectedFiles = []; // Reset
-                    updateCartUI();
-                    closeMenuModal();
-                    openCartModal();
                 });
 
                 return; // Stop standard rendering
@@ -2433,6 +2461,39 @@
             
             // Also update the in-menu cart footer whenever we render/re-render
             updateCartUI();
+        }
+
+        // --- Supabase Upload Helper Function ---
+        async function uploadToSupabase(file) {
+            const auth = getAuth();
+            if (!auth.currentUser) {
+                alert("Please login to upload files.");
+                return null;
+            }
+
+            // Sanitized Filename
+            const sanitizedName = file.name.replace(/[^a-zA-Z0-9.-]/g, '_');
+            const filePath = `stationery_orders/${auth.currentUser.uid}/${Date.now()}_${sanitizedName}`;
+            
+            // 1. Upload the file
+            const { data, error } = await supabase.storage
+                .from('stationery') // Ensure this bucket exists in your Supabase project
+                .upload(filePath, file, {
+                    cacheControl: '3600',
+                    upsert: false
+                });
+
+            if (error) {
+                console.error("Supabase Upload Error:", error.message);
+                return null;
+            }
+
+            // 2. Get the direct link to store in your Firebase Firestore order
+            const { data: publicUrlData } = supabase.storage
+                .from('stationery')
+                .getPublicUrl(filePath);
+
+            return publicUrlData.publicUrl;
         }
 
         function updateCart(itemId, change) {
@@ -2586,9 +2647,6 @@
             
             checkoutErrorMessage.classList.add('hidden');
             
-            // Note: File upload is now handled inside Menu, not checkout.
-            // Old checkout file logic removed.
-
             checkoutModal.classList.remove('hidden');
             setTimeout(() => {
                 checkoutModal.classList.remove('opacity-0');
@@ -2644,7 +2702,7 @@
         }
 
 
-        // --- Submit Logic with Razorpay ---
+        // --- Submit Logic (Razorpay removed) ---
         function submitOrder(e) {
             e.preventDefault();
             const submitBtn = checkoutForm.querySelector('button[type="submit"]');
@@ -2679,11 +2737,11 @@
 
             const firstItem = Object.values(cart)[0];
 
-            // Normal Order (Files already processed in cart)
-            proceedToPayment(submitBtn, firstItem, dropoffValue, deliveryFee);
+            // Proceed directly to save order to Firebase
+            proceedToSaveOrder(submitBtn, firstItem, dropoffValue, deliveryFee);
         }
 
-        function proceedToPayment(submitBtn, firstItem, dropoffValue, deliveryFee) {
+        function proceedToSaveOrder(submitBtn, firstItem, dropoffValue, deliveryFee) {
             // Disable button
             submitBtn.disabled = true;
             loadingModal.classList.remove('hidden');
@@ -2723,219 +2781,34 @@
                 documents: firstItem.documents || [] // Pass documents array if exists
             };
 
-            // Trigger Payment
-            startRazorpayPayment(orderData);
+            // Directly save to Firebase
+            saveOrderToFirebase(orderData);
         }
 
-        // --- Razorpay Integration Function ---
-        function startRazorpayPayment(orderData) {
-            const options = {
-                "key": "rzp_test_RiMRmuv0ZwU8i9", // <--- PASTE YOUR KEY HERE
-                "amount": Math.round(orderData.totalAmount * 100), // Amount is in paise
-                "currency": "INR",
-                "name": "Gravli Campus Delivery",
-                "description": "Food Order Payment",
-                "image": "LOGO.png",
-                "handler": function (response){
-                    // Payment Success!
-                    // Save Payment ID to order
-                    orderData.paymentId = response.razorpay_payment_id;
-                    orderData.paymentStatus = 'paid';
-                    
-                    // Now save to Firebase
-                    saveOrderToFirebase(orderData);
-                },
-                "prefill": {
-                    "name": orderData.requesterName,
-                    "email": currentUser.email || ""
-                },
-                "theme": {
-                    "color": "#8b5cf6"
-                },
-                "modal": {
-                    "ondismiss": function(){
-                        // Handle modal closed without payment
-                        loadingModal.classList.add('hidden');
-                        const submitBtn = checkoutForm.querySelector('button[type="submit"]');
-                        if(submitBtn) submitBtn.disabled = false;
-                        alert("Payment cancelled. Order was not placed.");
-                    }
-                }
-            };
-            
-            const rzp1 = new Razorpay(options);
-            rzp1.open();
-        }
-
-        async function saveOrderToFirebase(request) {
-             try {
-                const collectionPath = `/artifacts/${appId}/public/data/deliveries`;
-                await addDoc(collection(db, collectionPath), request);
-                
-                loadingModal.classList.add('hidden');
-                closeCheckoutModal();
-                cart = {};
-                selectedFiles = []; // Clear files
-                updateCartUI();
-                checkoutForm.reset();
-                const submitBtn = checkoutForm.querySelector('button[type="submit"]');
-                if(submitBtn) submitBtn.disabled = false;
-
-            } catch (error) {
-                console.error("Error adding document: ", error);
-                loadingModal.classList.add('hidden');
-                checkoutErrorMessage.textContent = "Failed to post request. Please contact support.";
-                checkoutErrorMessage.classList.remove('hidden');
-                const submitBtn = checkoutForm.querySelector('button[type="submit"]');
-                if(submitBtn) submitBtn.disabled = false;
-            }
-        }
-
-        async function logout() {
+        // --- Save Order To Firebase (Function Added) ---
+        async function saveOrderToFirebase(orderData) {
             try {
-                localStorage.removeItem('userRole'); 
-                localStorage.removeItem('managedCafeId');
-                await signOut(auth);
+                // Reference to the database collection
+                const colRef = collection(db, `/artifacts/${appId}/public/data/deliveries`);
+                
+                // Add the order to Firestore
+                await addDoc(colRef, orderData);
+                
+                // --- Success Handling ---
+                loadingModal.classList.add('hidden'); // Hide the spinner
+                closeCheckoutModal(); // Close the checkout popup
+                cart = {}; // Clear the cart
+                updateCartUI(); // Reset UI counters
+                
+                // Notify user
+                alert(`Order Placed Successfully! Your Order ID is ${orderData.shortId}`);
+                
             } catch (error) {
-                console.error("Logout Error:", error);
-            }
-        }
-
-        // --- Firestore Logic ---
-        function fetchAndDisplayRequests() {
-           if (!currentUser) return;
-           if(unsubscribe) unsubscribe();
-           loader.classList.remove('hidden');
-           const collectionPath = `/artifacts/${appId}/public/data/deliveries`;
-           const q = query(collection(db, collectionPath));
-           
-           unsubscribe = onSnapshot(q, (querySnapshot) => {
-               loader.classList.add('hidden');
-               const nowInSeconds = Date.now() / 1000;
-               const maxAge = 900;
-               let activeRequests = [];
-               let allHistoryOrders = []; 
-
-               let totalDeliveriesCount = 0;
-
-               querySnapshot.forEach((doc) => {
-                   const req = { id: doc.id, ...doc.data() };
-                   
-                   if (req.delivererId === currentUser.uid && req.status === 'completed') {
-                       totalDeliveriesCount++;
-                   }
-
-                   allHistoryOrders.push(req);
-
-                   // Filter logic for main view (clean up old open requests)
-                   // But if Owner accepted it, keep it.
-                   if (req.status === 'open' && req.createdAt && (nowInSeconds - req.createdAt.seconds > maxAge)) {
-                       if (req.requesterId === currentUser.uid) {
-                           deleteDoc(doc.ref);
-                       }
-                   } else {
-                       activeRequests.push(req);
-                   }
-               });
-               
-               if (currentRole === 'deliverer') {
-                   deliveryStats.textContent = `Deliveries: ${totalDeliveriesCount}`;
-               }
-
-               activeRequests.sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
-               displayRequests(activeRequests);
-               
-               renderOrderHistory(allHistoryOrders);
-
-           }, (error) => {
-               console.error("Error fetching requests: ", error);
-               loader.classList.add('hidden');
-           });
-        }
-        
-        function getStatusBadge(status) {
-            switch(status) {
-                case 'open': return `<span class="badge badge-open">Open</span>`;
-                case 'in-progress': return `<span class="badge badge-progress">In Progress</span>`;
-                case 'preparing': return `<span class="badge badge-progress">Preparing</span>`;
-                case 'ready': return `<span class="badge badge-ready">Ready for Pickup</span>`;
-                case 'completed': return `<span class="badge badge-completed">Completed</span>`;
-                case 'rejected': return `<span class="badge badge-rejected">Rejected</span>`;
-                default: return `<span class="badge" style="background: #e5e7eb; color: #1f2937;">Unknown</span>`;
-            }
-        }
-
-        function displayRequests(requests) {
-            const myRequestsList = document.getElementById('my-requests-list');
-            const allRequestsListDeliverer = document.getElementById('all-requests-list-deliverer');
-            const myCurrentDeliveriesList = document.getElementById('my-current-deliveries-list');
-            const availableDeliveriesContainer = document.getElementById('available-deliveries-container');
-            const singleDeliveryMessage = document.getElementById('single-delivery-message');
-            const ownerOrdersList = document.getElementById('owner-orders-list');
-            
-            myRequestsList.innerHTML = '';
-            if (allRequestsListDeliverer) allRequestsListDeliverer.innerHTML = '';
-            if (myCurrentDeliveriesList) myCurrentDeliveriesList.innerHTML = '';
-            if (ownerOrdersList) ownerOrdersList.innerHTML = '';
-            
-            // Student Logic
-            if (currentRole === 'student') {
-                const myReqs = requests.filter(r => r.requesterId === currentUser.uid);
-                const myActiveOrders = myReqs.filter(r => ['open', 'in-progress', 'preparing', 'ready'].includes(r.status));
-                
-                myRequestsList.innerHTML = myActiveOrders.length ? '' : `<p class="text-secondary">You have no active orders.</p>`;
-                myActiveOrders.forEach(req => myRequestsList.appendChild(createRequestCard(req, 'student-own')));
-                
-                const myInProgressOrder = myReqs.find(r => ['in-progress', 'preparing', 'ready'].includes(r.status));
-                if (myInProgressOrder) {
-                    activeOrderBarStatus.textContent = formatSubStatus(myInProgressOrder.subStatus || myInProgressOrder.status);
-                    activeOrderBar.classList.remove('hidden');
-                    activeOrderBar.dataset.orderId = `order-${myInProgressOrder.id}`;
-                } else {
-                    activeOrderBar.classList.add('hidden');
-                }
-            }
-
-            // Deliverer Logic
-            else if (currentRole === 'deliverer') {
-                const myCurrentDeliveries = requests.filter(r => r.delivererId === currentUser.uid && r.status !== 'completed');
-                const openDeliveries = requests.filter(r => r.status === 'open' && !r.isPickup); 
-                const hasActiveDelivery = myCurrentDeliveries.some(r => r.status === 'in-progress');
-
-                myCurrentDeliveriesList.innerHTML = myCurrentDeliveries.length ? '' : `<p class="text-secondary">You have no active deliveries.</p>`;
-                myCurrentDeliveries.forEach(req => myCurrentDeliveriesList.appendChild(createRequestCard(req, 'deliverer-own')));
-                
-                if (hasActiveDelivery) {
-                    availableDeliveriesContainer.classList.add('hidden');
-                    singleDeliveryMessage.classList.remove('hidden');
-                } else {
-                    availableDeliveriesContainer.classList.remove('hidden');
-                    singleDeliveryMessage.classList.add('hidden');
-                    allRequestsListDeliverer.innerHTML = openDeliveries.length ? '' : `<p class="text-secondary">No available deliveries right now.</p>`;
-                    openDeliveries.forEach(req => allRequestsListDeliverer.appendChild(createRequestCard(req, 'deliverer')));
-                }
-            }
-
-            // Owner Logic
-            else if (currentRole === 'owner') {
-                const myCafeOrders = requests.filter(r => 
-                    r.cafeId === managedCafeId && r.isPickup && 
-                    ['open', 'accepted', 'preparing', 'ready'].includes(r.status)
-                );
-
-                ownerOrdersList.innerHTML = myCafeOrders.length ? '' : `<p class="text-secondary">No pickup orders pending.</p>`;
-                myCafeOrders.forEach(req => ownerOrdersList.appendChild(createRequestCard(req, 'owner')));
-            }
-        }
-        
-        function formatSubStatus(status) {
-            if (!status) return 'Awaiting updates...';
-            switch(status) {
-                case 'reached-cafe': return 'Reached the cafe';
-                case 'picked-up': return 'Order picked up';
-                case 'preparing': return 'Preparing your food';
-                case 'ready': return 'Ready for Pickup!';
-                default: return 'In progress';
+                // --- Error Handling ---
+                console.error("Error adding document: ", error);
+                loadingModal.classList.add('hidden'); // Hide the spinner so user isn't stuck
+                checkoutErrorMessage.textContent = "Network error. Please check your connection and try again.";
+                checkoutErrorMessage.classList.remove('hidden');
             }
         }
 
@@ -3009,18 +2882,17 @@
 
             // --- Logic for Owner ---
             if (viewType === 'owner') {
-                // ADDED: Multi-Document Download for Owner
                 let docDownloadBtns = '';
                 
                 // Legacy support for single file
                 if(req.documentUrl) {
-                     docDownloadBtns += `<a href="${req.documentUrl}" download="Order_Doc.pdf" class="btn btn-sm btn-secondary w-full mb-2" style="background-color: var(--info-bg); color: white; display: flex; justify-content: center; text-decoration: none;">Download Document</a>`;
+                      docDownloadBtns += `<a href="${req.documentUrl}" download="Order_Doc.pdf" class="btn btn-sm btn-secondary w-full mb-2" style="background-color: var(--info-bg); color: white; display: flex; justify-content: center; text-decoration: none;">Download Document</a>`;
                 }
                 
-                // New multiple file support
+                // New multiple file support (SUPABASE LINKS)
                 if (req.documents && Array.isArray(req.documents)) {
                     req.documents.forEach((doc, index) => {
-                         docDownloadBtns += `<a href="${doc.data}" download="${doc.name}" class="btn btn-sm btn-secondary w-full mb-2" style="background-color: var(--info-bg); color: white; display: flex; justify-content: center; text-decoration: none;">Download ${doc.name} (${doc.pages} pgs)</a>`;
+                          docDownloadBtns += `<a href="${doc.url}" target="_blank" class="btn btn-sm btn-secondary w-full mb-2" style="background-color: var(--info-bg); color: white; display: flex; justify-content: center; text-decoration: none;">Open ${doc.name} (${doc.pages} pgs)</a>`;
                     });
                 }
 
@@ -3040,7 +2912,6 @@
             }
             // --- Logic for Deliverer ---
             else if (viewType === 'deliverer-own' && req.status === 'in-progress') {
-                // Existing Deliverer Logic
                 let etaSection = '';
                 if (!req.estimatedTime) {
                     etaSection = `<div class="flex flex-col md:flex-row md:items-center gap-2 mb-2">
@@ -3149,7 +3020,6 @@
                         await updateDoc(docRef, { status: 'rejected' });
                     }
                 } else if (target.classList.contains('owner-ready-btn')) {
-                    // Generate 4 digit PIN
                     const pin = Math.floor(1000 + Math.random() * 9000).toString();
                     await updateDoc(docRef, { status: 'ready', pin: pin });
                 } else if (target.classList.contains('owner-verify-btn')) {
@@ -3166,6 +3036,156 @@
             } catch (error) {
                 console.error("Error updating document:", error);
             }
+        }
+
+        // --- Firebase Request Fetching ---
+        function fetchAndDisplayRequests() {
+             const requestsRef = collection(db, `/artifacts/${appId}/public/data/deliveries`);
+             // We can fetch all and filter in memory since dataset is likely small
+             const q = query(requestsRef); // In prod, add orderBy
+             
+             unsubscribe = onSnapshot(q, (snapshot) => {
+                 const allOrders = [];
+                 snapshot.forEach((doc) => {
+                     allOrders.push({ id: doc.id, ...doc.data() });
+                 });
+                 
+                 // Render for Student View
+                 if (currentRole === 'student') {
+                     const myRequestsList = document.getElementById('my-requests-list');
+                     const activeOrderBar = document.getElementById('active-order-bar');
+                     
+                     if (myRequestsList) {
+                         myRequestsList.innerHTML = '';
+                         const myActiveOrders = allOrders.filter(req => req.requesterId === currentUser.uid && (req.status !== 'completed' && req.status !== 'rejected'));
+                         
+                         // Sort active orders: 'ready' first, then others
+                         myActiveOrders.sort((a, b) => {
+                             if(a.status === 'ready' && b.status !== 'ready') return -1;
+                             if(a.status !== 'ready' && b.status === 'ready') return 1;
+                             return (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0);
+                         });
+
+                         if (myActiveOrders.length === 0) {
+                             myRequestsList.innerHTML = `<p class="text-secondary text-center italic">You have no active orders.</p>`;
+                             activeOrderBar.classList.add('hidden');
+                         } else {
+                             myActiveOrders.forEach(req => {
+                                 const card = createRequestCard(req, 'student-own');
+                                 myRequestsList.appendChild(card);
+                             });
+                             
+                             // Update Bottom Bar
+                             const topOrder = myActiveOrders[0];
+                             activeOrderBar.dataset.orderId = `order-${topOrder.id}`;
+                             activeOrderBar.classList.remove('hidden');
+                             
+                             const statusText = document.getElementById('active-order-bar-status');
+                             if(topOrder.status === 'open') statusText.textContent = "Waiting for acceptance...";
+                             else if(topOrder.status === 'preparing') statusText.textContent = "Being prepared...";
+                             else if(topOrder.status === 'in-progress') statusText.textContent = `On the way! ETA: ${topOrder.estimatedTime ? topOrder.estimatedTime + ' mins' : 'Calculating...'}`;
+                             else if(topOrder.status === 'ready') statusText.textContent = "Ready for Pickup! Check PIN.";
+                             
+                         }
+                     }
+                 }
+                 
+                 // Render for Deliverer View
+                 if (currentRole === 'deliverer') {
+                     const availableContainer = document.getElementById('all-requests-list-deliverer');
+                     const myCurrentContainer = document.getElementById('my-current-deliveries-list');
+                     const singleDeliveryMessage = document.getElementById('single-delivery-message');
+                     
+                     if(availableContainer && myCurrentContainer) {
+                         availableContainer.innerHTML = '';
+                         myCurrentContainer.innerHTML = '';
+                         
+                         const myJob = allOrders.find(req => req.delivererId === currentUser.uid && req.status === 'in-progress');
+                         
+                         if(myJob) {
+                             const card = createRequestCard(myJob, 'deliverer-own');
+                             myCurrentContainer.appendChild(card);
+                             availableContainer.classList.add('hidden'); // Hide available jobs if busy
+                             singleDeliveryMessage.classList.remove('hidden');
+                         } else {
+                             myCurrentContainer.innerHTML = `<p class="text-secondary text-center italic">No active deliveries.</p>`;
+                             availableContainer.classList.remove('hidden');
+                             singleDeliveryMessage.classList.add('hidden');
+                             
+                             // Show Open Requests (Exclude pickups, exclude my own requests if any)
+                             const openRequests = allOrders.filter(req => req.status === 'open' && !req.isPickup && req.requesterId !== currentUser.uid);
+                             // Sort by latest
+                             openRequests.sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
+                             
+                             if (openRequests.length === 0) {
+                                 availableContainer.innerHTML = `<p class="text-secondary text-center italic">No available delivery jobs right now.</p>`;
+                             } else {
+                                 openRequests.forEach(req => {
+                                     const card = createRequestCard(req, 'deliverer');
+                                     availableContainer.appendChild(card);
+                                 });
+                             }
+                         }
+                         
+                         // Update Stats
+                         const completedCount = allOrders.filter(req => req.delivererId === currentUser.uid && req.status === 'completed').length;
+                         const deliveryStats = document.getElementById('delivery-stats');
+                         if(deliveryStats) deliveryStats.textContent = `Deliveries: ${completedCount}`;
+                     }
+                 }
+                 
+                 // Render for Owner View
+                 if (currentRole === 'owner' && managedCafeId) {
+                     const ownerList = document.getElementById('owner-orders-list');
+                     if(ownerList) {
+                         ownerList.innerHTML = '';
+                         // Show active orders for this cafe
+                         const cafeOrders = allOrders.filter(req => req.cafeId === managedCafeId && (req.status === 'open' || req.status === 'preparing' || req.status === 'ready'));
+                         
+                         // Sort: Open first, then Preparing, then Ready
+                         const statusOrder = { 'open': 1, 'preparing': 2, 'ready': 3 };
+                         cafeOrders.sort((a, b) => {
+                             const statusDiff = statusOrder[a.status] - statusOrder[b.status];
+                             if (statusDiff !== 0) return statusDiff;
+                             return (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0);
+                         });
+                         
+                         if(cafeOrders.length === 0) {
+                             ownerList.innerHTML = `<p class="text-secondary text-center italic">No active orders.</p>`;
+                         } else {
+                             cafeOrders.forEach(req => {
+                                 const card = createRequestCard(req, 'owner');
+                                 ownerList.appendChild(card);
+                             });
+                         }
+                     }
+                 }
+                 
+                 // Always update history modal if open
+                 if(!historyModal.classList.contains('hidden')) {
+                     renderOrderHistory(allOrders);
+                 }
+             });
+        }
+        
+        function getStatusBadge(status) {
+            switch(status) {
+                case 'open': return `<span class="badge badge-open">Open</span>`;
+                case 'in-progress': return `<span class="badge badge-progress">On The Way</span>`;
+                case 'preparing': return `<span class="badge badge-progress">Preparing</span>`;
+                case 'ready': return `<span class="badge badge-ready">Ready</span>`;
+                case 'completed': return `<span class="badge badge-completed">Completed</span>`;
+                case 'rejected': return `<span class="badge badge-rejected">Rejected</span>`;
+                default: return `<span class="badge badge-open">${status}</span>`;
+            }
+        }
+        
+        function logout() {
+            signOut(auth).then(() => {
+                // UI update handled by onAuthStateChanged
+            }).catch((error) => {
+                console.error("Logout Error:", error);
+            });
         }
         
         // --- Event Listeners ---
