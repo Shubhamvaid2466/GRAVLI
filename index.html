@@ -1058,8 +1058,7 @@
             deleteDoc,
         } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
         
-        // Supabase Import (via CDN global var, but accessing via window or re-importing usually preferred in modules. 
-        // Since we loaded via script tag in head, 'supabase' global is available, but the createClient function is:
+        // Supabase Import
         const { createClient } = window.supabase;
 
         // --- Firebase Configuration ---
@@ -1079,14 +1078,12 @@
         const db = getFirestore(app);
         const auth = getAuth(app);
 
-        // --- Initialize Supabase with Firebase Auth Bridge ---
-        // REPLACE THESE WITH YOUR ACTUAL SUPABASE URL AND ANON KEY
+        // --- Initialize Supabase ---
         const SUPABASE_URL = 'https://wdssoioqpazcjzdsbnam.supabase.co'; 
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indkc3NvaW9xcGF6Y2p6ZHNibmFtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk4MzE1MzIsImV4cCI6MjA4NTQwNzUzMn0.NpTX0KPq5z0WzWk8TSirlGv0QGj9UPwBZHtZOyDIXX4';
 
         const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
             accessToken: async () => {
-                // Fetch the token from Firebase Auth
                 return (await auth.currentUser?.getIdToken()) ?? null;
             },
         });
@@ -2364,7 +2361,7 @@
                     });
                 });
 
-                // Add To Order (Supabase Upload Logic)
+                // Add To Order (Supabase Upload Logic) - PARALLEL UPLOADS OPTIMIZED
                 addToOrderBtn.addEventListener('click', async () => {
                     if (selectedFiles.length === 0) return;
                     
@@ -2377,23 +2374,32 @@
                     
                     // Change Loading Text
                     const loadingText = document.getElementById('loading-text');
-                    if (loadingText) loadingText.textContent = "Please wait, your file is uploading and checking...";
+                    if (loadingText) loadingText.textContent = "Please wait, your files are uploading and checking...";
                     
                     loadingModal.classList.remove('hidden'); 
                     
-                    const processedDocs = [];
-                    
                     try {
-                        for (const item of selectedFiles) {
+                        // 1. Create an array of upload promises (This starts all uploads immediately)
+                        const uploadPromises = selectedFiles.map(async (item) => {
                              const publicUrl = await uploadToSupabase(item.file);
-                             
                              if (publicUrl) {
-                                 processedDocs.push({
+                                 return {
                                      name: item.file.name,
-                                     url: publicUrl, // Storing URL instead of Base64
+                                     url: publicUrl,
                                      pages: item.pages
-                                 });
+                                 };
                              }
+                             return null;
+                        });
+
+                        // 2. Wait for ALL uploads to finish concurrently
+                        const results = await Promise.all(uploadPromises);
+                        
+                        // 3. Filter out any failed uploads (nulls)
+                        const processedDocs = results.filter(doc => doc !== null);
+
+                        if (processedDocs.length === 0) {
+                            throw new Error("No files were successfully uploaded.");
                         }
 
                         // Add single "Print Job" item to cart
@@ -2418,7 +2424,7 @@
                         
                     } catch (err) {
                         console.error(err);
-                        alert("Failed to upload files to Supabase. Please try again.");
+                        alert("Failed to upload files. Please check your connection and try again.");
                     } finally {
                         loadingModal.classList.add('hidden');
                         // Reset text for other uses
@@ -2776,6 +2782,33 @@
 
             // Directly save to Firebase
             saveOrderToFirebase(orderData);
+        }
+
+        // --- Save Order To Firebase (Function Added) ---
+        async function saveOrderToFirebase(orderData) {
+            try {
+                // Reference to the database collection
+                const colRef = collection(db, `/artifacts/${appId}/public/data/deliveries`);
+                
+                // Add the order to Firestore
+                await addDoc(colRef, orderData);
+                
+                // --- Success Handling ---
+                loadingModal.classList.add('hidden'); // Hide the spinner
+                closeCheckoutModal(); // Close the checkout popup
+                cart = {}; // Clear the cart
+                updateCartUI(); // Reset UI counters
+                
+                // Notify user
+                alert(`Order Placed Successfully! Your Order ID is ${orderData.shortId}`);
+                
+            } catch (error) {
+                // --- Error Handling ---
+                console.error("Error adding document: ", error);
+                loadingModal.classList.add('hidden'); // Hide the spinner so user isn't stuck
+                checkoutErrorMessage.textContent = "Network error. Please check your connection and try again.";
+                checkoutErrorMessage.classList.remove('hidden');
+            }
         }
 
         // --- Updated Card Creation ---
