@@ -2476,8 +2476,9 @@
             const filePath = `stationery_orders/${auth.currentUser.uid}/${Date.now()}_${sanitizedName}`;
             
             // 1. Upload the file
+            // CHANGED: Using 'STATIONERY' (uppercase) to match your Supabase config
             const { data, error } = await supabase.storage
-                .from('stationery') // Ensure this bucket exists in your Supabase project
+                .from('STATIONERY') 
                 .upload(filePath, file, {
                     cacheControl: '3600',
                     upsert: false
@@ -2489,8 +2490,9 @@
             }
 
             // 2. Get the direct link to store in your Firebase Firestore order
+            // CHANGED: Using 'STATIONERY' (uppercase)
             const { data: publicUrlData } = supabase.storage
-                .from('stationery')
+                .from('STATIONERY')
                 .getPublicUrl(filePath);
 
             return publicUrlData.publicUrl;
@@ -3211,7 +3213,7 @@
             delivererView.classList.remove('hidden');
             ownerView.classList.add('hidden');
             deliveryStats.classList.remove('hidden');
-            cartButton.classList.add('hidden');
+            cartButton.classList.add('hidden'); 
             startApp();
         });
 
