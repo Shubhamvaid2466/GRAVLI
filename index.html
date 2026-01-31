@@ -1086,6 +1086,7 @@
 
         // FIX: Removed the custom access token logic. It's causing the conflict.
         const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        window.supabase = supabase;
         
         // --- Mock Data: Owner IDs ---
         const OWNER_CREDENTIALS = {
@@ -3350,5 +3351,6 @@
     </script>
 </body>
 </html>
+
 
 
