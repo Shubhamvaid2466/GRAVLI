@@ -110,6 +110,7 @@
         .gap-4 { gap: 1rem; }
         .w-full { width: 100%; }
         .h-full { height: 100%; }
+        .truncate { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
         
         /* Transition Utilities */
         .transition-all { transition: all 0.3s ease; }
@@ -215,6 +216,7 @@
         .btn-secondary:hover { opacity: 0.9; }
 
         .btn-sm { padding: 0.375rem 1rem; font-size: 0.75rem; }
+        .btn-xs { padding: 0.2rem 0.5rem; font-size: 0.7rem; }
         .btn-icon { padding: 0.5rem; border-radius: 50%; color: var(--text-secondary); }
         .btn-icon:hover { background-color: rgba(255,255,255,0.1); }
 
@@ -2476,9 +2478,9 @@
             const filePath = `stationery_orders/${auth.currentUser.uid}/${Date.now()}_${sanitizedName}`;
             
             // 1. Upload the file
-            // CHANGED: Using 'STATIONERY' (uppercase) to match your Supabase config
+            // CHANGED: Using 'stationery' (lowercase) - Standard Convention
             const { data, error } = await supabase.storage
-                .from('STATIONERY') 
+                .from('stationery') 
                 .upload(filePath, file, {
                     cacheControl: '3600',
                     upsert: false
@@ -2490,9 +2492,9 @@
             }
 
             // 2. Get the direct link to store in your Firebase Firestore order
-            // CHANGED: Using 'STATIONERY' (uppercase)
+            // CHANGED: Using 'stationery' (lowercase)
             const { data: publicUrlData } = supabase.storage
-                .from('STATIONERY')
+                .from('stationery')
                 .getPublicUrl(filePath);
 
             return publicUrlData.publicUrl;
@@ -2888,24 +2890,27 @@
                 
                 // Legacy support for single file
                 if(req.documentUrl) {
-                      docDownloadBtns += `<a href="${req.documentUrl}" target="_blank" class="btn btn-sm btn-secondary w-full mb-2" style="background-color: var(--info-bg); color: white; display: flex; justify-content: center; text-decoration: none;">Open Document</a>`;
+                      docDownloadBtns += `<div class="flex items-center justify-between bg-gray-100 p-2 rounded mb-2 text-sm">
+                            <span class="truncate pr-2">Document.pdf</span>
+                            <a href="${req.documentUrl}" target="_blank" class="text-accent hover:text-accent-hover font-bold text-xs border border-accent px-2 py-1 rounded">Open</a>
+                        </div>`;
                 }
                 
-                // New multiple file support (SUPABASE LINKS) - UPDATED FOR OPENING
+                // New multiple file support - COMPACT OPEN BUTTONS
                 if (req.documents && Array.isArray(req.documents)) {
                     req.documents.forEach((doc, index) => {
-                          const safeName = doc.name.length > 20 ? doc.name.substring(0, 18) + '...' : doc.name;
-                          // Using target="_blank" so user can open and then print
+                          const safeName = doc.name.length > 25 ? doc.name.substring(0, 22) + '...' : doc.name;
+                          // Using target="_blank" to open in new tab
                           docDownloadBtns += `
-                          <a href="${doc.url}" 
-                             target="_blank"
-                             class="btn btn-sm w-full mb-2" 
-                             style="background-color: var(--info-bg); color: white; display: flex; align-items: center; justify-content: center; text-decoration: none; gap: 0.5rem;">
-                             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                             </svg>
-                             Open ${safeName} (${doc.pages} pgs)
-                          </a>`;
+                          <div class="flex items-center justify-between bg-gray-50 dark:bg-gray-700 p-2 rounded mb-2 text-sm border border-gray-200 dark:border-gray-600">
+                                <div class="flex items-center overflow-hidden">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                    </svg>
+                                    <span class="truncate pr-2 text-xs font-medium">${safeName}</span>
+                                </div>
+                                <a href="${doc.url}" target="_blank" class="text-accent hover:text-white hover:bg-accent border border-accent transition-colors px-3 py-1 rounded text-xs font-bold">Open</a>
+                          </div>`;
                     });
                 }
 
@@ -2920,8 +2925,10 @@
                 } else if (req.status === 'preparing') {
                     actionButtonOrPanel = `
                         ${docDownloadBtns}
-                        <button data-id="${req.id}" class="owner-ready-btn btn btn-accent w-full mt-2">Mark Ready (Generate PIN)</button>
-                        <button data-id="${req.id}" class="owner-reject-btn btn btn-danger btn-sm w-full mt-2">Cancel Order</button>
+                        <div class="flex flex-col gap-2 mt-2">
+                            <button data-id="${req.id}" class="owner-ready-btn btn btn-accent w-full">Mark Ready (Generate PIN)</button>
+                            <button data-id="${req.id}" class="owner-reject-btn btn btn-danger btn-sm w-full">Cancel Order</button>
+                        </div>
                     `;
                 } else if (req.status === 'ready') {
                     actionButtonOrPanel = `<button data-id="${req.id}" data-pin="${req.pin}" class="owner-verify-btn btn btn-success w-full mt-2" style="background:var(--success-bg);color:white;">Verify PIN & Complete</button>`;
