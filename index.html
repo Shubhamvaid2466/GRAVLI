@@ -2252,7 +2252,7 @@
                 
                 // Clear state when opening modal
                 if(selectedFiles.length === 0) {
-                     prefArea.classList.add('hidden');
+                      prefArea.classList.add('hidden');
                 } else {
                     updateStationeryUI(); // Restore if returning from browse
                 }
@@ -2891,10 +2891,22 @@
                       docDownloadBtns += `<a href="${req.documentUrl}" download="Order_Doc.pdf" class="btn btn-sm btn-secondary w-full mb-2" style="background-color: var(--info-bg); color: white; display: flex; justify-content: center; text-decoration: none;">Download Document</a>`;
                 }
                 
-                // New multiple file support (SUPABASE LINKS)
+                // New multiple file support (SUPABASE LINKS) - UPDATED FOR DOWNLOAD
                 if (req.documents && Array.isArray(req.documents)) {
                     req.documents.forEach((doc, index) => {
-                          docDownloadBtns += `<a href="${doc.url}" target="_blank" class="btn btn-sm btn-secondary w-full mb-2" style="background-color: var(--info-bg); color: white; display: flex; justify-content: center; text-decoration: none;">Open ${doc.name} (${doc.pages} pgs)</a>`;
+                          const safeName = doc.name.length > 20 ? doc.name.substring(0, 18) + '...' : doc.name;
+                          // Using target="_blank" as reliable fallback for cross-origin downloads
+                          docDownloadBtns += `
+                          <a href="${doc.url}" 
+                             download="${doc.name}" 
+                             target="_blank"
+                             class="btn btn-sm w-full mb-2" 
+                             style="background-color: var(--info-bg); color: white; display: flex; align-items: center; justify-content: center; text-decoration: none; gap: 0.5rem;">
+                             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                             </svg>
+                             Download ${safeName} (${doc.pages} pgs)
+                          </a>`;
                     });
                 }
 
@@ -2911,7 +2923,7 @@
                 } else if (req.status === 'ready') {
                     actionButtonOrPanel = `<button data-id="${req.id}" data-pin="${req.pin}" class="owner-verify-btn btn btn-success w-full mt-2" style="background:var(--success-bg);color:white;">Verify PIN & Complete</button>`;
                 }
-            }
+            } 
             // --- Logic for Deliverer ---
             else if (viewType === 'deliverer-own' && req.status === 'in-progress') {
                 let etaSection = '';
