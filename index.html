@@ -2888,24 +2888,23 @@
                 
                 // Legacy support for single file
                 if(req.documentUrl) {
-                      docDownloadBtns += `<a href="${req.documentUrl}" download="Order_Doc.pdf" class="btn btn-sm btn-secondary w-full mb-2" style="background-color: var(--info-bg); color: white; display: flex; justify-content: center; text-decoration: none;">Download Document</a>`;
+                      docDownloadBtns += `<a href="${req.documentUrl}" target="_blank" class="btn btn-sm btn-secondary w-full mb-2" style="background-color: var(--info-bg); color: white; display: flex; justify-content: center; text-decoration: none;">Open Document</a>`;
                 }
                 
-                // New multiple file support (SUPABASE LINKS) - UPDATED FOR DOWNLOAD
+                // New multiple file support (SUPABASE LINKS) - UPDATED FOR OPENING
                 if (req.documents && Array.isArray(req.documents)) {
                     req.documents.forEach((doc, index) => {
                           const safeName = doc.name.length > 20 ? doc.name.substring(0, 18) + '...' : doc.name;
-                          // Using target="_blank" as reliable fallback for cross-origin downloads
+                          // Using target="_blank" so user can open and then print
                           docDownloadBtns += `
                           <a href="${doc.url}" 
-                             download="${doc.name}" 
                              target="_blank"
                              class="btn btn-sm w-full mb-2" 
                              style="background-color: var(--info-bg); color: white; display: flex; align-items: center; justify-content: center; text-decoration: none; gap: 0.5rem;">
                              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
                              </svg>
-                             Download ${safeName} (${doc.pages} pgs)
+                             Open ${safeName} (${doc.pages} pgs)
                           </a>`;
                     });
                 }
@@ -2919,7 +2918,11 @@
                         </div>
                     `;
                 } else if (req.status === 'preparing') {
-                    actionButtonOrPanel = `${docDownloadBtns}<button data-id="${req.id}" class="owner-ready-btn btn btn-accent w-full mt-2">Mark Ready (Generate PIN)</button>`;
+                    actionButtonOrPanel = `
+                        ${docDownloadBtns}
+                        <button data-id="${req.id}" class="owner-ready-btn btn btn-accent w-full mt-2">Mark Ready (Generate PIN)</button>
+                        <button data-id="${req.id}" class="owner-reject-btn btn btn-danger btn-sm w-full mt-2">Cancel Order</button>
+                    `;
                 } else if (req.status === 'ready') {
                     actionButtonOrPanel = `<button data-id="${req.id}" data-pin="${req.pin}" class="owner-verify-btn btn btn-success w-full mt-2" style="background:var(--success-bg);color:white;">Verify PIN & Complete</button>`;
                 }
@@ -3030,7 +3033,7 @@
                 else if (target.classList.contains('owner-accept-btn')) {
                     await updateDoc(docRef, { status: 'preparing' });
                 } else if (target.classList.contains('owner-reject-btn')) {
-                    if (confirm("Reject this order?")) {
+                    if (confirm("Are you sure you want to cancel/reject this order?")) {
                         await updateDoc(docRef, { status: 'rejected' });
                     }
                 } else if (target.classList.contains('owner-ready-btn')) {
