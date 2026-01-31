@@ -641,13 +641,13 @@
         }
         
         /* Custom Stationery UI Styles */
-        .stationery-container {
+        .STATIONERY-container {
             display: flex;
             flex-direction: column;
             gap: 1rem;
             text-align: left;
         }
-        .stationery-info {
+        .STATIONERY-info {
             background: #eef2ff;
             border: 1px solid #c7d2fe;
             padding: 1rem;
@@ -655,14 +655,14 @@
             color: #3730a3;
             font-size: 0.9rem;
         }
-        .dark .stationery-info {
+        .dark .STATIONERY-info {
             background: #312e81;
             border-color: #4338ca;
             color: #e0e7ff;
         }
         
         /* New Professional Upload Area */
-        .stationery-upload-box {
+        .STATIONERY-upload-box {
             border: 2px dashed var(--accent-color);
             background-color: var(--bg-primary);
             border-radius: var(--radius-lg);
@@ -672,7 +672,7 @@
             transition: all 0.3s ease;
             position: relative;
         }
-        .stationery-upload-box:hover {
+        .STATIONERY-upload-box:hover {
             background-color: rgba(139, 92, 246, 0.05);
             border-color: var(--accent-hover);
         }
@@ -734,7 +734,7 @@
             background-color: rgba(239, 68, 68, 0.1);
         }
         
-        .stationery-options {
+        .STATIONERY-options {
             display: flex;
             gap: 1rem;
             margin-top: 1rem;
@@ -2195,15 +2195,15 @@
             if (cafeId === 'HR8') {
                 // Info Section
                 const infoSection = document.createElement('div');
-                infoSection.className = 'stationery-container';
+                infoSection.className = 'STATIONERY-container';
                 infoSection.innerHTML = `
-                    <div class="stationery-info">
+                    <div class="STATIONERY-info">
                         <p><strong>• Price starting at ₹3/per page</strong></p>
                         <p><strong>• Paper quality : 70 GSM</strong></p>
                         <p><strong>• Single side prints</strong></p>
                     </div>
                     
-                    <label class="stationery-upload-box">
+                    <label class="STATIONERY-upload-box">
                         <input type="file" id="stat-file-input" accept=".pdf,.jpg,.jpeg,.png" multiple class="hidden">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 mx-auto upload-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
@@ -2221,7 +2221,7 @@
                         </div>
                         
                         <label class="form-label mt-4">Select Print Type</label>
-                        <div class="stationery-options">
+                        <div class="STATIONERY-options">
                             <label class="radio-label">
                                 <input type="radio" name="printType" value="bw" checked> 
                                 B&W (₹3/pg)
@@ -2367,7 +2367,7 @@
                     // Clear cart if mixed shops (Constraint: Single shop order)
                     const firstItem = Object.values(cart)[0];
                     if (firstItem && firstItem.cafeId !== 'HR8') {
-                        if (!confirm("Your cart contains items from another shop. Clear it to add stationery?")) return;
+                        if (!confirm("Your cart contains items from another shop. Clear it to add STATIONERY?")) return;
                         cart = {};
                     }
                     
@@ -2475,7 +2475,7 @@
 
             // Sanitized Filename
             const sanitizedName = file.name.replace(/[^a-zA-Z0-9.-]/g, '_');
-            const filePath = `stationery_orders/${auth.currentUser.uid}/${Date.now()}_${sanitizedName}`;
+            const filePath = `STATIONERY_orders/${auth.currentUser.uid}/${Date.now()}_${sanitizedName}`;
             
             // 1. Upload the file
             // CHANGED: Using 'STATIONERY' (all caps) per user request
@@ -3350,3 +3350,4 @@
     </script>
 </body>
 </html>
+
