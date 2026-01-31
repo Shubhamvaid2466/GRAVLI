@@ -2256,7 +2256,7 @@
                 if(selectedFiles.length === 0) {
                       prefArea.classList.add('hidden');
                 } else {
-                    updateStationeryUI(); // Restore if returning from browse
+                    updateSTATIONERYUI(); // Restore if returning from browse
                 }
 
                 // Handle File Selection
@@ -2297,11 +2297,11 @@
                     }
 
                     scanStatus.classList.add('hidden');
-                    updateStationeryUI();
+                    updateSTATIONERYUI();
                 });
 
                 // Update UI Function
-                function updateStationeryUI() {
+                function updateSTATIONERYUI() {
                     fileListContainer.innerHTML = '';
                     let grandTotalPages = 0;
 
@@ -2336,7 +2336,7 @@
                         btn.addEventListener('click', (e) => {
                             const removeId = parseFloat(e.currentTarget.dataset.id);
                             selectedFiles = selectedFiles.filter(f => f.id !== removeId);
-                            updateStationeryUI();
+                            updateSTATIONERYUI();
                         });
                     });
 
@@ -3350,4 +3350,5 @@
     </script>
 </body>
 </html>
+
 
