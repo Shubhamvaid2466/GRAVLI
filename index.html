@@ -826,7 +826,7 @@
                 </div>
             </div>
             
-            <div class="logo-area">
+            <div class="logo-area"> 
                 <span>Gravli</span>
             </div>
 
@@ -996,7 +996,7 @@
                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                 <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
             </svg>
-            <p class="mt-4 text-secondary font-semibold">Processing...</p>
+            <p id="loading-text" class="mt-4 text-secondary font-semibold">Processing...</p>
         </div>
     </div>
 
@@ -1339,7 +1339,7 @@
             "HR3": { 
                 name: "Thick Letto", 
                 items: [
-                     // Exotic Fruits
+                      // Exotic Fruits
                     { id: "tl-1", name: "Strawberry Thick Shake", price: 55 },
                     { id: "tl-2", name: "Butter Nuts Thick Shake", price: 55 },
                     { id: "tl-3", name: "Black Shrubs Thick Shake", price: 55 },
@@ -2213,7 +2213,7 @@
                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
                         </svg>
                         <div class="upload-text">Click to Upload Files</div>
-                        <div class="upload-hint">PDF, JPG, PNG (Max 50MB each)</div>
+                        <div class="upload-hint">PDF, JPG, PNG (Max 15MB each)</div>
                     </label>
                     <p id="stat-scan-status" class="text-sm font-semibold text-accent text-center mt-2 hidden">Scanning pages...</p>
 
@@ -2270,11 +2270,11 @@
 
                     scanStatus.classList.remove('hidden');
                     
-                    const MAX_SIZE_MB = 50;
+                    const MAX_SIZE_MB = 15;
                     const MAX_SIZE_BYTES = MAX_SIZE_MB * 1024 * 1024;
 
                     for (const file of newFiles) {
-                         // Size Check 50MB
+                         // Size Check 15MB
                         if(file.size > MAX_SIZE_BYTES) {
                             alert(`File ${file.name} is too large (Max ${MAX_SIZE_MB}MB). Skipped.`);
                             continue;
@@ -2374,7 +2374,11 @@
                         if (!confirm("Your cart contains items from another shop. Clear it to add stationery?")) return;
                         cart = {};
                     }
-
+                    
+                    // Change Loading Text
+                    const loadingText = document.getElementById('loading-text');
+                    if (loadingText) loadingText.textContent = "Please wait, your file is uploading and checking...";
+                    
                     loadingModal.classList.remove('hidden'); 
                     
                     const processedDocs = [];
@@ -2417,6 +2421,8 @@
                         alert("Failed to upload files to Supabase. Please try again.");
                     } finally {
                         loadingModal.classList.add('hidden');
+                        // Reset text for other uses
+                        if(loadingText) loadingText.textContent = "Processing...";
                     }
                 });
 
@@ -2846,13 +2852,13 @@
                 
                 // Legacy support for single file
                 if(req.documentUrl) {
-                     docDownloadBtns += `<a href="${req.documentUrl}" download="Order_Doc.pdf" class="btn btn-sm btn-secondary w-full mb-2" style="background-color: var(--info-bg); color: white; display: flex; justify-content: center; text-decoration: none;">Download Document</a>`;
+                      docDownloadBtns += `<a href="${req.documentUrl}" download="Order_Doc.pdf" class="btn btn-sm btn-secondary w-full mb-2" style="background-color: var(--info-bg); color: white; display: flex; justify-content: center; text-decoration: none;">Download Document</a>`;
                 }
                 
                 // New multiple file support (SUPABASE LINKS)
                 if (req.documents && Array.isArray(req.documents)) {
                     req.documents.forEach((doc, index) => {
-                         docDownloadBtns += `<a href="${doc.url}" target="_blank" class="btn btn-sm btn-secondary w-full mb-2" style="background-color: var(--info-bg); color: white; display: flex; justify-content: center; text-decoration: none;">Open ${doc.name} (${doc.pages} pgs)</a>`;
+                          docDownloadBtns += `<a href="${doc.url}" target="_blank" class="btn btn-sm btn-secondary w-full mb-2" style="background-color: var(--info-bg); color: white; display: flex; justify-content: center; text-decoration: none;">Open ${doc.name} (${doc.pages} pgs)</a>`;
                     });
                 }
 
@@ -2996,6 +3002,156 @@
             } catch (error) {
                 console.error("Error updating document:", error);
             }
+        }
+
+        // --- Firebase Request Fetching ---
+        function fetchAndDisplayRequests() {
+             const requestsRef = collection(db, `/artifacts/${appId}/public/data/deliveries`);
+             // We can fetch all and filter in memory since dataset is likely small
+             const q = query(requestsRef); // In prod, add orderBy
+             
+             unsubscribe = onSnapshot(q, (snapshot) => {
+                 const allOrders = [];
+                 snapshot.forEach((doc) => {
+                     allOrders.push({ id: doc.id, ...doc.data() });
+                 });
+                 
+                 // Render for Student View
+                 if (currentRole === 'student') {
+                     const myRequestsList = document.getElementById('my-requests-list');
+                     const activeOrderBar = document.getElementById('active-order-bar');
+                     
+                     if (myRequestsList) {
+                         myRequestsList.innerHTML = '';
+                         const myActiveOrders = allOrders.filter(req => req.requesterId === currentUser.uid && (req.status !== 'completed' && req.status !== 'rejected'));
+                         
+                         // Sort active orders: 'ready' first, then others
+                         myActiveOrders.sort((a, b) => {
+                             if(a.status === 'ready' && b.status !== 'ready') return -1;
+                             if(a.status !== 'ready' && b.status === 'ready') return 1;
+                             return (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0);
+                         });
+
+                         if (myActiveOrders.length === 0) {
+                             myRequestsList.innerHTML = `<p class="text-secondary text-center italic">You have no active orders.</p>`;
+                             activeOrderBar.classList.add('hidden');
+                         } else {
+                             myActiveOrders.forEach(req => {
+                                 const card = createRequestCard(req, 'student-own');
+                                 myRequestsList.appendChild(card);
+                             });
+                             
+                             // Update Bottom Bar
+                             const topOrder = myActiveOrders[0];
+                             activeOrderBar.dataset.orderId = `order-${topOrder.id}`;
+                             activeOrderBar.classList.remove('hidden');
+                             
+                             const statusText = document.getElementById('active-order-bar-status');
+                             if(topOrder.status === 'open') statusText.textContent = "Waiting for acceptance...";
+                             else if(topOrder.status === 'preparing') statusText.textContent = "Being prepared...";
+                             else if(topOrder.status === 'in-progress') statusText.textContent = `On the way! ETA: ${topOrder.estimatedTime ? topOrder.estimatedTime + ' mins' : 'Calculating...'}`;
+                             else if(topOrder.status === 'ready') statusText.textContent = "Ready for Pickup! Check PIN.";
+                             
+                         }
+                     }
+                 }
+                 
+                 // Render for Deliverer View
+                 if (currentRole === 'deliverer') {
+                     const availableContainer = document.getElementById('all-requests-list-deliverer');
+                     const myCurrentContainer = document.getElementById('my-current-deliveries-list');
+                     const singleDeliveryMessage = document.getElementById('single-delivery-message');
+                     
+                     if(availableContainer && myCurrentContainer) {
+                         availableContainer.innerHTML = '';
+                         myCurrentContainer.innerHTML = '';
+                         
+                         const myJob = allOrders.find(req => req.delivererId === currentUser.uid && req.status === 'in-progress');
+                         
+                         if(myJob) {
+                              const card = createRequestCard(myJob, 'deliverer-own');
+                              myCurrentContainer.appendChild(card);
+                              availableContainer.classList.add('hidden'); // Hide available jobs if busy
+                              singleDeliveryMessage.classList.remove('hidden');
+                         } else {
+                              myCurrentContainer.innerHTML = `<p class="text-secondary text-center italic">No active deliveries.</p>`;
+                              availableContainer.classList.remove('hidden');
+                              singleDeliveryMessage.classList.add('hidden');
+                              
+                              // Show Open Requests (Exclude pickups, exclude my own requests if any)
+                              const openRequests = allOrders.filter(req => req.status === 'open' && !req.isPickup && req.requesterId !== currentUser.uid);
+                              // Sort by latest
+                              openRequests.sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
+                              
+                              if (openRequests.length === 0) {
+                                  availableContainer.innerHTML = `<p class="text-secondary text-center italic">No available delivery jobs right now.</p>`;
+                              } else {
+                                  openRequests.forEach(req => {
+                                      const card = createRequestCard(req, 'deliverer');
+                                      availableContainer.appendChild(card);
+                                  });
+                              }
+                         }
+                         
+                         // Update Stats
+                         const completedCount = allOrders.filter(req => req.delivererId === currentUser.uid && req.status === 'completed').length;
+                         const deliveryStats = document.getElementById('delivery-stats');
+                         if(deliveryStats) deliveryStats.textContent = `Deliveries: ${completedCount}`;
+                     }
+                 }
+                 
+                 // Render for Owner View
+                 if (currentRole === 'owner' && managedCafeId) {
+                     const ownerList = document.getElementById('owner-orders-list');
+                     if(ownerList) {
+                         ownerList.innerHTML = '';
+                         // Show active orders for this cafe
+                         const cafeOrders = allOrders.filter(req => req.cafeId === managedCafeId && (req.status === 'open' || req.status === 'preparing' || req.status === 'ready'));
+                         
+                         // Sort: Open first, then Preparing, then Ready
+                         const statusOrder = { 'open': 1, 'preparing': 2, 'ready': 3 };
+                         cafeOrders.sort((a, b) => {
+                             const statusDiff = statusOrder[a.status] - statusOrder[b.status];
+                             if (statusDiff !== 0) return statusDiff;
+                             return (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0);
+                         });
+                         
+                         if(cafeOrders.length === 0) {
+                             ownerList.innerHTML = `<p class="text-secondary text-center italic">No active orders.</p>`;
+                         } else {
+                             cafeOrders.forEach(req => {
+                                 const card = createRequestCard(req, 'owner');
+                                 ownerList.appendChild(card);
+                             });
+                         }
+                     }
+                 }
+                 
+                 // Always update history modal if open
+                 if(!historyModal.classList.contains('hidden')) {
+                     renderOrderHistory(allOrders);
+                 }
+             });
+        }
+        
+        function getStatusBadge(status) {
+            switch(status) {
+                case 'open': return `<span class="badge badge-open">Open</span>`;
+                case 'in-progress': return `<span class="badge badge-progress">On The Way</span>`;
+                case 'preparing': return `<span class="badge badge-progress">Preparing</span>`;
+                case 'ready': return `<span class="badge badge-ready">Ready</span>`;
+                case 'completed': return `<span class="badge badge-completed">Completed</span>`;
+                case 'rejected': return `<span class="badge badge-rejected">Rejected</span>`;
+                default: return `<span class="badge badge-open">${status}</span>`;
+            }
+        }
+        
+        function logout() {
+            signOut(auth).then(() => {
+                // UI update handled by onAuthStateChanged
+            }).catch((error) => {
+                console.error("Logout Error:", error);
+            });
         }
         
         // --- Event Listeners ---
